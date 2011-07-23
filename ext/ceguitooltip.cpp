@@ -22,15 +22,15 @@ VALUE CeguiTooltip_new(int argc,VALUE *argv,VALUE self)
 	result[1]=name;
 	return rb_call_super(2,result);
 }
-
-
+/*
+*/
 void Init_CeguiTooltip(VALUE rb_mCegui)
 {
 #if 0
 	rb_mCegui = rb_define_module("Cegui");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 
-	rb_define_attr(rb_cCeguiTooltip,"displayTime",1,1);
+	rb_define_attr(rb_cCeguiTooltip,"targetWindow",1,1);
 
 	rb_define_attr(rb_cCeguiTooltip,"displayTime",1,1);
 	rb_define_attr(rb_cCeguiTooltip,"hoverTime",1,1);
@@ -47,6 +47,9 @@ void Init_CeguiTooltip(VALUE rb_mCegui)
 
 	rb_define_singleton_method(rb_cCeguiTooltip,"new",RUBY_METHOD_FUNC(CeguiTooltip_new),-1);
 
+	rb_define_const(rb_cCeguiTooltip,"WidgetTypeName",wrap(CEGUI::Tooltip::WidgetTypeName));	
+	rb_define_const(rb_cCeguiTooltip,"EventNamespace",wrap(CEGUI::Tooltip::EventNamespace));
+	
 	rb_define_const(rb_cCeguiTooltip,"EventHoverTimeChanged",wrap(CEGUI::Tooltip::EventHoverTimeChanged));
 	rb_define_const(rb_cCeguiTooltip,"EventDisplayTimeChanged",wrap(CEGUI::Tooltip::EventDisplayTimeChanged));
 	rb_define_const(rb_cCeguiTooltip,"EventFadeTimeChanged",wrap(CEGUI::Tooltip::EventFadeTimeChanged));

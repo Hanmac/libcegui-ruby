@@ -3,23 +3,24 @@
 
 #include "main.hpp"
 #include <iostream>
-#include <sstream>
+#include <ostream>
+//#include <sstream>
 
-class RubyOstream : public std::ostringstream{
+class RubyStreamBuf : public std::streambuf{
 public:
-	RubyOstream(VALUE val);
-	bool operator!() const;
-	bool good() const;
-	RubyOstream& put(char s);
-	RubyOstream& write(const char *s,size_t size);
-	
-	streampos tellp();	
-	RubyOstream& seekp ( streampos pos );
-	RubyOstream& seekp ( streamoff off, ios_base::seekdir dir );
-	
-	RubyOstream& flush();
+	RubyStreamBuf(VALUE val);
+	int overflow(int c);
+	size_t xsputn ( const char * s, size_t n );
 private:
 	VALUE value;
 };
 
+
+class RubyStream : public std::ostream{
+public:
+	RubyStream(VALUE val);
+	~RubyStream();
+private:
+	RubyStreamBuf *buf;	
+};
 #endif /* __RubyCeguiOstream_H__ */

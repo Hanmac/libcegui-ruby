@@ -2,11 +2,16 @@
 #include "ceguieventset.hpp"
 #include "ceguiexception.hpp"
 
+#include "ceguixmlserializer.hpp"
+
+#include "ceguiimage.hpp"
+
 #define _self wrap<CEGUI::Imageset*>(self)
 #define _manager CEGUI::ImagesetManager::getSingletonPtr()
 
 VALUE rb_cCeguiImageset;
 
+macro_attr(Imageset,NativeResolution,CEGUI::Size)
 /*
 */
 VALUE CeguiImageset_getName(VALUE self)
@@ -29,6 +34,22 @@ VALUE CeguiImageset_inspect(VALUE self)
 	array[1]=rb_class_of(self);
 	array[2]=CeguiImageset_getName(self);
 	return rb_f_sprintf(3,array);
+}
+
+/*
+*/
+VALUE CeguiImageset_each(VALUE self)
+{
+	wrap_each(_self->getIterator());
+	return self;
+}
+/*
+*/
+VALUE CeguiImageset_writeXML(VALUE self,VALUE xml)
+{
+	CEGUI::XMLSerializer *temp =wrap<CEGUI::XMLSerializer*>(xml);
+	_self->writeXMLToStream(*temp);
+	return self;
 }
 
 /*
@@ -99,6 +120,7 @@ void Init_CeguiImageset(VALUE rb_mCegui)
 {
 #if 0
 	rb_mCegui = rb_define_module("Cegui");
+	rb_define_attr(rb_cCeguiImageset,"nativeResolution",1,1);
 	
 #endif
 	rb_cCeguiImageset = rb_define_class_under(rb_mCegui,"Imageset",rb_cObject);
@@ -106,9 +128,17 @@ void Init_CeguiImageset(VALUE rb_mCegui)
 
 	rb_extend_object(rb_cCeguiImageset,rb_mCeguiEventSet);
 	rb_extend_object(rb_cCeguiImageset,rb_mEnumerable);
+	
+	rb_include_module(rb_cCeguiImageset,rb_mEnumerable);
 
 	rb_define_method(rb_cCeguiImageset,"name",RUBY_METHOD_FUNC(CeguiImageset_getName),0);
 	rb_define_method(rb_cCeguiImageset,"inspect",RUBY_METHOD_FUNC(CeguiImageset_inspect),0);
+
+	rb_define_attr_method(rb_cCeguiImageset,"nativeResolution",CeguiImageset_getNativeResolution,CeguiImageset_setNativeResolution);
+
+	rb_define_method(rb_cCeguiImageset,"each",RUBY_METHOD_FUNC(CeguiImageset_each),0);
+
+	rb_define_method(rb_cCeguiImageset,"writeXML",RUBY_METHOD_FUNC(CeguiImageset_writeXML),1);
 
 	rb_define_singleton_method(rb_cCeguiImageset,"[]",RUBY_METHOD_FUNC(CeguiImageset_Manager_get),1);
 	rb_define_singleton_method(rb_cCeguiImageset,"each",RUBY_METHOD_FUNC(CeguiImageset_Manager_each),0);

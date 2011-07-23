@@ -1,4 +1,6 @@
 #include "ceguiproperty.hpp"
+#include "ceguipropertyset.hpp"
+#include "ceguixmlserializer.hpp"
 #define _self wrap<CEGUI::Property*>(self)
 VALUE rb_cCeguiProperty;
 /*
@@ -27,6 +29,32 @@ VALUE CeguiProperty_inspect(VALUE self)
 }
 
 
+/*
+*/
+VALUE CeguiProperty_get(VALUE self,VALUE set)
+{
+	return wrap(_self->get(wrap<CEGUI::PropertySet*>(set)));
+}
+
+
+/*
+*/
+VALUE CeguiProperty_set(VALUE self,VALUE set,VALUE value)
+{
+	_self->set(wrap<CEGUI::PropertySet*>(set),wrap<CEGUI::String>(value));
+	return self;
+}
+
+/*
+*/
+VALUE CeguiProperty_writeXML(VALUE self,VALUE set,VALUE xml)
+{
+	CEGUI::XMLSerializer *temp =wrap<CEGUI::XMLSerializer*>(xml);
+	_self->writeXMLToStream(wrap<CEGUI::PropertySet*>(set),*temp);
+	return self;
+}
+
+
 void Init_CeguiProperty(VALUE rb_mCegui)
 {
 #if 0
@@ -37,4 +65,9 @@ void Init_CeguiProperty(VALUE rb_mCegui)
 	
 	rb_define_method(rb_cCeguiProperty,"inspect",RUBY_METHOD_FUNC(CeguiProperty_inspect),0);
 	rb_define_method(rb_cCeguiProperty,"name",RUBY_METHOD_FUNC(CeguiProperty_getName),0);
+	
+	rb_define_method(rb_cCeguiProperty,"get",RUBY_METHOD_FUNC(CeguiProperty_get),1);
+	rb_define_method(rb_cCeguiProperty,"set",RUBY_METHOD_FUNC(CeguiProperty_set),2);
+	
+	rb_define_method(rb_cCeguiProperty,"writeXML",RUBY_METHOD_FUNC(CeguiProperty_writeXML),2);
 }

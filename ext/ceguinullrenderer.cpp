@@ -1,5 +1,6 @@
 #include "ceguirenderer.hpp"
 #include "ceguinullrenderer.hpp"
+#include "ceguiwindowimpl.hpp"
 
 VALUE rb_cCeguiNullRenderer;
 #if HAVE_RENDERERMODULES_NULL_CEGUINULLRENDERER_H
@@ -7,7 +8,9 @@ VALUE rb_cCeguiNullRenderer;
 */
 VALUE CeguiNullRenderer_bootstrap(VALUE self)
 {
-	return wrap(CEGUI::NullRenderer::bootstrapSystem());
+	VALUE val = wrap(CEGUI::NullRenderer::bootstrapSystem());
+	ruby_bootstrap();
+	return val;
 }
 /*
 */

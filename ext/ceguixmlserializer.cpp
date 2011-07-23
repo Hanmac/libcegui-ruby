@@ -1,12 +1,14 @@
 #include "ceguixmlserializer.hpp"
-#include "ceguiostream.hpp"
 #define _self wrap<CEGUI::XMLSerializer*>(self)
 VALUE rb_cCeguiXMLSerializer;
 
+/*
+*/
 VALUE CeguiXMLSerializer_create(VALUE self,VALUE io)
 {
-	RubyOstream value(io);
-	return wrap(new CEGUI::XMLSerializer(value));
+//	std::ostream *os = new RubyStream(io);
+	std::ostream *os = new std::ostream(new RubyStreamBuf(io));
+	return wrap(new CEGUI::XMLSerializer(*os));
 }
 /*
 */

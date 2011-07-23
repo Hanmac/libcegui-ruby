@@ -103,6 +103,12 @@ VALUE CeguiSystem_getDefaultImageCodecName(VALUE self)
 {
 	return wrap(CEGUI::System::getDefaultImageCodecName());
 }
+
+void ruby_bootstrap()
+{
+	CEGUI::String str = CEGUI::WindowManager::EventWindowDestroyed;
+	CEGUI::WindowManager::getSingletonPtr()->subscribeEvent(str,CEGUI::Event::Subscriber(ruby_window_destroyed_callback));
+}
 /*
 */
 void Init_CeguiSystem(VALUE rb_mCegui)
@@ -135,4 +141,5 @@ void Init_CeguiSystem(VALUE rb_mCegui)
 	
 	rb_define_singleton_method(rb_mCeguiSystem,"defaultimagecodec",RUBY_METHOD_FUNC(CeguiSystem_getDefaultImageCodecName),0);
 	rb_define_singleton_method(rb_mCeguiSystem,"defaultimagecodec=",RUBY_METHOD_FUNC(CeguiSystem_setDefaultImageCodecName),1);
+	
 }

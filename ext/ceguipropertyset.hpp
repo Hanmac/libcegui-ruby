@@ -9,7 +9,8 @@ extern VALUE rb_mCeguiPropertySet;
 template <>
 inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 {
-//	return wrap< CEGUI::Window* >(vwindow);
+	if (rb_obj_is_kind_of(vset, rb_cCeguiWindow))
+		return wrap< CEGUI::Window* >(vset);
 	
 	if (rb_obj_is_kind_of(vset, rb_mCeguiPropertySet)){
 		CEGUI::PropertySet *set;

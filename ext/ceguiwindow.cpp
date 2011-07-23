@@ -15,11 +15,13 @@
 #include "ceguifalagard.hpp"
 #include "ceguiexception.hpp"
 
+#include "ceguiostream.hpp"
+
 #define _self wrap<CEGUI::Window*>(self)
 #define _manager CEGUI::WindowManager::getSingletonPtr()
 #define _factorymanager CEGUI::WindowFactoryManager::getSingletonPtr()
 VALUE rb_cCeguiWindow;
-//VALUE windowcallbackholder;
+std::map<CEGUI::Window*,RubyWindowHolder*> rubywindowholder;
 
 macro_attr(Window,Rotation,CEGUI::Vector3)
 macro_attr(Window,Text,CEGUI::String)
@@ -65,6 +67,13 @@ VALUE CeguiWindow_setParent(VALUE self,VALUE val)
 	wrap<CEGUI::Window*>(val)->addChildWindow(_self);
 	return val;
 }
+/*
+*/
+VALUE CeguiWindow_getType(VALUE self)
+{
+	return wrap(_self->getType());
+}
+
 
 /*
 */
@@ -87,11 +96,28 @@ VALUE CeguiWindow_each(VALUE self)
 */
 VALUE CeguiWindow_inspect(VALUE self)
 {
-	VALUE array[3];
-	array[0]=rb_str_new2("#<%s:%s>");
-	array[1]=rb_class_of(self);
-	array[2]=CeguiWindow_getName(self);
-	return rb_f_sprintf(3,array);
+	if(wrap< RubyWindowHolder* >(self)->window==NULL){
+		VALUE array[2];
+		array[0]=rb_str_new2("#<%s:(destroyed)>");
+		array[1]=rb_class_of(self);
+		return rb_f_sprintf(2,array);
+	}else{
+		if(rb_const_defined(rb_class_of(self),rb_intern("WidgetTypeName")))
+			if(_self->getType() == wrap<CEGUI::String>(rb_const_get(rb_class_of(self),rb_intern("WidgetTypeName"))))
+			{
+				VALUE array[3];
+				array[0]=rb_str_new2("#<%s:%s>");
+				array[1]=rb_class_of(self);
+				array[2]=CeguiWindow_getName(self);
+				return rb_f_sprintf(3,array);
+			}
+		VALUE array[4];
+		array[0]=rb_str_new2("#<%s(%s):%s>");
+		array[1]=rb_class_of(self);
+		array[2]=CeguiWindow_getType(self);
+		array[3]=CeguiWindow_getName(self);
+		return rb_f_sprintf(4,array);
+	}
 }
 
 /*
@@ -99,6 +125,13 @@ VALUE CeguiWindow_inspect(VALUE self)
 VALUE CeguiWindow_render(VALUE self)
 {
 	_self->render();
+	return Qnil;
+}
+/*
+*/
+VALUE CeguiWindow_destroy(VALUE self)
+{
+	_self->destroy();
 	return Qnil;
 }
 /*
@@ -176,7 +209,29 @@ VALUE CeguiWindow_getPixelSize(VALUE self)
 	return wrap(_self->getPixelSize());
 }
 
-
+/*
+*/
+VALUE CeguiWindow_writeXML(VALUE self,VALUE xml)
+{
+	CEGUI::XMLSerializer *temp =wrap<CEGUI::XMLSerializer*>(xml);
+	_self->writeXMLToStream(*temp);
+	return self;
+}
+/*
+*/
+VALUE CeguiWindow_saveWindowLayout(int argc,VALUE *argv,VALUE self)
+{
+	VALUE obj,writeParent;
+	rb_scan_args(argc, argv, "11",&obj,&writeParent);
+	if(rb_obj_is_kind_of(obj, rb_cString)){
+		_manager->saveWindowLayout(*_self,wrap<CEGUI::String>(obj),RTEST(writeParent));
+	}else{
+		RubyStreamBuf *buf =new RubyStreamBuf(obj);
+		std::ostream *os = new std::ostream(buf);
+		_manager->writeWindowLayoutToStream(*_self,*os,RTEST(writeParent));
+	}
+	return self;
+}
 /*
 */
 VALUE CeguiWindow_Manager_new(int argc,VALUE *argv,VALUE self)
@@ -254,6 +309,21 @@ VALUE CeguiWindow_Manager_loadWindowLayout(int argc,VALUE *argv,VALUE self)
 }
 /*
 */
+VALUE CeguiWindow_Manager_saveWindowLayout(int argc,VALUE *argv,VALUE self)
+{
+	VALUE name,obj,writeParent;
+	rb_scan_args(argc, argv, "21",&name,&obj,&writeParent);
+	if(rb_obj_is_kind_of(obj, rb_cString)){
+		_manager->saveWindowLayout(wrap<CEGUI::String>(name),wrap<CEGUI::String>(obj),RTEST(writeParent));
+	}else{
+		std::ostream *os = new std::ostream(new RubyStreamBuf(obj));
+		_manager->writeWindowLayoutToStream(wrap<CEGUI::String>(name),*os,RTEST(writeParent));
+	}
+	return self;
+}
+
+/*
+*/
 VALUE CeguiWindow_Manager_each_type(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
@@ -277,6 +347,32 @@ VALUE CeguiWindow_Manager_each_falagard(VALUE self)
 	return self;
 }
 
+
+
+/*
+*/
+VALUE CeguiWindow_Manager_destroyWindow(VALUE self,VALUE name)
+{
+	_manager->destroyWindow(wrap<CEGUI::String>(name));
+	return self;
+}
+
+
+/*
+*/
+VALUE CeguiWindow_Manager_destroyAllWindows(VALUE self)
+{
+	_manager->destroyAllWindows();
+	return self;
+}
+/*
+*/
+VALUE CeguiWindow_Manager_cleanDeadPool(VALUE self)
+{
+	_manager->cleanDeadPool();
+	return self;
+}
+
 /*
 */
 VALUE CeguiWindow_Manager_getDefaultResourceGroup(VALUE self)
@@ -289,6 +385,16 @@ VALUE CeguiWindow_Manager_setDefaultResourceGroup(VALUE self,VALUE val)
 {
 	CEGUI::WindowManager::setDefaultResourceGroup(wrap<CEGUI::String>(val));
 	return val;
+}
+
+
+int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg)
+{
+	const CEGUI::WindowEventArgs *wea=dynamic_cast<const CEGUI::WindowEventArgs*>(&arg);
+	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(wea->window);
+	if(it!=rubywindowholder.end())
+		it->second->window = NULL;
+	return 0;
 }
 
 void Init_CeguiWindow(VALUE rb_mCegui)
@@ -356,8 +462,12 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiWindow,"tooltipType",CeguiWindow_getTooltipType,CeguiWindow_setTooltipType);
 	rb_define_attr_method(rb_cCeguiWindow,"tooltipText",CeguiWindow_getTooltipText,CeguiWindow_setTooltipText);
 
+	rb_define_method(rb_cCeguiWindow,"type",RUBY_METHOD_FUNC(CeguiWindow_getType),0);
 
 	rb_define_method(rb_cCeguiWindow,"render",RUBY_METHOD_FUNC(CeguiWindow_render),0);
+	rb_define_method(rb_cCeguiWindow,"destroy",RUBY_METHOD_FUNC(CeguiWindow_destroy),0);
+
+	rb_define_method(rb_cCeguiWindow,"saveWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_saveWindowLayout),-1);
 
 	rb_define_method(rb_cCeguiWindow,"captureInput",RUBY_METHOD_FUNC(CeguiWindow_captureInput),0);
 	rb_define_method(rb_cCeguiWindow,"releaseInput",RUBY_METHOD_FUNC(CeguiWindow_releaseInput),0);
@@ -381,19 +491,29 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 
 	rb_define_method(rb_cCeguiWindow,"inspect",RUBY_METHOD_FUNC(CeguiWindow_inspect),0);
 
+	rb_define_method(rb_cCeguiWindow,"writeXML",RUBY_METHOD_FUNC(CeguiWindow_writeXML),1);
+
 	rb_define_singleton_method(rb_cCeguiWindow,"new",RUBY_METHOD_FUNC(CeguiWindow_Manager_new),-1);
 
 	rb_define_singleton_method(rb_cCeguiWindow,"loadWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_Manager_loadWindowLayout),-1);
+	rb_define_singleton_method(rb_cCeguiWindow,"saveWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_Manager_saveWindowLayout),-1);
 
 	rb_define_singleton_method(rb_cCeguiWindow,"[]",RUBY_METHOD_FUNC(CeguiWindow_Manager_get),1);
 	rb_define_singleton_method(rb_cCeguiWindow,"each",RUBY_METHOD_FUNC(CeguiWindow_Manager_each),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"each_type",RUBY_METHOD_FUNC(CeguiWindow_Manager_each_type),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"each_alias",RUBY_METHOD_FUNC(CeguiWindow_Manager_each_alias),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"each_falagard",RUBY_METHOD_FUNC(CeguiWindow_Manager_each_falagard),0);
-	
+
+
 	rb_define_singleton_method(rb_cCeguiWindow,"lock",RUBY_METHOD_FUNC(CeguiWindow_Manager_lock),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"unlock",RUBY_METHOD_FUNC(CeguiWindow_Manager_unlock),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"locked?",RUBY_METHOD_FUNC(CeguiWindow_Manager_locked),0);
+
+	rb_define_singleton_method(rb_cCeguiWindow,"cleanDeadPool",RUBY_METHOD_FUNC(CeguiWindow_Manager_cleanDeadPool),0);
+
+	rb_define_singleton_method(rb_cCeguiWindow,"destroyWindow",RUBY_METHOD_FUNC(CeguiWindow_Manager_destroyWindow),1);
+	
+	rb_define_singleton_method(rb_cCeguiWindow,"destroyAllWindows",RUBY_METHOD_FUNC(CeguiWindow_Manager_destroyAllWindows),0);
 
 
 	rb_define_singleton_method(rb_cCeguiWindow,"defaultResourceGroup",RUBY_METHOD_FUNC(CeguiWindow_Manager_getDefaultResourceGroup),0);

@@ -40,6 +40,25 @@ VALUE CeguiColor_initialize_copy(VALUE self, VALUE other)
 	CeguiColor_setAlpha(self,CeguiColor_getAlpha(other));
 	return result;
 }
+/*
+ * call-seq:
+ *   inspect -> String
+ * 
+ * Human-readable description. 
+ * ===Return value
+ * String
+*/
+VALUE CeguiColor_inspect(VALUE self)
+{
+	VALUE array[6];
+	array[0]=rb_str_new2("#<%s:(%f, %f, %f, %f)>");
+	array[1]=rb_class_of(self);
+	array[2]=CeguiColor_getRed(self);
+	array[3]=CeguiColor_getGreen(self);
+	array[4]=CeguiColor_getBlue(self);
+	array[5]=CeguiColor_getAlpha(self);
+	return rb_f_sprintf(6,array);
+}
 
 /*
  * call-seq:
@@ -139,9 +158,12 @@ void Init_CeguiColor(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiColor,"initialize",RUBY_METHOD_FUNC(CeguiColor_initialize),-1);
 	rb_define_private_method(rb_cCeguiColor,"initialize_copy",RUBY_METHOD_FUNC(CeguiColor_initialize_copy),1);
 	
+
 	rb_define_attr_method(rb_cCeguiColor,"red",CeguiColor_getRed,CeguiColor_setRed);
 	rb_define_attr_method(rb_cCeguiColor,"blue",CeguiColor_getBlue,CeguiColor_setBlue);
 	rb_define_attr_method(rb_cCeguiColor,"green",CeguiColor_getGreen,CeguiColor_setGreen);
 	rb_define_attr_method(rb_cCeguiColor,"alpha",CeguiColor_getAlpha,CeguiColor_setAlpha);
+
+	rb_define_method(rb_cCeguiColor,"inspect",RUBY_METHOD_FUNC(CeguiColor_inspect),0);
 }
 

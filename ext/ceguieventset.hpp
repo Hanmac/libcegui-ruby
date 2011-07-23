@@ -3,6 +3,9 @@
 
 #include "main.hpp"
 #include "ceguiwindow.hpp"
+#include "ceguischeme.hpp"
+#include "ceguifont.hpp"
+#include "ceguiimageset.hpp"
 void Init_CeguiEventSet(VALUE rb_mCegui);
 extern VALUE rb_mCeguiEventSet;
 
@@ -13,6 +16,12 @@ inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 		return wrap< CEGUI::Window* >(vset);
 	else if(vset == rb_cCeguiWindow)
 		return CEGUI::WindowManager::getSingletonPtr();
+	else if(vset == rb_cCeguiScheme)
+		return CEGUI::SchemeManager::getSingletonPtr();
+	else if(vset == rb_cCeguiImageset)
+		return CEGUI::ImagesetManager::getSingletonPtr();
+	else if(vset == rb_cCeguiFont)
+		return CEGUI::FontManager::getSingletonPtr();
 /*	
 	if (rb_obj_is_kind_of(vset, rb_mCeguiEventSet)){
 		CEGUI::EventSet *set;

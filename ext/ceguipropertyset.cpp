@@ -31,9 +31,8 @@ VALUE CeguiPropertySet_method_missing(int argc,VALUE *argv,VALUE self)
 	VALUE methID,arg,val;
 	rb_scan_args(argc, argv, "1*",&methID,&arg);
 	methID = rb_funcall(methID,rb_intern("to_s"),0);
-	std::string cname;
 	CEGUI::String propname;
-	cname = StringValueCStr(methID);
+	std::string cname = StringValueCStr(methID);
 	bool setter=false;
 	if(cname.find('=')!=std::string::npos){
 		setter=true;

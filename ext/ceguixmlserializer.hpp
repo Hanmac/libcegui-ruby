@@ -2,6 +2,7 @@
 #define __RubyCeguiXMLSerializer_H__
 
 #include "main.hpp"
+#include "ceguiostream.hpp"
 void Init_CeguiXMLSerializer(VALUE rb_mCegui);
 extern VALUE rb_cCeguiXMLSerializer;
 
@@ -22,8 +23,8 @@ inline CEGUI::XMLSerializer* wrap< CEGUI::XMLSerializer* >(const VALUE &vxml)
 		Data_Get_Struct( vxml, CEGUI::XMLSerializer, xml);
 		return xml;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiXMLSerializer),rb_obj_classname(vxml));
-		return NULL;
+		std::ostream *os = new std::ostream(new RubyStreamBuf(vxml));
+		return new CEGUI::XMLSerializer(*os);
 	}
 }
 #endif /* __RubyCeguiXMLSerializer_H__ */
