@@ -23,7 +23,7 @@ VALUE CeguiListboxTextItem_single_getDefaultTextColour(VALUE self)
 */
 VALUE CeguiListboxTextItem_single_setDefaultTextColour(VALUE self,VALUE value)
 {
-	const_cast<CEGUI::colour*>(&CEGUI::ListboxTextItem::DefaultTextColour)->setRGB(wrap<CEGUI::colour>(value));
+	const_cast<CEGUI::Colour*>(&CEGUI::ListboxTextItem::DefaultTextColour)->setRGB(wrap<CEGUI::Colour>(value));
 	return value;
 }
 /*

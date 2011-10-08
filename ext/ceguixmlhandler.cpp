@@ -15,12 +15,16 @@ void RubyXMLHandler::text(const CEGUI::String &text)
 {
 	rb_funcall(this->value,rb_intern("text"),1,wrap(text));
 }
+const CEGUI::String& RubyXMLHandler::getDefaultResourceGroup() const
+{
+	return temp.assign(wrap<CEGUI::String>(rb_funcall(this->value,rb_intern("getDefaultResourceGroup"),0)));
+}
+
 
 VALUE CeguiXMLHandler_alloc(VALUE self)
 {
 	return wrap(new RubyXMLHandler);
 }
-
 
 void Init_CeguiXMLHandler(VALUE rb_mCegui)
 {

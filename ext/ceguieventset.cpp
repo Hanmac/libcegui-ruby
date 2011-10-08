@@ -9,7 +9,7 @@ VALUE rb_mCeguiEventSet;
 VALUE CeguiEventSet_each_event(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
-	wrap_each(_self->getIterator());//EventSet::
+	wrap_each(_self->getEventIterator());//EventSet::
 	return self;
 }
 

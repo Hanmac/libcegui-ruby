@@ -15,16 +15,23 @@ inline VALUE wrap< CEGUI::PushButton >(CEGUI::PushButton *pushbutton )
 	CEGUI::Thumb *thumb = dynamic_cast<CEGUI::Thumb*>(pushbutton);
 	if(thumb)
 		return wrap(thumb);
-	return Data_Wrap_Struct(rb_cCeguiPushButton, NULL, NULL, pushbutton);
+	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(pushbutton);
+	if(it != rubywindowholder.end()){
+		return it->second->ruby;
+	}else{
+		RubyWindowHolder* hold = new RubyWindowHolder;
+		hold->window = pushbutton;
+		hold->ruby = Data_Wrap_Struct(rb_cCeguiPushButton, NULL, NULL, hold);
+		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(pushbutton,hold));
+		return hold->ruby;
+	}
 }
 
 template <>
 inline CEGUI::PushButton* wrap< CEGUI::PushButton* >(const VALUE &vpushbutton)
 {
 	if (rb_obj_is_kind_of(vpushbutton, rb_cCeguiPushButton)){
-		CEGUI::PushButton *pushbutton;
-		Data_Get_Struct( vpushbutton, CEGUI::PushButton, pushbutton);
-		return pushbutton;
+		return (CEGUI::PushButton*)(wrap< CEGUI::Window* >(vpushbutton));
 	}else{
 		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiPushButton),rb_obj_classname(vpushbutton));
 		return NULL;

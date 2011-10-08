@@ -9,9 +9,9 @@ VALUE CeguiVertex_alloc(VALUE self)
 {
 	return wrap(new CEGUI::Vertex);
 }
-macro_attr_prop(Vertex,position,CEGUI::Vector3)
-macro_attr_prop(Vertex,tex_coords,CEGUI::Vector2)
-macro_attr_prop(Vertex,colour_val,CEGUI::colour)
+macro_attr_prop(Vertex,position,CEGUI::Vector3f)
+macro_attr_prop(Vertex,tex_coords,CEGUI::Vector2f)
+macro_attr_prop(Vertex,colour_val,CEGUI::Colour)
 /*
 */
 VALUE CeguiVertex_initialize_copy(VALUE self, VALUE other)

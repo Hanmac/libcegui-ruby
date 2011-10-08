@@ -82,7 +82,7 @@ VALUE CeguiScheme_Manager_create(int argc,VALUE *argv,VALUE self)
 	VALUE path,resource_group;
 	rb_scan_args(argc, argv, "11",&path,&resource_group);
 	try{
-		return wrap(_manager->create(wrap<CEGUI::String>(path),wrap<CEGUI::String>(resource_group)));
+		return wrap(_manager->createFromFile(wrap<CEGUI::String>(path),wrap<CEGUI::String>(resource_group)));
 	}catch(CEGUI::Exception& e){
 		rb_raise(wrap(e));
 		return Qnil;
@@ -96,7 +96,12 @@ VALUE CeguiScheme_Manager_createAll(int argc,VALUE *argv,VALUE self)
 {
 	VALUE pattern,resource_group;
 	rb_scan_args(argc, argv, "11",&pattern,&resource_group);
-	_manager->createAll(wrap<CEGUI::String>(pattern),wrap<CEGUI::String>(resource_group));
+	try{
+		_manager->createAll(wrap<CEGUI::String>(pattern),wrap<CEGUI::String>(resource_group));
+	}catch(CEGUI::Exception& e){
+		rb_raise(wrap(e));
+		return Qnil;
+	}
 	return self;
 }
 /*

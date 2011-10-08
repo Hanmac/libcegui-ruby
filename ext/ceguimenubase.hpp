@@ -6,7 +6,7 @@ void Init_CeguiMenuBase(VALUE rb_mCegui);
 extern VALUE rb_cCeguiMenuBase;
 
 #include "ceguipopupmenu.hpp"
-
+#include "ceguimenubar.hpp"
 template <>
 inline VALUE wrap< CEGUI::MenuBase >(CEGUI::MenuBase *menubase )
 {
@@ -15,6 +15,9 @@ inline VALUE wrap< CEGUI::MenuBase >(CEGUI::MenuBase *menubase )
 	CEGUI::PopupMenu *popupmenu = dynamic_cast<CEGUI::PopupMenu*>(menubase);
 	if(popupmenu)
 		return wrap(popupmenu);
+	CEGUI::Menubar *menubar = dynamic_cast<CEGUI::Menubar*>(menubase);
+	if(menubar)
+		return wrap(menubar);
 	
 	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(menubase);
 	if(it != rubywindowholder.end()){

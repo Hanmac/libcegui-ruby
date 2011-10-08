@@ -7,39 +7,45 @@ extern VALUE rb_cCeguiRect;
 
 
 template <>
-inline VALUE wrap< CEGUI::Rect >(CEGUI::Rect *rect )
+inline VALUE wrap< CEGUI::Rectf >(CEGUI::Rectf *rect )
 {
 	return Data_Wrap_Struct(rb_cCeguiRect, NULL, free, rect);
 }
 //*
 
-
 template <>
-inline CEGUI::Rect* wrap< CEGUI::Rect* >(const VALUE &vrect)
+inline CEGUI::Rectf* wrap< CEGUI::Rectf* >(const VALUE &vrect)
 {
 	if(rb_obj_is_kind_of(vrect, rb_cCeguiRect)){
-		CEGUI::Rect *rect;
-		Data_Get_Struct( vrect, CEGUI::Rect, rect);
+		CEGUI::Rectf *rect;
+		Data_Get_Struct( vrect, CEGUI::Rectf, rect);
 		return rect;
+	}else if(rb_respond_to(vrect,rb_intern("min")) && 
+	 rb_respond_to(vrect,rb_intern("max"))){
+		CEGUI::Rectf *rect = new CEGUI::Rectf;
+		rect->d_min = wrap<CEGUI::Vector2f>(rb_funcall(vrect,rb_intern("min"),0));
+		rect->d_max = wrap<CEGUI::Vector2f>(rb_funcall(vrect,rb_intern("max"),0));
+		return rect;
+
 	}else if(rb_respond_to(vrect,rb_intern("top")) && 
 	 rb_respond_to(vrect,rb_intern("bottom")) &&
 	 rb_respond_to(vrect,rb_intern("left")) &&
 	 rb_respond_to(vrect,rb_intern("right"))){
-	 	CEGUI::Rect *rect = new CEGUI::Rect;
-	 	rect->d_top = NUM2DBL(rb_funcall(vrect,rb_intern("top"),0));
-	 	rect->d_bottom = NUM2DBL(rb_funcall(vrect,rb_intern("bottom"),0));
-	 	rect->d_left = NUM2DBL(rb_funcall(vrect,rb_intern("left"),0));
-		rect->d_right = NUM2DBL(rb_funcall(vrect,rb_intern("right"),0));
-	 	return rect;
+		CEGUI::Rectf *rect = new CEGUI::Rectf;
+		rect->d_min.d_x = NUM2DBL(rb_funcall(vrect,rb_intern("top"),0));
+		rect->d_min.d_y = NUM2DBL(rb_funcall(vrect,rb_intern("bottom"),0));
+		rect->d_max.d_x = NUM2DBL(rb_funcall(vrect,rb_intern("left"),0));
+		rect->d_max.d_y = NUM2DBL(rb_funcall(vrect,rb_intern("right"),0));
+		return rect;
 	}else{
 		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiRect),rb_obj_classname(vrect));
 		return NULL;
 	}
 }
 template <>
-inline CEGUI::Rect wrap< CEGUI::Rect >(const VALUE &vrect)
+inline CEGUI::Rectf wrap< CEGUI::Rectf >(const VALUE &vrect)
 {
-	return *wrap< CEGUI::Rect* >(vrect);
+	return *wrap< CEGUI::Rectf* >(vrect);
 }
 //*/
 #endif /* __RubyCeguiRect_H__ */

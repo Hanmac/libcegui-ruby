@@ -4,33 +4,70 @@
 
 #include "ceguirect.hpp"
 
-#define _self wrap<CEGUI::Rect*>(self)
+#define _self wrap<CEGUI::Rectf*>(self)
 VALUE rb_cCeguiRect;
 
-macro_attr_prop_with_func(Rect,d_top,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Rect,d_bottom,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Rect,d_left,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Rect,d_right,DBL2NUM,NUM2DBL)
+macro_attr_prop(Rect,d_min,CEGUI::Vector2f)
+macro_attr_prop(Rect,d_max,CEGUI::Vector2f)
 
-macro_attr(Rect,Position,CEGUI::Vector2)
-macro_attr_with_func(Rect,Width,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Rect,Height,DBL2NUM,NUM2DBL)
-macro_attr(Rect,Size,CEGUI::Size)
+macro_attr(Rect,Position,CEGUI::Vector2f)
+macro_attr(Rect,Width,float)
+macro_attr(Rect,Height,float)
+macro_attr(Rect,Size,CEGUI::Sizef)
 
 VALUE CeguiRect_alloc(VALUE self)
 {
-	return wrap(new CEGUI::Rect());
+	return wrap(new CEGUI::Rectf());
+}
+
+VALUE CeguiRect_get_d_top(VALUE self)
+{
+	return wrap(_self->d_min.d_x);
+}
+VALUE CeguiRect_get_d_bottom(VALUE self)
+{
+	return wrap(_self->d_min.d_y);
+}
+
+VALUE CeguiRect_get_d_left(VALUE self)
+{
+	return wrap(_self->d_max.d_x);
+}
+VALUE CeguiRect_get_d_right(VALUE self)
+{
+	return wrap(_self->d_max.d_y);
+}
+
+
+VALUE CeguiRect_set_d_top(VALUE self,VALUE v)
+{
+	_self->d_min.d_x = wrap<float>(v);
+	return v;
+}
+VALUE CeguiRect_set_d_bottom(VALUE self,VALUE v)
+{
+	_self->d_min.d_y = wrap<float>(v);
+	return v;
+}
+
+VALUE CeguiRect_set_d_left(VALUE self,VALUE v)
+{
+	_self->d_max.d_x = wrap<float>(v);
+	return v;
+}
+VALUE CeguiRect_set_d_right(VALUE self,VALUE v)
+{
+	_self->d_max.d_y = wrap<float>(v);
+	return v;
 }
 
 
 /*
 */
-VALUE CeguiRect_initialize(VALUE self,VALUE top,VALUE bottom,VALUE left,VALUE right)
+VALUE CeguiRect_initialize(VALUE self,VALUE min,VALUE max)
 {
-	CeguiRect_set_d_top(self,top);
-	CeguiRect_set_d_bottom(self,bottom);
-	CeguiRect_set_d_left(self,left);
-	CeguiRect_set_d_right(self,right);
+	CeguiRect_set_d_min(self,min);
+	CeguiRect_set_d_max(self,max);
 	return self;
 }
 /*
@@ -38,10 +75,8 @@ VALUE CeguiRect_initialize(VALUE self,VALUE top,VALUE bottom,VALUE left,VALUE ri
 VALUE CeguiRect_initialize_copy(VALUE self, VALUE other)
 {
 	VALUE result = rb_call_super(1,&other);
-	CeguiRect_set_d_top(self,CeguiRect_get_d_top(other));
-	CeguiRect_set_d_bottom(self,CeguiRect_get_d_bottom(other));
-	CeguiRect_set_d_left(self,CeguiRect_get_d_left(other));
-	CeguiRect_set_d_right(self,CeguiRect_get_d_right(other));
+	CeguiRect_set_d_min(self,CeguiRect_get_d_min(other));
+	CeguiRect_set_d_max(self,CeguiRect_get_d_max(other));
 	return result;
 }
 /*
@@ -54,30 +89,26 @@ VALUE CeguiRect_initialize_copy(VALUE self, VALUE other)
 */
 VALUE CeguiRect_inspect(VALUE self)
 {
-	VALUE array[6];
-	array[0]=rb_str_new2("#<%s:(%f, %f, %f, %f)>");
+	VALUE array[4];
+	array[0]=rb_str_new2("#<%s:(%s, %s)>");
 	array[1]=rb_class_of(self);
-	array[2]=CeguiRect_get_d_top(self);
-	array[3]=CeguiRect_get_d_bottom(self);
-	array[4]=CeguiRect_get_d_left(self);
-	array[5]=CeguiRect_get_d_right(self);
-	return rb_f_sprintf(6,array);
+	array[2]=rb_funcall(CeguiRect_get_d_min(self),rb_intern("inpect"),0);
+	array[3]=rb_funcall(CeguiRect_get_d_max(self),rb_intern("inpect"),0);
+	return rb_f_sprintf(4,array);
 }/*
 */
 VALUE CeguiRect_swap(VALUE self,VALUE other)
 {
-	CEGUI::Rect* cother = wrap<CEGUI::Rect*>(other);
-	std::swap(_self->d_top,cother->d_top);
-	std::swap(_self->d_bottom,cother->d_bottom);
-	std::swap(_self->d_left,cother->d_left);
-	std::swap(_self->d_right,cother->d_right);
+	CEGUI::Rectf* cother = wrap<CEGUI::Rectf*>(other);
+	std::swap(_self->d_min,cother->d_min);
+	std::swap(_self->d_max,cother->d_max);
 	return self;
 }
 /*
 */
 VALUE CeguiRect_plus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::Rect>(other));
+	return wrap(*_self + wrap<CEGUI::Rectf>(other));
 }
 /*
 */
@@ -89,57 +120,57 @@ VALUE CeguiRect_mal(VALUE self,VALUE other)
 */
 VALUE CeguiRect_isinside(VALUE self,VALUE point)
 {
-	return RBOOL(_self->isPointInRect(wrap<CEGUI::Vector2>(point)));
+	return RBOOL(_self->isPointInRect(wrap<CEGUI::Vector2f>(point)));
 }
 /*
 */
 VALUE CeguiRect_intersection(VALUE self,VALUE other)
 {
-	return wrap(_self->getIntersection(wrap<CEGUI::Rect>(other)));
+	return wrap(_self->getIntersection(wrap<CEGUI::Rectf>(other)));
 }
 /*
 */
 VALUE CeguiRect_constrainSize_self(VALUE self,VALUE size1,VALUE size2)
 {
-	_self->constrainSize(wrap<CEGUI::Size>(size1),wrap<CEGUI::Size>(size1));
+	_self->constrainSize(wrap<CEGUI::Sizef>(size1),wrap<CEGUI::Sizef>(size1));
 	return self;
 }
 /*
 */
 VALUE CeguiRect_constrainSizeMax_self(VALUE self,VALUE other)
 {
-	_self->constrainSizeMax(wrap<CEGUI::Size>(other));
+	_self->constrainSizeMax(wrap<CEGUI::Sizef>(other));
 	return self;
 }
 /*
 */
 VALUE CeguiRect_constrainSizeMin_self(VALUE self,VALUE other)
 {
-	_self->constrainSizeMin(wrap<CEGUI::Size>(other));
+	_self->constrainSizeMin(wrap<CEGUI::Sizef>(other));
 	return self;
 }
 /*
 */
 VALUE CeguiRect_constrainSize(VALUE self,VALUE size1,VALUE size2)
 {
-	CEGUI::Rect *temp = new CEGUI::Rect(*_self);
-	temp->constrainSize(wrap<CEGUI::Size>(size1),wrap<CEGUI::Size>(size1));
+	CEGUI::Rectf *temp = new CEGUI::Rectf(*_self);
+	temp->constrainSize(wrap<CEGUI::Sizef>(size1),wrap<CEGUI::Sizef>(size1));
 	return wrap(temp);
 }
 /*
 */
 VALUE CeguiRect_constrainSizeMax(VALUE self,VALUE other)
 {
-	CEGUI::Rect *temp = new CEGUI::Rect(*_self);
-	temp->constrainSizeMax(wrap<CEGUI::Size>(other));
+	CEGUI::Rectf *temp = new CEGUI::Rectf(*_self);
+	temp->constrainSizeMax(wrap<CEGUI::Sizef>(other));
 	return wrap(temp);
 }
 /*
 */
 VALUE CeguiRect_constrainSizeMin(VALUE self,VALUE other)
 {
-	CEGUI::Rect *temp = new CEGUI::Rect(*_self);
-	temp->constrainSizeMin(wrap<CEGUI::Size>(other));
+	CEGUI::Rectf *temp = new CEGUI::Rectf(*_self);
+	temp->constrainSizeMin(wrap<CEGUI::Sizef>(other));
 	return wrap(temp);
 }
 
@@ -149,15 +180,15 @@ VALUE CeguiRect_constrainSizeMin(VALUE self,VALUE other)
 */
 VALUE CeguiRect_offset_self(VALUE self,VALUE point)
 {
-	_self->offset(wrap<CEGUI::Vector2>(point));
+	_self->offset(wrap<CEGUI::Vector2f>(point));
 	return self;
 }
 /*
 */
 VALUE CeguiRect_offset(VALUE self,VALUE point)
 {
-	CEGUI::Rect *temp = new CEGUI::Rect(*_self);
-	temp->offset(wrap<CEGUI::Vector2>(point));
+	CEGUI::Rectf *temp = new CEGUI::Rectf(*_self);
+	temp->offset(wrap<CEGUI::Vector2f>(point));
 	return wrap(temp);
 }
 
@@ -173,10 +204,8 @@ VALUE CeguiRect_offset(VALUE self,VALUE point)
 VALUE CeguiRect_hash(VALUE self)
 {
 	VALUE result = rb_ary_new();
-	rb_ary_push(result,CeguiRect_get_d_top(self));
-	rb_ary_push(result,CeguiRect_get_d_bottom(self));
-	rb_ary_push(result,CeguiRect_get_d_left(self));
-	rb_ary_push(result,CeguiRect_get_d_right(self));
+	rb_ary_push(result,CeguiRect_get_d_min(self));
+	rb_ary_push(result,CeguiRect_get_d_max(self));
 	return rb_funcall(result,rb_intern("hash"),0);
 }
 /*
@@ -241,6 +270,9 @@ void Init_CeguiRect(VALUE rb_mCegui)
 	rb_define_alloc_func(rb_cCeguiRect,CeguiRect_alloc);
 	rb_define_method(rb_cCeguiRect,"initialize",RUBY_METHOD_FUNC(CeguiRect_initialize),4);
 	rb_define_private_method(rb_cCeguiRect,"initialize_copy",RUBY_METHOD_FUNC(CeguiRect_initialize_copy),1);
+
+	rb_define_attr_method(rb_cCeguiRect,"min",CeguiRect_get_d_min,CeguiRect_set_d_min);
+	rb_define_attr_method(rb_cCeguiRect,"max",CeguiRect_get_d_max,CeguiRect_set_d_max);
 	
 	rb_define_attr_method(rb_cCeguiRect,"top",CeguiRect_get_d_top,CeguiRect_set_d_top);
 	rb_define_attr_method(rb_cCeguiRect,"bottom",CeguiRect_get_d_bottom,CeguiRect_set_d_bottom);

@@ -1,14 +1,14 @@
 #include "ceguisize.hpp"
-#define _self wrap<CEGUI::Size*>(self)
+#define _self wrap<CEGUI::Sizef*>(self)
 VALUE rb_cCeguiSize;
 
-macro_attr_prop_with_func(Size,d_width,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Size,d_height,DBL2NUM,NUM2DBL)
+macro_attr_prop(Size,d_width,float)
+macro_attr_prop(Size,d_height,float)
 
 
 VALUE CeguiSize_alloc(VALUE self)
 {
-	return wrap(new CEGUI::Size);
+	return wrap(new CEGUI::Sizef);
 }
 /*
 */
@@ -48,13 +48,13 @@ VALUE CeguiSize_inspect(VALUE self)
 */
 VALUE CeguiSize_minusself(VALUE self)
 {
-	return wrap(CEGUI::Size(- _self->d_width,- _self->d_height));
+	return wrap(CEGUI::Sizef(- _self->d_width,- _self->d_height));
 }
 /*
 */
 VALUE CeguiSize_swap(VALUE self,VALUE other)
 {
-	CEGUI::Size* cother = wrap<CEGUI::Size*>(other);
+	CEGUI::Sizef* cother = wrap<CEGUI::Sizef*>(other);
 	std::swap(_self->d_width,cother->d_width);
 	std::swap(_self->d_height,cother->d_height);
 	return self;
@@ -63,13 +63,13 @@ VALUE CeguiSize_swap(VALUE self,VALUE other)
 */
 VALUE CeguiSize_plus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::Size>(other));
+	return wrap(*_self + wrap<CEGUI::Sizef>(other));
 }
 /*
 */
 VALUE CeguiSize_minus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::Size>(CeguiSize_minusself(other)));
+	return wrap(*_self + wrap<CEGUI::Sizef>(CeguiSize_minusself(other)));
 }
 /*
 */
@@ -120,7 +120,7 @@ VALUE CeguiSize_marshal_load(VALUE self,VALUE load)
 }
 
 /*
- * Document-class: CEGUI::Size
+ * Document-class: CEGUI::Sizef
  * 
  * This class represents an Size
 */ 

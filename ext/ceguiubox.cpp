@@ -1,4 +1,5 @@
 #include "ceguiuvector2.hpp"
+#include "ceguiubox.hpp"
 #define _self wrap<CEGUI::UBox*>(self)
 VALUE rb_cCeguiUBox;
 

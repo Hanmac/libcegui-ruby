@@ -9,7 +9,7 @@
 
 VALUE rb_cCeguiFont;
 
-macro_attr(Font,NativeResolution,CEGUI::Size)
+macro_attr(Font,NativeResolution,CEGUI::Sizef)
 
 
 VALUE CeguiFont_setAutoScaled(VALUE self,VALUE val)
@@ -63,8 +63,8 @@ VALUE CeguiFont_drawText(int argc,VALUE *argv,VALUE self)
 		x_scale = NUM2DBL(x_scale);
 	if(!NIL_P(y_scale))
 		y_scale = NUM2DBL(y_scale);
-	_self->drawText(*wrap<CEGUI::GeometryBuffer*>(buffer),wrap<CEGUI::String>(text),wrap<CEGUI::Vector2>(position),
-	wrap<CEGUI::Rect*>(clip_rect),wrap<CEGUI::ColourRect>(colours), cspace_extra,cx_scale, cy_scale);
+	_self->drawText(*wrap<CEGUI::GeometryBuffer*>(buffer),wrap<CEGUI::String>(text),wrap<CEGUI::Vector2f>(position),
+	wrap<CEGUI::Rectf*>(clip_rect),wrap<CEGUI::ColourRect>(colours), cspace_extra,cx_scale, cy_scale);
 	return self;
 }
 
@@ -108,7 +108,7 @@ VALUE CeguiFont_Manager_create(int argc,VALUE *argv,VALUE self)
 	VALUE path,resource_group;
 	rb_scan_args(argc, argv, "11",&path,&resource_group);
 	try{
-		return wrap(&_manager->create(wrap<CEGUI::String>(path),wrap<CEGUI::String>(resource_group)));
+		return wrap(&_manager->createFromFile(wrap<CEGUI::String>(path),wrap<CEGUI::String>(resource_group)));
 	}catch(CEGUI::Exception& e){
 		rb_raise(wrap(e));
 		return Qnil;

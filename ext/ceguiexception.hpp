@@ -6,13 +6,6 @@ void Init_CeguiException(VALUE rb_mCegui);
 extern VALUE rb_mCeguiException;
 extern VALUE rb_eCeguiUnknownObjectException,rb_eCeguiAlreadyExistsException,rb_eCeguiInvalidRequestException;
 
-inline void rb_raise(VALUE exception){
-	rb_funcall(rb_mKernel,rb_intern("raise"),1,exception);
-}
-
-
-
-
 template <>
 inline VALUE wrap< CEGUI::UnknownObjectException >(CEGUI::UnknownObjectException *exception )
 {

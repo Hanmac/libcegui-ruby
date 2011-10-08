@@ -23,29 +23,32 @@
 VALUE rb_cCeguiWindow;
 std::map<CEGUI::Window*,RubyWindowHolder*> rubywindowholder;
 
-macro_attr(Window,Rotation,CEGUI::Vector3)
+macro_attr(Window,Rotation,CEGUI::Quaternion)
 macro_attr(Window,Text,CEGUI::String)
 
 macro_attr(Window,Tooltip,CEGUI::Tooltip*)
 macro_attr(Window,TooltipType,CEGUI::String)
 macro_attr(Window,TooltipText,CEGUI::String)
 
+macro_attr(Window,LookNFeel,CEGUI::String)
+
 
 macro_attr(Window,Height,CEGUI::UDim)
 macro_attr(Window,Width,CEGUI::UDim)
+macro_attr(Window,Area,CEGUI::URect)
 macro_attr(Window,Position,CEGUI::UVector2)
 macro_attr(Window,XPosition,CEGUI::UDim)
 macro_attr(Window,YPosition,CEGUI::UDim)
 
-macro_attr(Window,Size,CEGUI::UVector2)
-macro_attr(Window,MinSize,CEGUI::UVector2)
-macro_attr(Window,MaxSize,CEGUI::UVector2)
+macro_attr(Window,Size,CEGUI::USize)
+macro_attr(Window,MinSize,CEGUI::USize)
+macro_attr(Window,MaxSize,CEGUI::USize)
 
 macro_attr(Window,Margin,CEGUI::UBox)
 
 
 
-macro_attr_with_func(Window,Alpha,DBL2NUM,NUM2DBL)
+macro_attr(Window,Alpha,float)
 
 VALUE CeguiWindow_getName(VALUE self)
 {
@@ -64,7 +67,7 @@ VALUE CeguiWindow_getParent(VALUE self)
 }
 VALUE CeguiWindow_setParent(VALUE self,VALUE val)
 {
-	wrap<CEGUI::Window*>(val)->addChildWindow(_self);
+	wrap<CEGUI::Window*>(val)->addChild(_self);
 	return val;
 }
 /*
@@ -219,16 +222,13 @@ VALUE CeguiWindow_writeXML(VALUE self,VALUE xml)
 }
 /*
 */
-VALUE CeguiWindow_saveWindowLayout(int argc,VALUE *argv,VALUE self)
+VALUE CeguiWindow_saveLayout(VALUE self,VALUE obj)
 {
-	VALUE obj,writeParent;
-	rb_scan_args(argc, argv, "11",&obj,&writeParent);
 	if(rb_obj_is_kind_of(obj, rb_cString)){
-		_manager->saveWindowLayout(*_self,wrap<CEGUI::String>(obj),RTEST(writeParent));
+		_manager->saveLayoutToFile(*_self,wrap<CEGUI::String>(obj));
 	}else{
-		RubyStreamBuf *buf =new RubyStreamBuf(obj);
-		std::ostream *os = new std::ostream(buf);
-		_manager->writeWindowLayoutToStream(*_self,*os,RTEST(writeParent));
+		std::ostream *os = new std::ostream(new RubyStreamBuf(obj));
+		_manager->writeLayoutToStream(*_self,*os);
 	}
 	return self;
 }
@@ -254,13 +254,6 @@ VALUE CeguiWindow_Manager_each(VALUE self)
 	RETURN_ENUMERATOR(self,0,NULL);
 	wrap_each(_manager->getIterator());
 	return self;
-}
-/*
-*/
-VALUE CeguiWindow_Manager_get(VALUE self,VALUE name)
-{
-	CEGUI::String cname = wrap<CEGUI::String>(name);
-	return _manager->isWindowPresent(cname) ? wrap(_manager->getWindow(cname)) : Qnil;
 }
 /*
 */
@@ -293,33 +286,19 @@ bool 	windowcallback(CEGUI::Window *window, CEGUI::String &propname, CEGUI::Stri
 
 /*
 */
-VALUE CeguiWindow_Manager_loadWindowLayout(int argc,VALUE *argv,VALUE self)
+VALUE CeguiWindow_Manager_loadLayout(int argc,VALUE *argv,VALUE self)
 {
-	VALUE filename,name_prefix,resourceGroup;
-	rb_scan_args(argc, argv, "12",&filename,&name_prefix,&resourceGroup);
+	VALUE filename,resourceGroup;
+	rb_scan_args(argc, argv, "11",&filename,&resourceGroup);
 	try{
 		if(rb_block_given_p()){
-			return wrap(_manager->loadWindowLayout(wrap<CEGUI::String>(filename),wrap<CEGUI::String>(name_prefix),wrap<CEGUI::String>(resourceGroup),windowcallback,(void*)rb_block_proc()));
+			return wrap(_manager->loadLayoutFromFile(wrap<CEGUI::String>(filename),wrap<CEGUI::String>(resourceGroup),windowcallback,(void*)rb_block_proc()));
 		}else
-			return wrap(_manager->loadWindowLayout(wrap<CEGUI::String>(filename),wrap<CEGUI::String>(name_prefix),wrap<CEGUI::String>(resourceGroup)));
+			return wrap(_manager->loadLayoutFromFile(wrap<CEGUI::String>(filename),wrap<CEGUI::String>(resourceGroup)));
 	}catch(CEGUI::Exception& e){
 		rb_raise(wrap(e));
 		return Qnil;
 	}
-}
-/*
-*/
-VALUE CeguiWindow_Manager_saveWindowLayout(int argc,VALUE *argv,VALUE self)
-{
-	VALUE name,obj,writeParent;
-	rb_scan_args(argc, argv, "21",&name,&obj,&writeParent);
-	if(rb_obj_is_kind_of(obj, rb_cString)){
-		_manager->saveWindowLayout(wrap<CEGUI::String>(name),wrap<CEGUI::String>(obj),RTEST(writeParent));
-	}else{
-		std::ostream *os = new std::ostream(new RubyStreamBuf(obj));
-		_manager->writeWindowLayoutToStream(wrap<CEGUI::String>(name),*os,RTEST(writeParent));
-	}
-	return self;
 }
 
 /*
@@ -344,16 +323,6 @@ VALUE CeguiWindow_Manager_each_falagard(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
 	wrap_each(_factorymanager->getFalagardMappingIterator());
-	return self;
-}
-
-
-
-/*
-*/
-VALUE CeguiWindow_Manager_destroyWindow(VALUE self,VALUE name)
-{
-	_manager->destroyWindow(wrap<CEGUI::String>(name));
 	return self;
 }
 
@@ -408,10 +377,13 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 
 	rb_define_attr(rb_cCeguiWindow,"parent",1,1);
 
+	rb_define_attr(rb_cCeguiWindow,"area",1,1);
 	rb_define_attr(rb_cCeguiWindow,"height",1,1);
 	rb_define_attr(rb_cCeguiWindow,"width",1,1);
 	
-	rb_define_attr(rb_cCeguiWindow,"Position",1,1);
+	rb_define_attr(rb_cCeguiWindow,"lookNFeel",1,1);
+	
+	rb_define_attr(rb_cCeguiWindow,"position",1,1);
 	
 	rb_define_attr(rb_cCeguiWindow,"xPosition",1,1);
 	rb_define_attr(rb_cCeguiWindow,"yPosition",1,1);
@@ -442,6 +414,7 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	
 	rb_define_attr_method(rb_cCeguiWindow,"parent",CeguiWindow_getParent,CeguiWindow_setParent);
 	
+	rb_define_attr_method(rb_cCeguiWindow,"area",CeguiWindow_getArea,CeguiWindow_setArea);
 	rb_define_attr_method(rb_cCeguiWindow,"height",CeguiWindow_getHeight,CeguiWindow_setHeight);
 	rb_define_attr_method(rb_cCeguiWindow,"width",CeguiWindow_getWidth,CeguiWindow_setWidth);
 	
@@ -455,6 +428,7 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 
 	rb_define_attr_method(rb_cCeguiWindow,"margin",CeguiWindow_getMargin,CeguiWindow_setMargin);
 
+	rb_define_attr_method(rb_cCeguiWindow,"lookNFeel",CeguiWindow_getLookNFeel,CeguiWindow_setLookNFeel);
 
 	rb_define_attr_method(rb_cCeguiWindow,"alpha",CeguiWindow_getAlpha,CeguiWindow_setAlpha);
 
@@ -467,7 +441,7 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiWindow,"render",RUBY_METHOD_FUNC(CeguiWindow_render),0);
 	rb_define_method(rb_cCeguiWindow,"destroy",RUBY_METHOD_FUNC(CeguiWindow_destroy),0);
 
-	rb_define_method(rb_cCeguiWindow,"saveWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_saveWindowLayout),-1);
+	rb_define_method(rb_cCeguiWindow,"saveLayout",RUBY_METHOD_FUNC(CeguiWindow_saveLayout),-1);
 
 	rb_define_method(rb_cCeguiWindow,"captureInput",RUBY_METHOD_FUNC(CeguiWindow_captureInput),0);
 	rb_define_method(rb_cCeguiWindow,"releaseInput",RUBY_METHOD_FUNC(CeguiWindow_releaseInput),0);
@@ -495,10 +469,8 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 
 	rb_define_singleton_method(rb_cCeguiWindow,"new",RUBY_METHOD_FUNC(CeguiWindow_Manager_new),-1);
 
-	rb_define_singleton_method(rb_cCeguiWindow,"loadWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_Manager_loadWindowLayout),-1);
-	rb_define_singleton_method(rb_cCeguiWindow,"saveWindowLayout",RUBY_METHOD_FUNC(CeguiWindow_Manager_saveWindowLayout),-1);
+	rb_define_singleton_method(rb_cCeguiWindow,"loadLayout",RUBY_METHOD_FUNC(CeguiWindow_Manager_loadLayout),-1);
 
-	rb_define_singleton_method(rb_cCeguiWindow,"[]",RUBY_METHOD_FUNC(CeguiWindow_Manager_get),1);
 	rb_define_singleton_method(rb_cCeguiWindow,"each",RUBY_METHOD_FUNC(CeguiWindow_Manager_each),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"each_type",RUBY_METHOD_FUNC(CeguiWindow_Manager_each_type),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"each_alias",RUBY_METHOD_FUNC(CeguiWindow_Manager_each_alias),0);
@@ -511,15 +483,13 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 
 	rb_define_singleton_method(rb_cCeguiWindow,"cleanDeadPool",RUBY_METHOD_FUNC(CeguiWindow_Manager_cleanDeadPool),0);
 
-	rb_define_singleton_method(rb_cCeguiWindow,"destroyWindow",RUBY_METHOD_FUNC(CeguiWindow_Manager_destroyWindow),1);
-	
 	rb_define_singleton_method(rb_cCeguiWindow,"destroyAllWindows",RUBY_METHOD_FUNC(CeguiWindow_Manager_destroyAllWindows),0);
 
 
 	rb_define_singleton_method(rb_cCeguiWindow,"defaultResourceGroup",RUBY_METHOD_FUNC(CeguiWindow_Manager_getDefaultResourceGroup),0);
 	rb_define_singleton_method(rb_cCeguiWindow,"defaultResourceGroup=",RUBY_METHOD_FUNC(CeguiWindow_Manager_setDefaultResourceGroup),1);
 
-	rb_define_const(rb_cCeguiWindow,"EventWindowUpdated",wrap(CEGUI::Window::EventWindowUpdated));
+	rb_define_const(rb_cCeguiWindow,"EventUpdated",wrap(CEGUI::Window::EventUpdated));
 	rb_define_const(rb_cCeguiWindow,"EventParentSized",wrap(CEGUI::Window::EventParentSized));
 	rb_define_const(rb_cCeguiWindow,"EventSized",wrap(CEGUI::Window::EventSized));
 	rb_define_const(rb_cCeguiWindow,"EventMoved",wrap(CEGUI::Window::EventMoved));
@@ -558,8 +528,8 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	rb_define_const(rb_cCeguiWindow,"EventMarginChanged",wrap(CEGUI::Window::EventMarginChanged));
 	rb_define_const(rb_cCeguiWindow,"EventMouseEntersArea",wrap(CEGUI::Window::EventMouseEntersArea));
 	rb_define_const(rb_cCeguiWindow,"EventMouseLeavesArea",wrap(CEGUI::Window::EventMouseLeavesArea));
-	rb_define_const(rb_cCeguiWindow,"EventMouseEnters",wrap(CEGUI::Window::EventMouseEnters));
-	rb_define_const(rb_cCeguiWindow,"EventMouseLeaves",wrap(CEGUI::Window::EventMouseLeaves));
+	rb_define_const(rb_cCeguiWindow,"EventMouseEntersSurface",wrap(CEGUI::Window::EventMouseEntersSurface));
+	rb_define_const(rb_cCeguiWindow,"EventMouseLeavesSurface",wrap(CEGUI::Window::EventMouseLeavesSurface));
 	rb_define_const(rb_cCeguiWindow,"EventMouseMove",wrap(CEGUI::Window::EventMouseMove));
 	rb_define_const(rb_cCeguiWindow,"EventMouseWheel",wrap(CEGUI::Window::EventMouseWheel));
 	rb_define_const(rb_cCeguiWindow,"EventMouseButtonDown",wrap(CEGUI::Window::EventMouseButtonDown));

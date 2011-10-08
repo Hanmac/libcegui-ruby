@@ -1,17 +1,17 @@
 #include "ceguicolor.hpp"
 
-#define _self wrap<CEGUI::colour*>(self)
+#define _self wrap<CEGUI::Colour*>(self)
 VALUE rb_cCeguiColor;
 
 VALUE CeguiColor_alloc(VALUE self)
 {
-	return wrap(new CEGUI::colour);
+	return wrap(new CEGUI::Colour);
 }
 
-macro_attr_with_func(Color,Red,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Color,Green,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Color,Blue,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Color,Alpha,DBL2NUM,NUM2DBL)
+macro_attr(Color,Red,float)
+macro_attr(Color,Green,float)
+macro_attr(Color,Blue,float)
+macro_attr(Color,Alpha,float)
 /*
  * call-seq:
  *   Color.new(red,green,blue[,alpha])
@@ -70,7 +70,7 @@ VALUE CeguiColor_inspect(VALUE self)
 */
 VALUE OgreColor_plus(VALUE self,VALUE val)
 {
-	return wrap(*_self + wrap<CEGUI::colour>(val));
+	return wrap(*_self + wrap<CEGUI::Colour>(val));
 }
 /*
  * call-seq:
@@ -82,7 +82,7 @@ VALUE OgreColor_plus(VALUE self,VALUE val)
 */
 VALUE OgreColor_minus(VALUE self,VALUE val)
 {
-	return wrap(*_self - wrap<CEGUI::colour>(val));
+	return wrap(*_self - wrap<CEGUI::Colour>(val));
 }
 /*
  * call-seq:

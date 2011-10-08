@@ -7,21 +7,21 @@ extern VALUE rb_cCeguiVector2;
 
 
 template <>
-inline VALUE wrap< CEGUI::Vector2 >(CEGUI::Vector2 *vector )
+inline VALUE wrap< CEGUI::Vector2f >(CEGUI::Vector2f *vector )
 {
 	return Data_Wrap_Struct(rb_cCeguiVector2, NULL, free, vector);
 }
 
 template <>
-inline CEGUI::Vector2* wrap< CEGUI::Vector2* >(const VALUE &vvector)
+inline CEGUI::Vector2f* wrap< CEGUI::Vector2f* >(const VALUE &vvector)
 {
 	if (rb_obj_is_kind_of(vvector, rb_cCeguiVector2)){
-		CEGUI::Vector2 *vector;
-		Data_Get_Struct( vvector, CEGUI::Vector2, vector);
+		CEGUI::Vector2f *vector;
+		Data_Get_Struct( vvector, CEGUI::Vector2f, vector);
 		return vector;
 	}else if(rb_respond_to(vvector,rb_intern("x")) && 
 	 rb_respond_to(vvector,rb_intern("y"))){
-	 	CEGUI::Vector2 *vector = new CEGUI::Vector2;
+	 	CEGUI::Vector2f *vector = new CEGUI::Vector2f;
 	 	vector->d_x = NUM2DBL(rb_funcall(vvector,rb_intern("x"),0));
 	 	vector->d_y = NUM2DBL(rb_funcall(vvector,rb_intern("y"),0));
 	 	return vector;
@@ -32,8 +32,8 @@ inline CEGUI::Vector2* wrap< CEGUI::Vector2* >(const VALUE &vvector)
 
 }
 template <>
-inline CEGUI::Vector2 wrap< CEGUI::Vector2 >(const VALUE &vvector)
+inline CEGUI::Vector2f wrap< CEGUI::Vector2f >(const VALUE &vvector)
 {
-	return *wrap< CEGUI::Vector2* >(vvector);
+	return *wrap< CEGUI::Vector2f* >(vvector);
 }
 #endif /* __RubyCeguiVector2_H__ */

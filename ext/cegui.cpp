@@ -22,13 +22,13 @@
 #include "ceguiudim.hpp"
 #include "ceguiuvector2.hpp"
 #include "ceguiubox.hpp"
+#include "ceguiurect.hpp"
 
 #include "ceguisize.hpp"
 #include "ceguirect.hpp"
 
 #include "ceguischeme.hpp"
 #include "ceguifont.hpp"
-#include "ceguiimageset.hpp"
 
 #include "ceguiimage.hpp"
 
@@ -39,8 +39,6 @@
 #include "ceguiexception.hpp"
 
 #include "ceguirenderer.hpp"
-#include "ceguinullrenderer.hpp"
-#include "ceguiopenglrenderer.hpp"
 
 #include "ceguigeometrybuffer.hpp"
 #include "ceguitexture.hpp"
@@ -59,6 +57,8 @@
 
 #include "ceguiwidgetlook.hpp"
 
+#include "ceguitreeitem.hpp"
+
 VALUE rb_mCegui;
 
 extern "C" void Init_cegui(void)
@@ -72,8 +72,9 @@ extern "C" void Init_cegui(void)
 	Init_CeguiVertex(rb_mCegui);
 
 	Init_CeguiUDim(rb_mCegui);
-	Init_CeguiUVector2(rb_mCegui);	
+	Init_CeguiUVector2(rb_mCegui);
 	Init_CeguiUBox(rb_mCegui);
+	Init_CeguiURect(rb_mCegui);
 	
 	Init_CeguiSize(rb_mCegui);
 	Init_CeguiRect(rb_mCegui);
@@ -91,8 +92,11 @@ extern "C" void Init_cegui(void)
 	Init_CeguiTooltip(rb_mCegui);
 	Init_CeguiScrollbar(rb_mCegui);
 	Init_CeguiListbox(rb_mCegui);
+	Init_CeguiComboDropList(rb_mCegui);
 	Init_CeguiItemEntry(rb_mCegui);
 	Init_CeguiMenuItem(rb_mCegui);
+	
+	Init_CeguiEditbox(rb_mCegui);
 	
 	Init_CeguiButtonBase(rb_mCegui);
 	Init_CeguiPushButton(rb_mCegui);
@@ -105,20 +109,24 @@ extern "C" void Init_cegui(void)
 	Init_CeguiItemListBase(rb_mCegui);
 	Init_CeguiMenuBase(rb_mCegui);
 	Init_CeguiPopupMenu(rb_mCegui);
+	Init_CeguiMenubar(rb_mCegui);
 
+	Init_CeguiCombobox(rb_mCegui);
+
+	Init_CeguiTree(rb_mCegui);
+
+	Init_CeguiTreeItem(rb_mCegui);
 
 	Init_CeguiXMLSerializer(rb_mCegui);
 
 	Init_CeguiScheme(rb_mCegui);
 	Init_CeguiFont(rb_mCegui);
-	Init_CeguiImageset(rb_mCegui);
+//	Init_CeguiImageset(rb_mCegui);
 	Init_CeguiImage(rb_mCegui);
 
 	Init_CeguiException(rb_mCegui);
 
 	Init_CeguiRenderer(rb_mCegui);
-	Init_CeguiNullRenderer(rb_mCegui);
-	Init_CeguiOpenGLRenderer(rb_mCegui);
 	
 	Init_CeguiGeometryBuffer(rb_mCegui);
 	Init_CeguiTexture(rb_mCegui);

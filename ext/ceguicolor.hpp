@@ -7,24 +7,24 @@ extern VALUE rb_cCeguiColor;
 
 
 template <>
-inline VALUE wrap< CEGUI::colour >(CEGUI::colour *color )
+inline VALUE wrap< CEGUI::Colour >(CEGUI::Colour *color )
 {
 	return Data_Wrap_Struct(rb_cCeguiColor, NULL, free, color);
 }
 
 template <>
-inline CEGUI::colour* wrap< CEGUI::colour* >(const VALUE &vcolor)
+inline CEGUI::Colour* wrap< CEGUI::Colour* >(const VALUE &vcolor)
 {
 	if (rb_obj_is_kind_of(vcolor, rb_cCeguiColor)){
-		CEGUI::colour *color;
-		Data_Get_Struct( vcolor, CEGUI::colour, color);
+		CEGUI::Colour *color;
+		Data_Get_Struct( vcolor, CEGUI::Colour, color);
 		return color;
 	}else if(rb_respond_to(vcolor,rb_intern("red")) && 
 	 rb_respond_to(vcolor,rb_intern("blue")) &&
 	 rb_respond_to(vcolor,rb_intern("green")) &&
 	 rb_respond_to(vcolor,rb_intern("alpha"))){
 	 double temp;
-	 CEGUI::colour *color = new CEGUI::colour;
+	 CEGUI::Colour *color = new CEGUI::Colour;
 	 temp = NUM2DBL(rb_funcall(vcolor,rb_intern("red"),0));
 	 if(temp > 1.0)
 	 	temp /=256;
@@ -50,8 +50,8 @@ inline CEGUI::colour* wrap< CEGUI::colour* >(const VALUE &vcolor)
 	}
 }
 template <>
-inline CEGUI::colour wrap< CEGUI::colour >(const VALUE &vcolor)
+inline CEGUI::Colour wrap< CEGUI::Colour >(const VALUE &vcolor)
 {
-	return *wrap< CEGUI::colour* >(vcolor);
+	return *wrap< CEGUI::Colour* >(vcolor);
 }
 #endif /* __RubyCeguiColor_H__ */

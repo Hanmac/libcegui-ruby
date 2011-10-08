@@ -9,8 +9,10 @@ public:
 	void elementStart(const CEGUI::String &element, const CEGUI::XMLAttributes &attributes);
 	void elementEnd (const CEGUI::String &element);
 	void text(const CEGUI::String &text);
-
+	const CEGUI::String& getDefaultResourceGroup() const;
 	VALUE value;
+	
+	CEGUI::String mutable temp;
 };
 
 void Init_CeguiXMLHandler(VALUE rb_mCegui);
@@ -37,9 +39,11 @@ inline CEGUI::XMLHandler* wrap< CEGUI::XMLHandler* >(const VALUE &vhandler)
 		return NULL;
 	}
 }
+/*
 template <>
 inline CEGUI::XMLHandler wrap< CEGUI::XMLHandler >(const VALUE &vhandler)
 {
 	return *wrap< CEGUI::XMLHandler* >(vhandler);
 }
+*/
 #endif /* __RubyCeguiXMLHandler_H__ */

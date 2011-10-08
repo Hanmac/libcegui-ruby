@@ -4,7 +4,7 @@ VALUE rb_cCeguiRenderTarget;
 
 #define _self wrap<CEGUI::RenderTarget*>(self)
 
-macro_attr(RenderTarget,Area,CEGUI::Rect)
+macro_attr(RenderTarget,Area,CEGUI::Rectf)
 
 void Init_CeguiRenderTarget(VALUE rb_mCegui)
 {

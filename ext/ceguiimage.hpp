@@ -19,6 +19,8 @@ inline CEGUI::Image* wrap< CEGUI::Image* >(const VALUE &vimage)
 		CEGUI::Image *image;
 		Data_Get_Struct( vimage, CEGUI::Image, image);
 		return image;
+	}else if (rb_obj_is_kind_of(vimage, rb_cString)){
+		return &CEGUI::ImageManager::getSingletonPtr()->get(wrap<CEGUI::String>(vimage));
 	}else{
 		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiImage),rb_obj_classname(vimage));
 		return NULL;

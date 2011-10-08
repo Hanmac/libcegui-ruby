@@ -7,35 +7,6 @@
 
 VALUE rb_cCeguiXMLParser;
 
-#ifdef HAVE_XMLPARSERMODULES_XERCESPARSER_CEGUIXERCESPARSER_H
-VALUE rb_cCeguiXercesParser;
-VALUE CeguiXercesParser_alloc(VALUE self)
-{
-	return wrap(new CEGUI::XercesParser);
-}
-#endif
-#ifdef HAVE_XMLPARSERMODULES_EXPATPARSER_CEGUIEXPATPARSER_H
-VALUE rb_cCeguiExpatParser;
-VALUE CeguiExpatParser_alloc(VALUE self)
-{
-	return wrap(new CEGUI::ExpatParser);
-}
-#endif
-#ifdef HAVE_XMLPARSERMODULES_LIBXMLPARSER_CEGUILIBXMLPARSER_H
-VALUE rb_cCeguiLibXMLParser;
-VALUE CeguiLibXMLParser_alloc(VALUE self)
-{
-	return wrap(new CEGUI::LibxmlParser);
-}
-#endif
-#ifdef HAVE_XMLPARSERMODULES_TINYXMLPARSER_CEGUITINYXMLPARSER_H
-VALUE rb_cCeguiTinyXMLParser;
-VALUE CeguiTinyXMLParser_alloc(VALUE self)
-{
-	return wrap(new CEGUI::TinyXMLParser);
-}
-#endif
-
 /*
 */
 VALUE CeguiXMLParser_getName(VALUE self)
@@ -104,22 +75,5 @@ void Init_CeguiXMLParser(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiXMLParser,"cleanup",RUBY_METHOD_FUNC(CeguiXMLParser_cleanup),0);
 
 	rb_define_method(rb_cCeguiXMLParser,"parseXMLFile",RUBY_METHOD_FUNC(CeguiXMLParser_parseXMLFile),4);
-	
-#ifdef HAVE_XMLPARSERMODULES_XERCESPARSER_CEGUIXERCESPARSER_H
-	rb_cCeguiXercesParser = rb_define_class_under(rb_mCegui,"XercesParser",rb_cCeguiXMLParser);
-	rb_define_alloc_func(rb_cCeguiXercesParser,CeguiXercesParser_alloc);
-#endif
-#ifdef HAVE_XMLPARSERMODULES_EXPATPARSER_CEGUIEXPATPARSER_H
-	rb_cCeguiExpatParser = rb_define_class_under(rb_mCegui,"ExpatParser",rb_cCeguiXMLParser);
-	rb_define_alloc_func(rb_cCeguiExpatParser,CeguiExpatParser_alloc);
-#endif
-#ifdef HAVE_XMLPARSERMODULES_LIBXMLPARSER_CEGUILIBXMLPARSER_H
-	rb_cCeguiLibXMLParser = rb_define_class_under(rb_mCegui,"LibXMLParser",rb_cCeguiXMLParser);
-	rb_define_alloc_func(rb_cCeguiLibXMLParser,CeguiLibXMLParser_alloc);
-#endif
-#ifdef HAVE_XMLPARSERMODULES_TINYXMLPARSER_CEGUITINYXMLPARSER_H
-	rb_cCeguiTinyXMLParser = rb_define_class_under(rb_mCegui,"TinyXMLParser",rb_cCeguiXMLParser);
-	rb_define_alloc_func(rb_cCeguiTinyXMLParser,CeguiTinyXMLParser_alloc);
-#endif
 
 }

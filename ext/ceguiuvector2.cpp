@@ -57,30 +57,38 @@ VALUE CeguiUVector2_swap(VALUE self,VALUE other)
 	std::swap(_self->d_y,cother->d_y);
 	return self;
 }
+
 /*
 */
 VALUE CeguiUVector2_plus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::UDim>(other));
+	return wrap(*_self + wrap<CEGUI::UVector2>(other));
 }
 /*
 */
 VALUE CeguiUVector2_minus(VALUE self,VALUE other)
 {
-	return wrap(*_self - wrap<CEGUI::UDim>(other));
+	return wrap(*_self - wrap<CEGUI::UVector2>(other));
 }
 /*
 */
 VALUE CeguiUVector2_mal(VALUE self,VALUE other)
 {
-	return wrap(*_self * wrap<CEGUI::UDim>(other));
+	if(rb_obj_is_kind_of(other,rb_cCeguiUDim))
+		return wrap(*_self * wrap<CEGUI::UDim>(other));
+	else
+		return wrap(*_self * wrap<CEGUI::UVector2>(other));
 }
 /*
 */
 VALUE CeguiUVector2_durch(VALUE self,VALUE other)
 {
-	return wrap(*_self / wrap<CEGUI::UDim>(other));
+	if(rb_obj_is_kind_of(other,rb_cCeguiUDim))
+		return wrap(*_self / wrap<CEGUI::UDim>(other));
+	else
+		return wrap(*_self / wrap<CEGUI::UVector2>(other));
 }
+
 /*
  * call-seq:
  *   vector.hash -> Integer

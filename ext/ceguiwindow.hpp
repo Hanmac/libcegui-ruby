@@ -13,6 +13,10 @@ void Init_CeguiWindow(VALUE rb_mCegui);
 #include "ceguibuttonbase.hpp"
 
 #include "ceguiitemlistbase.hpp"
+
+#include "ceguieditbox.hpp"
+#include "ceguicombobox.hpp"
+#include "ceguitree.hpp"
 template <>
 inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 {
@@ -38,7 +42,17 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 	CEGUI::ItemListBase *itemlistbase = dynamic_cast<CEGUI::ItemListBase*>(window);
 	if(itemlistbase)
 		return wrap(itemlistbase);
-	
+	CEGUI::Editbox *editbox = dynamic_cast<CEGUI::Editbox*>(window);
+	if(editbox)
+		return wrap(editbox);
+	CEGUI::Combobox *combobox = dynamic_cast<CEGUI::Combobox*>(window);
+	if(combobox)
+		return wrap(combobox);
+
+	CEGUI::Tree *tree = dynamic_cast<CEGUI::Tree*>(window);
+	if(tree)
+		return wrap(tree);
+
 	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(window);
 	if(it != rubywindowholder.end()){
 		return it->second->ruby;
@@ -51,7 +65,7 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 	}
 }
 template <>
-inline void wrap_each<CEGUI::WindowFactory* >(CEGUI::ConstBaseIterator<std::map<CEGUI::String, CEGUI::WindowFactory*, CEGUI::String::FastLessCompare> > it)
+inline void wrap_each<CEGUI::WindowFactory* >(CEGUI::ConstMapIterator<std::map<CEGUI::String, CEGUI::WindowFactory*, CEGUI::StringFastLessCompare> > it)
 {
 	for(it.toStart(); !it.isAtEnd(); ++it)
 			rb_yield(wrap(it.getCurrentKey()));

@@ -29,8 +29,8 @@ require 'mkmf'
 
 dir_config("cegui")
 with_cflags("-x c++"){
-	unless(!pkg_config("CEGUI-NULL") && !pkg_config("CEGUI-OPENGL"))
-		pkg_config("CEGUI")
+	unless(!pkg_config("CEGUI-NULL-0.8") && !pkg_config("CEGUI-OPENGL-0.8"))
+		pkg_config("CEGUI-0.8")
 	end
 	unless(find_library("CEGUIBase","main") && find_header("CEGUI.h"))
 		abort("need cegui-dev package.")
@@ -38,23 +38,25 @@ with_cflags("-x c++"){
 
 	["Null","OpenGL"].each{|n|
 		find_library("CEGUI#{n}Renderer","main")
-		have_header("RendererModules/#{n}/CEGUI#{n}Renderer.h")
+		have_header("RendererModules/#{n}/Renderer.h")
 	}
 
-	["Corona","DevIL","SILLY","TGA","STB","FreeImage"].each{|n|
-		find_library("CEGUI#{n}ImageCodec","main")
-		have_header("ImageCodecModules/#{n}ImageCodec/CEGUI#{n}ImageCodec.h")
-	}
-	["Expat","Libxml","Xerces","RapidXML","TinyXML"].each{|n|
-		find_library("CEGUI#{n}Parser","main")
-		have_header("XMLParserModules/#{n}Parser/CEGUI#{n}Parser.h")
-	}
+	#wird nicht mehr abgefagt weil das game das dynamisch laden soll
+	#["Corona","DevIL","SILLY","TGA","STB","FreeImage"].each{|n|
+	#	find_library("CEGUI#{n}ImageCodec","main")
+	#	have_header("ImageCodecModules/#{n}ImageCodec/CEGUI#{n}ImageCodec.h")
+	#}
+	#["Expat","Libxml","Xerces","RapidXML","TinyXML"].each{|n|
+	#	find_library("CEGUI#{n}Parser","main")
+	#	have_header("XMLParserModules/#{n}Parser/CEGUI#{n}Parser.h")
+	#}
 	pkg_config("freetype2")
 	find_header("freetype/config/ftheader.h")
-	have_header("CEGUIFreeTypeFont.h")
-}
+	have_header("FreeTypeFont.h")
+
 $CFLAGS += " -Wall"
 
+$CFLAGS = $CFLAGS.split(" ").uniq.join(" ")
 unless have_func("rb_string_value_cstr","ruby.h")
 	abort("missing VALUE to char convert! You need ruby version >= 1.8.7")
 end
@@ -65,3 +67,5 @@ end
 create_header
 
 create_makefile("cegui")
+
+}

@@ -7,10 +7,10 @@ VALUE CeguiColorRect_alloc(VALUE self)
 {
 	return wrap(new CEGUI::ColourRect);
 }
-macro_attr_prop(ColorRect,d_top_left,CEGUI::colour)
-macro_attr_prop(ColorRect,d_top_right,CEGUI::colour)
-macro_attr_prop(ColorRect,d_bottom_left,CEGUI::colour)
-macro_attr_prop(ColorRect,d_bottom_right,CEGUI::colour)
+macro_attr_prop(ColorRect,d_top_left,CEGUI::Colour)
+macro_attr_prop(ColorRect,d_top_right,CEGUI::Colour)
+macro_attr_prop(ColorRect,d_bottom_left,CEGUI::Colour)
+macro_attr_prop(ColorRect,d_bottom_right,CEGUI::Colour)
 
 /*
  * Document-class: CEGUI::ColorRect

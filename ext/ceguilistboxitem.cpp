@@ -69,7 +69,7 @@ VALUE CeguiListboxItem_single_getDefaultSelectionColour(VALUE self)
 */
 VALUE CeguiListboxItem_single_setDefaultSelectionColour(VALUE self,VALUE value)
 {
-	const_cast<CEGUI::colour*>(&CEGUI::ListboxItem::DefaultSelectionColour)->setRGB(wrap<CEGUI::colour>(value));
+	const_cast<CEGUI::Colour*>(&CEGUI::ListboxItem::DefaultSelectionColour)->setRGB(wrap<CEGUI::Colour>(value));
 	return value;
 }
 
@@ -78,7 +78,7 @@ VALUE CeguiListboxItem_single_setDefaultSelectionColour(VALUE self,VALUE value)
 VALUE CeguiListboxItem_draw(VALUE self,VALUE buffer,VALUE targetRect,VALUE alpha,VALUE clipper)
 {
 	CEGUI::GeometryBuffer *temp = wrap<CEGUI::GeometryBuffer*>(buffer);
-	_self->draw(*temp,wrap<CEGUI::Rect>(targetRect),NUM2DBL(alpha),wrap<CEGUI::Rect*>(clipper));
+	_self->draw(*temp,wrap<CEGUI::Rectf>(targetRect),NUM2DBL(alpha),wrap<CEGUI::Rectf*>(clipper));
 	return self;
 }
 /*
@@ -130,6 +130,8 @@ void Init_CeguiListboxItem(VALUE rb_mCegui)
 
 	rb_define_method(rb_cCeguiListboxItem,"<=>",RUBY_METHOD_FUNC(CeguiListboxItem_compare),1);
 	rb_include_module(rb_cCeguiListboxItem,rb_mComparable);
+	
+	rb_define_method(rb_cCeguiListboxItem,"draw",RUBY_METHOD_FUNC(CeguiListboxItem_draw),4);
 	
 	rb_define_singleton_method(rb_cCeguiListboxItem,"defaultSelectionColor",RUBY_METHOD_FUNC(CeguiListboxItem_single_getDefaultSelectionColour),0);
 	rb_define_singleton_method(rb_cCeguiListboxItem,"defaultSelectionColor=",RUBY_METHOD_FUNC(CeguiListboxItem_single_setDefaultSelectionColour),1);

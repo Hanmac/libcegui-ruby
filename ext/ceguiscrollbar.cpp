@@ -3,11 +3,11 @@
 #define _self wrap<CEGUI::Scrollbar*>(self)
 VALUE rb_cCeguiScrollbar;
 
-macro_attr_with_func(Scrollbar,DocumentSize,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Scrollbar,PageSize,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Scrollbar,StepSize,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Scrollbar,OverlapSize,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Scrollbar,ScrollPosition,DBL2NUM,NUM2DBL)
+macro_attr(Scrollbar,DocumentSize,float)
+macro_attr(Scrollbar,PageSize,float)
+macro_attr(Scrollbar,StepSize,float)
+macro_attr(Scrollbar,OverlapSize,float)
+macro_attr(Scrollbar,ScrollPosition,float)
 
 /*
 */
@@ -80,8 +80,8 @@ void Init_CeguiScrollbar(VALUE rb_mCegui)
 	rb_define_const(rb_cCeguiScrollbar,"EventThumbTrackStarted",wrap(CEGUI::Scrollbar::EventThumbTrackStarted));
 	rb_define_const(rb_cCeguiScrollbar,"EventThumbTrackEnded",wrap(CEGUI::Scrollbar::EventThumbTrackEnded));
 	rb_define_const(rb_cCeguiScrollbar,"EventScrollConfigChanged",wrap(CEGUI::Scrollbar::EventScrollConfigChanged));
-	rb_define_const(rb_cCeguiScrollbar,"ThumbNameSuffix",wrap(CEGUI::Scrollbar::ThumbNameSuffix));
-	rb_define_const(rb_cCeguiScrollbar,"IncreaseButtonNameSuffix",wrap(CEGUI::Scrollbar::IncreaseButtonNameSuffix));
-	rb_define_const(rb_cCeguiScrollbar,"DecreaseButtonNameSuffix",wrap(CEGUI::Scrollbar::DecreaseButtonNameSuffix));
+	rb_define_const(rb_cCeguiScrollbar,"ThumbName",wrap(CEGUI::Scrollbar::ThumbName));
+	rb_define_const(rb_cCeguiScrollbar,"IncreaseButtonName",wrap(CEGUI::Scrollbar::IncreaseButtonName));
+	rb_define_const(rb_cCeguiScrollbar,"DecreaseButtonName",wrap(CEGUI::Scrollbar::DecreaseButtonName));
 
 }

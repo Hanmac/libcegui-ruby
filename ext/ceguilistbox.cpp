@@ -13,18 +13,31 @@ VALUE rb_cCeguiListbox;
 VALUE CeguiListbox_new(int argc,VALUE *argv,VALUE self)
 {
 	VALUE name;
-	rb_scan_args(argc, argv, "01",&name);
-	VALUE result[2];
-	result[0]=wrap(CEGUI::String(CEGUI::Listbox::WidgetTypeName));
-	result[1]=name;
-	return rb_call_super(2,result);
+	if(argc==2)
+		return rb_call_super(2,argv);
+	else{
+		rb_scan_args(argc, argv, "01",&name);
+		VALUE result[2];
+		result[0]=wrap(CEGUI::String(CEGUI::Listbox::WidgetTypeName));
+		result[1]=name;
+		return rb_call_super(2,result);
+	}
 }
-
 /*
 */
 VALUE CeguiListbox_addItem(VALUE self,VALUE item)
 {
 	_self->addItem(wrap<CEGUI::ListboxItem*>(item));
+	return self;
+}
+/*
+*/
+VALUE CeguiListbox_insertItem(VALUE self,VALUE pos,VALUE item)
+{
+	if(rb_obj_is_kind_of(pos, rb_cCeguiListboxItem)){
+		_self->insertItem(wrap<CEGUI::ListboxItem*>(pos),wrap<CEGUI::ListboxItem*>(item));
+	}else
+		_self->insertItem(_self->getListboxItemFromIndex(NUM2UINT(pos)),wrap<CEGUI::ListboxItem*>(item));
 	return self;
 }
 /*
@@ -74,6 +87,13 @@ VALUE CeguiListbox_getHorzScrollbar(VALUE self)
 {
 	return wrap(_self->getHorzScrollbar());
 }
+/*
+*/
+VALUE CeguiListbox_reset(VALUE self)
+{
+	_self->resetList();
+	return Qnil;
+}
 
 /*
 */
@@ -92,6 +112,7 @@ void Init_CeguiListbox(VALUE rb_mCegui)
 
 
 	rb_define_method(rb_cCeguiListbox,"addItem",RUBY_METHOD_FUNC(CeguiListbox_addItem),1);
+	rb_define_method(rb_cCeguiListbox,"insertItem",RUBY_METHOD_FUNC(CeguiListbox_insertItem),2);
 	rb_define_method(rb_cCeguiListbox,"removeItem",RUBY_METHOD_FUNC(CeguiListbox_removeItem),1);
 	
 	rb_define_method(rb_cCeguiListbox,"each_item",RUBY_METHOD_FUNC(CeguiListbox_each_item),0);
@@ -100,6 +121,7 @@ void Init_CeguiListbox(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiListbox,"vertScrollbar",RUBY_METHOD_FUNC(CeguiListbox_getVertScrollbar),0);
 	rb_define_method(rb_cCeguiListbox,"horzScrollbar",RUBY_METHOD_FUNC(CeguiListbox_getHorzScrollbar),0);
 	
+	rb_define_method(rb_cCeguiListbox,"reset",RUBY_METHOD_FUNC(CeguiListbox_reset),0);
 	
 	rb_define_const(rb_cCeguiListbox,"EventNamespace",wrap(CEGUI::Listbox::EventNamespace));
 	rb_define_const(rb_cCeguiListbox,"WidgetTypeName",wrap(CEGUI::Listbox::WidgetTypeName));	
@@ -111,7 +133,7 @@ void Init_CeguiListbox(VALUE rb_mCegui)
 	rb_define_const(rb_cCeguiListbox,"EventVertScrollbarModeChanged",wrap(CEGUI::Listbox::EventVertScrollbarModeChanged));
 	rb_define_const(rb_cCeguiListbox,"EventHorzScrollbarModeChanged",wrap(CEGUI::Listbox::EventHorzScrollbarModeChanged));
 
-	rb_define_const(rb_cCeguiListbox,"VertScrollbarNameSuffix",wrap(CEGUI::Listbox::VertScrollbarNameSuffix));
-	rb_define_const(rb_cCeguiListbox,"HorzScrollbarNameSuffix",wrap(CEGUI::Listbox::HorzScrollbarNameSuffix));	
+	rb_define_const(rb_cCeguiListbox,"VertScrollbarName",wrap(CEGUI::Listbox::VertScrollbarName));
+	rb_define_const(rb_cCeguiListbox,"HorzScrollbarName",wrap(CEGUI::Listbox::HorzScrollbarName));	
 
 }

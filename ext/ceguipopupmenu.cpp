@@ -7,8 +7,8 @@
 #define _self wrap<CEGUI::PopupMenu*>(self)
 VALUE rb_cCeguiPopupMenu;
 
-macro_attr_with_func(PopupMenu,FadeInTime,DBL2NUM,NUM2DBL)
-macro_attr_with_func(PopupMenu,FadeOutTime,DBL2NUM,NUM2DBL)
+macro_attr(PopupMenu,FadeInTime,float)
+macro_attr(PopupMenu,FadeOutTime,float)
 
 /*
 */

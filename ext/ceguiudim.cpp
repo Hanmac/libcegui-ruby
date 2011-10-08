@@ -6,8 +6,8 @@ VALUE CeguiUDim_alloc(VALUE self)
 {
 	return wrap(new CEGUI::UDim(0,0));
 }
-macro_attr_prop_with_func(UDim,d_scale,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(UDim,d_offset,DBL2NUM,NUM2DBL)
+macro_attr_prop(UDim,d_scale,float)
+macro_attr_prop(UDim,d_offset,float)
 /*
 */
 VALUE CeguiUDim_initialize(VALUE self,VALUE scale,VALUE offset)

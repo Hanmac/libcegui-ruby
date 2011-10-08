@@ -7,8 +7,8 @@
 #define _self wrap<CEGUI::MenuBase*>(self)
 VALUE rb_cCeguiMenuBase;
 
-macro_attr_with_func(MenuBase,ItemSpacing,DBL2NUM,NUM2DBL)
-macro_attr_with_func(MenuBase,AutoCloseNestedPopups,RBOOL,RTEST)
+macro_attr(MenuBase,ItemSpacing,float)
+macro_attr(MenuBase,AutoCloseNestedPopups,bool)
 
 void Init_CeguiMenuBase(VALUE rb_mCegui)
 {

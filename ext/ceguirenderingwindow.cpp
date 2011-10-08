@@ -7,10 +7,10 @@
 
 #define _self wrap<CEGUI::RenderingWindow*>(self)
 
-macro_attr(RenderingWindow,Position,CEGUI::Vector2)
-macro_attr(RenderingWindow,Rotation,CEGUI::Vector3)
-macro_attr(RenderingWindow,Pivot,CEGUI::Vector3)
-macro_attr(RenderingWindow,Size,CEGUI::Size)
+macro_attr(RenderingWindow,Position,CEGUI::Vector2f)
+macro_attr(RenderingWindow,Rotation,CEGUI::Quaternion)
+macro_attr(RenderingWindow,Pivot,CEGUI::Vector3f)
+macro_attr(RenderingWindow,Size,CEGUI::Sizef)
 
 VALUE rb_cCeguiRenderingWindow;
 void Init_CeguiRenderingWindow(VALUE rb_mCegui)

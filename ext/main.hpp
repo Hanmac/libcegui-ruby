@@ -6,24 +6,20 @@
 
 #include RUBY_EXTCONF_H
 
-#include <typeinfo>
 #include <algorithm>
-template <typename T>
-VALUE wrap(T *arg){
-	rb_warn("unknown convertion from %s to VALUE. return nil instat.",typeid(T).name());
-	return Qnil;
-};
 
 template <typename T>
-T wrap(const VALUE &arg){
-	rb_warn("unknown convertion from VALUE to %s. return %s() instat.",typeid(T).name(),typeid(T).name());
-	return T();
-};
+VALUE wrap(T *arg);
+
+template <typename T>
+T wrap(const VALUE &arg);
+
 
 template <typename T>
 VALUE wrap(const T &arg){
 	return wrap(new T(arg));
 };
+
 
 template <typename T>
 VALUE wrap(const std::vector<T> &vec){
@@ -38,6 +34,31 @@ template <>
 inline VALUE wrap< CEGUI::String >(const CEGUI::String &st )
 {
 	return rb_str_new2(st.c_str());
+}
+
+template <>
+inline float wrap< float >(const VALUE &val )
+{
+	return DBL2NUM(val);
+}
+
+template <>
+inline VALUE wrap< float >(const float &st )
+{
+	return NUM2DBL(st);
+}
+
+
+template <>
+inline bool wrap< bool >(const VALUE &val )
+{
+	return RTEST(val);
+}
+
+template <>
+inline VALUE wrap< bool >(const bool &st )
+{
+	return st ? Qtrue : Qfalse;
 }
 
 template <>
@@ -60,12 +81,6 @@ inline CEGUI::String wrap< CEGUI::String >(const VALUE &val )
 		return rb_string_value_cstr((volatile VALUE*)(&val));
 	else
 		return wrap< CEGUI::String >(rb_funcall(val,rb_intern("to_s"),0));
-}
-
-template <>
-inline VALUE wrap< float >(const float &st )
-{
-	return DBL2NUM(st);
 }
 
 template <typename T>
@@ -104,10 +119,18 @@ T wrap(const VALUE &val,typename T default_value )
 //}
 
 template <typename T>
-void wrap_each(CEGUI::ConstBaseIterator<std::map<CEGUI::String, T, CEGUI::String::FastLessCompare> > it)
+void wrap_each(CEGUI::ConstMapIterator<std::map<CEGUI::String, T, CEGUI::StringFastLessCompare > > it)
 {
 	for(it.toStart(); !it.isAtEnd(); ++it)
 			rb_yield_values(2,wrap(it.getCurrentKey()),wrap(it.getCurrentValue()));
+}
+
+
+template <typename T>
+void wrap_each(CEGUI::ConstVectorIterator<std::vector<T> CEGUI_VECTOR_ALLOC(T) > it)
+{
+	for(it.toStart(); !it.isAtEnd(); ++it)
+			rb_yield_values(1,wrap(it.getCurrentValue()));
 }
 /*
 */
@@ -132,13 +155,23 @@ inline void rb_define_single_attr_method(VALUE klass,std::string name,VALUE(get)
 
 bool cegui_subscriberfunc(const CEGUI::EventArgs& arg, void * obj);
 
+
+inline void rb_raise(VALUE exception){
+	rb_funcall(rb_mKernel,rb_intern("raise"),1,exception);
+}
+
 #define macro_attr(klass,attr,type) \
 VALUE Cegui##klass##_get##attr(VALUE self)\
 {return wrap(_self->get##attr());}\
 \
 VALUE Cegui##klass##_set##attr(VALUE self,VALUE other)\
 {\
-	_self->set##attr(wrap<type>(other));\
+	try{\
+		_self->set##attr(wrap<type>(other));\
+	}catch(CEGUI::Exception& e){\
+		rb_raise(wrap(e));\
+		return Qnil;\
+	}\
 	return other;\
 }
 

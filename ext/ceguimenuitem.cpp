@@ -10,7 +10,7 @@ VALUE rb_cCeguiMenuItem;
 macro_attr(MenuItem,PopupMenu,CEGUI::PopupMenu*)
 macro_attr(MenuItem,PopupOffset,CEGUI::UVector2)
 
-macro_attr_with_func(MenuItem,AutoPopupTimeout,DBL2NUM,NUM2DBL)
+macro_attr(MenuItem,AutoPopupTimeout,float)
 /*
 */
 VALUE CeguiMenuItem_new(int argc,VALUE *argv,VALUE self)

@@ -20,7 +20,7 @@ VALUE CeguiPropertySet_setProperty(VALUE self,VALUE name,VALUE val)
 VALUE CeguiPropertySet_each_property(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
-	wrap_each(_self->getIterator());
+	wrap_each(_self->getPropertyIterator());
 	return self;
 }
 
@@ -48,7 +48,7 @@ VALUE CeguiPropertySet_method_missing(int argc,VALUE *argv,VALUE self)
 			return wrap(_self->getProperty(cname));
 		}
 	}else{
-		CEGUI::PropertySet::Iterator it = _self->getIterator();
+		CEGUI::PropertySet::PropertyIterator it = _self->getPropertyIterator();
 		for(it.toStart(); !it.isAtEnd(); ++it){
 			propname = it.getCurrentKey();
 			std::transform(cname.begin(), cname.end(), cname.begin(),std::ptr_fun<int,int>(std::tolower));

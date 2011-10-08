@@ -6,9 +6,9 @@ VALUE rb_cCeguiTooltip;
 
 macro_attr(Tooltip,TargetWindow,CEGUI::Window*)
 
-macro_attr_with_func(Tooltip,DisplayTime,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Tooltip,HoverTime,DBL2NUM,NUM2DBL)
-macro_attr_with_func(Tooltip,FadeTime,DBL2NUM,NUM2DBL)
+macro_attr(Tooltip,DisplayTime,float)
+macro_attr(Tooltip,HoverTime,float)
+macro_attr(Tooltip,FadeTime,float)
 
 
 /*

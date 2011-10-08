@@ -1,13 +1,13 @@
 #include "ceguivector2.hpp"
-#define _self wrap<CEGUI::Vector2*>(self)
+#define _self wrap<CEGUI::Vector2f*>(self)
 VALUE rb_cCeguiVector2;
 
 VALUE CeguiVector2_alloc(VALUE self)
 {
-	return wrap(new CEGUI::Vector2);
+	return wrap(new CEGUI::Vector2f);
 }
-macro_attr_prop_with_func(Vector2,d_x,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Vector2,d_y,DBL2NUM,NUM2DBL)
+macro_attr_prop(Vector2,d_x,float)
+macro_attr_prop(Vector2,d_y,float)
 /*
 */
 VALUE CeguiVector2_initialize(VALUE self,VALUE x,VALUE y)
@@ -46,13 +46,13 @@ VALUE CeguiVector2_inspect(VALUE self)
 */
 VALUE CeguiVector2_minusself(VALUE self)
 {
-	return wrap(CEGUI::Vector2(- _self->d_x,- _self->d_y));
+	return wrap(CEGUI::Vector2f(- _self->d_x,- _self->d_y));
 }
 /*
 */
 VALUE CeguiVector2_swap(VALUE self,VALUE other)
 {
-	CEGUI::Vector2* cother = wrap<CEGUI::Vector2*>(other);
+	CEGUI::Vector2f* cother = wrap<CEGUI::Vector2f*>(other);
 	std::swap(_self->d_x,cother->d_x);
 	std::swap(_self->d_y,cother->d_y);
 	return self;
@@ -61,13 +61,13 @@ VALUE CeguiVector2_swap(VALUE self,VALUE other)
 */
 VALUE CeguiVector2_plus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::Vector2>(other));
+	return wrap(*_self + wrap<CEGUI::Vector2f>(other));
 }
 /*
 */
 VALUE CeguiVector2_minus(VALUE self,VALUE other)
 {
-	return wrap(*_self - wrap<CEGUI::Vector2>(other));
+	return wrap(*_self - wrap<CEGUI::Vector2f>(other));
 }
 /*
 */
@@ -76,7 +76,16 @@ VALUE CeguiVector2_mal(VALUE self,VALUE other)
 	if(rb_obj_is_kind_of(other,rb_cNumeric))
 		return wrap(*_self * NUM2DBL(other));
 	else
-		return wrap(*_self * wrap<CEGUI::Vector2>(other));
+		return wrap(*_self * wrap<CEGUI::Vector2f>(other));
+}
+/*
+*/
+VALUE CeguiVector2_durch(VALUE self,VALUE other)
+{
+	if(rb_obj_is_kind_of(other,rb_cNumeric))
+		return wrap(*_self / NUM2DBL(other));
+	else
+		return wrap(*_self / wrap<CEGUI::Vector2f>(other));
 }
 /*
  * call-seq:
@@ -150,7 +159,8 @@ void Init_CeguiVector2(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiVector2,"+",RUBY_METHOD_FUNC(CeguiVector2_plus),1);
 	rb_define_method(rb_cCeguiVector2,"-",RUBY_METHOD_FUNC(CeguiVector2_minus),1);
 	rb_define_method(rb_cCeguiVector2,"*",RUBY_METHOD_FUNC(CeguiVector2_mal),1);
-
+	rb_define_method(rb_cCeguiVector2,"/",RUBY_METHOD_FUNC(CeguiVector2_durch),1);
+	
 	rb_define_method(rb_cCeguiVector2,"hash",RUBY_METHOD_FUNC(CeguiVector2_hash),0);
 
 	rb_define_method(rb_cCeguiVector2,"swap",RUBY_METHOD_FUNC(CeguiVector2_swap),1);

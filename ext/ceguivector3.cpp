@@ -1,14 +1,14 @@
 #include "ceguivector3.hpp"
-#define _self wrap<CEGUI::Vector3*>(self)
+#define _self wrap<CEGUI::Vector3f*>(self)
 VALUE rb_cCeguiVector3;
 
 VALUE CeguiVector3_alloc(VALUE self)
 {
-	return wrap(new CEGUI::Vector3);
+	return wrap(new CEGUI::Vector3f);
 }
-macro_attr_prop_with_func(Vector3,d_x,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Vector3,d_y,DBL2NUM,NUM2DBL)
-macro_attr_prop_with_func(Vector3,d_z,DBL2NUM,NUM2DBL)
+macro_attr_prop(Vector3,d_x,float)
+macro_attr_prop(Vector3,d_y,float)
+macro_attr_prop(Vector3,d_z,float)
 /*
 */
 VALUE CeguiVector3_initialize(VALUE self,VALUE x,VALUE y,VALUE z)
@@ -50,13 +50,13 @@ VALUE CeguiVector3_inspect(VALUE self)
 */
 VALUE CeguiVector3_minusself(VALUE self)
 {
-	return wrap(CEGUI::Vector3(- _self->d_x,- _self->d_y,- _self->d_z));
+	return wrap(CEGUI::Vector3f(- _self->d_x,- _self->d_y,- _self->d_z));
 }
 /*
 */
 VALUE CeguiVector3_swap(VALUE self,VALUE other)
 {
-	CEGUI::Vector3* cother = wrap<CEGUI::Vector3*>(other);
+	CEGUI::Vector3f* cother = wrap<CEGUI::Vector3f*>(other);
 	std::swap(_self->d_x,cother->d_x);
 	std::swap(_self->d_y,cother->d_y);
 	std::swap(_self->d_z,cother->d_z);
@@ -66,8 +66,16 @@ VALUE CeguiVector3_swap(VALUE self,VALUE other)
 */
 VALUE CeguiVector3_plus(VALUE self,VALUE other)
 {
-	return wrap(*_self + wrap<CEGUI::Vector3>(other));
+	return wrap(*_self + wrap<CEGUI::Vector3f>(other));
 }
+/*
+*/
+VALUE CeguiVector3_minus(VALUE self,VALUE other)
+{
+	return wrap(*_self - wrap<CEGUI::Vector3f>(other));
+}
+
+
 /*
 */
 VALUE CeguiVector3_mal(VALUE self,VALUE other)
@@ -150,6 +158,7 @@ void Init_CeguiVector3(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiVector3,"inspect",RUBY_METHOD_FUNC(CeguiVector3_inspect),0);
 
 	rb_define_method(rb_cCeguiVector3,"+",RUBY_METHOD_FUNC(CeguiVector3_plus),1);
+	rb_define_method(rb_cCeguiVector3,"-",RUBY_METHOD_FUNC(CeguiVector3_minus),1);
 	rb_define_method(rb_cCeguiVector3,"*",RUBY_METHOD_FUNC(CeguiVector3_mal),1);
 
 	rb_define_method(rb_cCeguiVector3,"hash",RUBY_METHOD_FUNC(CeguiVector3_hash),0);

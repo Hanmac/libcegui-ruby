@@ -4,5 +4,5 @@
 #include "main.hpp"
 
 void Init_CeguiSystem(VALUE rb_mCegui);
-extern VALUE rb_mCeguiSystem;
+extern VALUE rb_cCeguiSystem,vSystem;
 #endif /* __RubyCeguiRenderer_H__ */
