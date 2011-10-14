@@ -4,6 +4,9 @@
 #include "ceguieventargs.hpp"
 #define _self wrap<CEGUI::EventSet*>(self)
 VALUE rb_mCeguiEventSet;
+
+std::map<VALUE,CEGUI::EventSet*> eventsetholder;
+
 /*
 */
 VALUE CeguiEventSet_each_event(VALUE self)
@@ -19,9 +22,11 @@ VALUE CeguiEventSet_subscribe(int argc,VALUE *argv,VALUE self)
 {
 	VALUE name,subscriber_name;
 	rb_scan_args(argc, argv, "11",&name,&subscriber_name);
-	if(NIL_P(subscriber_name))
-		return wrap(_self->subscribeEvent(wrap<CEGUI::String>(name),CEGUI::SubscriberSlot(Subscriberfunc(rb_block_proc()))));
-	else
+	if(NIL_P(subscriber_name)){
+		VALUE val = rb_block_proc();
+//		rb_global_variable(&val);
+		return wrap(_self->subscribeEvent(wrap<CEGUI::String>(name),CEGUI::SubscriberSlot(Subscriberfunc(val))));
+	}else
 		return wrap(_self->subscribeScriptedEvent(wrap<CEGUI::String>(name),wrap<CEGUI::String>(subscriber_name)));
 }
 
@@ -58,5 +63,5 @@ void Init_CeguiEventSet(VALUE rb_mCegui)
 	rb_define_method(rb_mCeguiEventSet,"subscribe",RUBY_METHOD_FUNC(CeguiEventSet_subscribe),-1);
 	rb_define_method(rb_mCeguiEventSet,"fireEvent",RUBY_METHOD_FUNC(CeguiEventSet_fireEvent),-1);
 
-	rb_define_method(rb_mCeguiEventSet,"method_missing",RUBY_METHOD_FUNC(CeguiEventSet_method_missing),-1);
+	//rb_define_method(rb_mCeguiEventSet,"method_missing",RUBY_METHOD_FUNC(CeguiEventSet_method_missing),-1);
 }

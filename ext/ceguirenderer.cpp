@@ -90,6 +90,7 @@ VALUE CeguiOpenGLRenderer_bootstrap(VALUE self)
 		VALUE val = wrap(CEGUI::OpenGLRenderer::bootstrapSystem());
 		ruby_bootstrap();
 		vSystem = rb_funcall(rb_cCeguiSystem,rb_intern("allocate"),0);
+		rb_global_variable(&vSystem);
 		return val;
 	}catch(CEGUI::Exception& e){
 		rb_raise(wrap(e));

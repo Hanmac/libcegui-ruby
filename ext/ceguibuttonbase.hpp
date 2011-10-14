@@ -22,16 +22,14 @@ inline VALUE wrap< CEGUI::ButtonBase >(CEGUI::ButtonBase *buttonbase )
 	if(checkbox)
 		return wrap(checkbox);
 
-	return Data_Wrap_Struct(rb_cCeguiButtonBase, NULL, NULL, buttonbase);
+	return Qnil;//Data_Wrap_Struct(rb_cCeguiButtonBase, NULL, NULL, buttonbase);
 }
 
 template <>
 inline CEGUI::ButtonBase* wrap< CEGUI::ButtonBase* >(const VALUE &vbuttonbase)
 {
 	if (rb_obj_is_kind_of(vbuttonbase, rb_cCeguiButtonBase)){
-		CEGUI::ButtonBase *buttonbase;
-		Data_Get_Struct( vbuttonbase, CEGUI::ButtonBase, buttonbase);
-		return buttonbase;
+		return (CEGUI::ButtonBase*)(wrap< CEGUI::Window* >(vbuttonbase));
 	}else{
 		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiButtonBase),rb_obj_classname(vbuttonbase));
 		return NULL;

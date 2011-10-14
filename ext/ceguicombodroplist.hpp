@@ -19,6 +19,7 @@ inline VALUE wrap< CEGUI::ComboDropList >(CEGUI::ComboDropList *list )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = list;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiComboDropList, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(list,hold));
 		return hold->ruby;
 	}

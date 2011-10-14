@@ -10,6 +10,7 @@ struct RubyWindowHolder
 };
 extern VALUE rb_cCeguiWindow;
 extern std::map<CEGUI::Window*,RubyWindowHolder*> rubywindowholder;
+extern VALUE rb_windowholder;
 
 int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg);
 void ruby_bootstrap();

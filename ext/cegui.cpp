@@ -59,6 +59,9 @@
 
 #include "ceguitreeitem.hpp"
 
+#include "ceguirenderedstring.hpp"
+#include "ceguirenderedstringcomponent.hpp"
+
 VALUE rb_mCegui;
 
 extern "C" void Init_cegui(void)
@@ -147,6 +150,11 @@ extern "C" void Init_cegui(void)
 	
 	Init_CeguiWidgetLook(rb_mCegui);
 	Init_CeguiFalagard(rb_mCegui);
+	
+	Init_CeguiRenderedString(rb_mCegui);
+	Init_CeguiRenderedStringComponent(rb_mCegui);
+	Init_CeguiRenderedStringTextComponent(rb_mCegui);
+	Init_CeguiRenderedStringImageComponent(rb_mCegui);
 	VALUE array[4];
 	array[0]=rb_str_new2("%d.%d.%d");
 	array[1]=INT2NUM(CEGUI_VERSION_MAJOR);

@@ -22,6 +22,7 @@ inline VALUE wrap< CEGUI::Listbox >(CEGUI::Listbox *listbox )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = listbox;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiListbox, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(listbox,hold));
 		return hold->ruby;
 	}

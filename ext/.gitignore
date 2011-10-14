@@ -1,0 +1,5 @@
+Makefile
+extconf.h
+CEGUI.log
+doc/**/*
+*~

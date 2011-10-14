@@ -19,6 +19,7 @@ inline VALUE wrap< CEGUI::Thumb >(CEGUI::Thumb *thumb )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = thumb;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiThumb, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(thumb,hold));
 		return hold->ruby;
 	}

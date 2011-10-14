@@ -129,10 +129,45 @@ VALUE CeguiSystem_isRedrawRequested(VALUE self)
 */
 VALUE CeguiSystem_injectMousePosition(VALUE self,VALUE x,VALUE y)
 {
-	_self->injectMousePosition(NUM2DBL(x),NUM2DBL(y));
-	return self;
+	return wrap(_self->injectMousePosition(NUM2DBL(x),NUM2DBL(y)));
+}
+/*
+*/
+VALUE CeguiSystem_injectMouseMove(VALUE self,VALUE x,VALUE y)
+{
+	return wrap(_self->injectMouseMove(NUM2DBL(x),NUM2DBL(y)));
 }
 
+/*
+*/
+VALUE CeguiSystem_injectMouseButtonDown(VALUE self,VALUE button)
+{
+	return wrap(_self->injectMouseButtonDown(wrap<CEGUI::MouseButton>(button)));
+}
+/*
+*/
+VALUE CeguiSystem_injectMouseButtonUp(VALUE self,VALUE button)
+{
+	return wrap(_self->injectMouseButtonUp(wrap<CEGUI::MouseButton>(button)));
+}
+/*
+*/
+VALUE CeguiSystem_injectKeyDown(VALUE self,VALUE button)
+{
+	return wrap(_self->injectKeyDown(NUM2UINT(button)));
+}
+/*
+*/
+VALUE CeguiSystem_injectKeyUp(VALUE self,VALUE button)
+{
+	return wrap(_self->injectKeyUp(NUM2UINT(button)));
+}
+/*
+*/
+VALUE CeguiSystem_injectChar(VALUE self,VALUE button)
+{
+	return wrap(_self->injectKeyUp(NUM2ULONG(button)));
+}
 
 /*
 */
@@ -208,7 +243,7 @@ void Init_CeguiSystem(VALUE rb_mCegui)
 	rb_define_attr(rb_cCeguiSystem,"xmlparser",1,1);
 	rb_define_attr(rb_cCeguiSystem,"imagecodec",1,1);
 #endif
-	
+
 	rb_cCeguiSystem = rb_define_class_under(rb_mCegui,"System",rb_cObject);
 	//rb_undef_alloc_func(rb_cCeguiSystem);
 	rb_define_singleton_method(rb_cCeguiSystem,"resourceProvider",RUBY_METHOD_FUNC(CeguiSystem_getResourceProvider),0);
@@ -229,10 +264,17 @@ void Init_CeguiSystem(VALUE rb_mCegui)
 
 	rb_define_method(rb_cCeguiSystem,"renderGUI",RUBY_METHOD_FUNC(CeguiSystem_renderGUI),0);
 	rb_define_method(rb_cCeguiSystem,"signalRedraw",RUBY_METHOD_FUNC(CeguiSystem_signalRedraw),0);
-	
 	rb_define_method(rb_cCeguiSystem,"redrawRequested?",RUBY_METHOD_FUNC(CeguiSystem_isRedrawRequested),0);
 	
 	rb_define_method(rb_cCeguiSystem,"injectMousePosition",RUBY_METHOD_FUNC(CeguiSystem_injectMousePosition),2);
+	rb_define_method(rb_cCeguiSystem,"injectMouseMove",RUBY_METHOD_FUNC(CeguiSystem_injectMouseMove),2);
+
+	rb_define_method(rb_cCeguiSystem,"injectMouseButtonDown",RUBY_METHOD_FUNC(CeguiSystem_injectMouseButtonDown),1);
+	rb_define_method(rb_cCeguiSystem,"injectMouseButtonUp",RUBY_METHOD_FUNC(CeguiSystem_injectMouseButtonUp),1);
+
+	rb_define_method(rb_cCeguiSystem,"injectKeyDown",RUBY_METHOD_FUNC(CeguiSystem_injectKeyDown),1);
+	rb_define_method(rb_cCeguiSystem,"injectKeyUp",RUBY_METHOD_FUNC(CeguiSystem_injectKeyUp),1);
+	rb_define_method(rb_cCeguiSystem,"injectChar",RUBY_METHOD_FUNC(CeguiSystem_injectChar),1);
 
 	rb_define_singleton_method(rb_cCeguiSystem,"new",RUBY_METHOD_FUNC(CeguiSystem_new),-1);
 	

@@ -6,6 +6,22 @@
 void Init_CeguiPropertySet(VALUE rb_mCegui);
 extern VALUE rb_mCeguiPropertySet;
 
+extern std::map<VALUE,CEGUI::PropertySet*> propertysetholder;
+template <>
+inline VALUE wrap< CEGUI::PropertySet >(CEGUI::PropertySet* set)
+{
+	CEGUI::Window *window = dynamic_cast<CEGUI::Window*>(set);
+	if(window)
+		return wrap(window);
+	std::map<VALUE,CEGUI::PropertySet*>::iterator it;
+	for(it = propertysetholder.begin();it != propertysetholder.end();++it)
+	{
+	if(it->second == set)
+		return it->first;
+	}
+	return Qnil;
+}
+
 template <>
 inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 {
@@ -13,9 +29,14 @@ inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 		return wrap< CEGUI::Window* >(vset);
 	
 	if (rb_obj_is_kind_of(vset, rb_mCeguiPropertySet)){
-		CEGUI::PropertySet *set;
-		Data_Get_Struct( vset, CEGUI::PropertySet, set);
-		return set;
+		std::map<VALUE,CEGUI::PropertySet*>::iterator it = propertysetholder.find(vset);
+		if(it != propertysetholder.end()){
+			return it->second;
+		}else{
+			CEGUI::PropertySet* temp = new CEGUI::PropertySet;
+			propertysetholder.insert(std::make_pair(vset,temp));
+			return temp;
+		}
 	}else{
 		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_mCeguiPropertySet),rb_obj_classname(vset));
 		return NULL;

@@ -60,6 +60,7 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = window;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiWindow, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(window,hold));
 		return hold->ruby;
 	}

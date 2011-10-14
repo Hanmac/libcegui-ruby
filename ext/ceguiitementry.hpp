@@ -22,6 +22,7 @@ inline VALUE wrap< CEGUI::ItemEntry >(CEGUI::ItemEntry *itementry )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = itementry;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiItemEntry, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(itementry,hold));
 		return hold->ruby;
 	}

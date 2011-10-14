@@ -4,14 +4,10 @@
 VALUE rb_cCeguiEvent,subscriberholder;
 
 	Subscriberfunc::Subscriberfunc(VALUE val) : value(val){
-		rb_ary_push(subscriberholder,val);
+		rb_ary_push(subscriberholder,val);//TODO find a way to GC them
 	};
 	bool Subscriberfunc::operator()(const CEGUI::EventArgs& e){
 		return RTEST(rb_funcall(value,rb_intern("call"),1,wrap(e)));
-	}
-
-	Subscriberfunc::~Subscriberfunc(){
-		rb_ary_delete(subscriberholder,value);
 	}
 
 /*

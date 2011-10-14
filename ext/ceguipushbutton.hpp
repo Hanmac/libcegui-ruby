@@ -22,6 +22,7 @@ inline VALUE wrap< CEGUI::PushButton >(CEGUI::PushButton *pushbutton )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = pushbutton;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiPushButton, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(pushbutton,hold));
 		return hold->ruby;
 	}

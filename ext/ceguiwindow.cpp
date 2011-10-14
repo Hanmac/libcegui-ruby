@@ -22,7 +22,7 @@
 #define _factorymanager CEGUI::WindowFactoryManager::getSingletonPtr()
 VALUE rb_cCeguiWindow;
 std::map<CEGUI::Window*,RubyWindowHolder*> rubywindowholder;
-
+VALUE rb_windowholder;
 macro_attr(Window,Rotation,CEGUI::Quaternion)
 macro_attr(Window,Text,CEGUI::String)
 
@@ -87,6 +87,13 @@ VALUE CeguiWindow_each(VALUE self)
 		rb_yield(wrap(_self->getChildAtIdx(i)));
 	return self;
 }
+/*
+*/
+VALUE CeguiWindow_get(VALUE self,VALUE name)
+{
+	return wrap(_self->getChild(wrap<CEGUI::String>(name)));
+}
+
 
 
 /*
@@ -362,7 +369,10 @@ int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg)
 	const CEGUI::WindowEventArgs *wea=dynamic_cast<const CEGUI::WindowEventArgs*>(&arg);
 	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(wea->window);
 	if(it!=rubywindowholder.end())
+	{
 		it->second->window = NULL;
+		rb_ary_delete(rb_windowholder,it->second->ruby);
+	}
 	return 0;
 }
 
@@ -449,6 +459,7 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiWindow,"beginInitialisation",RUBY_METHOD_FUNC(CeguiWindow_beginInitialisation),0);
 	rb_define_method(rb_cCeguiWindow,"endInitialisation",RUBY_METHOD_FUNC(CeguiWindow_endInitialisation),0);
 
+	rb_define_method(rb_cCeguiWindow,"[]",RUBY_METHOD_FUNC(CeguiWindow_get),1);
 
 	rb_define_method(rb_cCeguiWindow,"child?",RUBY_METHOD_FUNC(CeguiWindow_isChild),1);
 	rb_define_method(rb_cCeguiWindow,"ancestor?",RUBY_METHOD_FUNC(CeguiWindow_isAncestor),1);
@@ -541,6 +552,6 @@ void Init_CeguiWindow(VALUE rb_mCegui)
 	rb_define_const(rb_cCeguiWindow,"EventKeyUp",wrap(CEGUI::Window::EventKeyUp));
 	rb_define_const(rb_cCeguiWindow,"EventCharacterKey",wrap(CEGUI::Window::EventCharacterKey));
 
-//	windowcallbackholder = rb_ary_new();
-//	rb_global_variable(&windowcallbackholder);
+	rb_windowholder = rb_ary_new();
+	rb_global_variable(&rb_windowholder);
 }

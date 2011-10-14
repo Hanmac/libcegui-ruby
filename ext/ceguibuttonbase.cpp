@@ -32,6 +32,6 @@ void Init_CeguiButtonBase(VALUE rb_mCegui)
 
 	rb_cCeguiButtonBase = rb_define_class_under(rb_mCegui,"ButtonBase",rb_cCeguiWindow);
 	
-	rb_define_method(rb_cCeguiButtonBase,"pushed?",RUBY_METHOD_FUNC(CeguiButtonBase_isPushed),1);
-	rb_define_method(rb_cCeguiButtonBase,"hovering?",RUBY_METHOD_FUNC(CeguiButtonBase_isHovering),1);
+	rb_define_method(rb_cCeguiButtonBase,"pushed?",RUBY_METHOD_FUNC(CeguiButtonBase_isPushed),0);
+	rb_define_method(rb_cCeguiButtonBase,"hovering?",RUBY_METHOD_FUNC(CeguiButtonBase_isHovering),0);
 }

@@ -2,6 +2,23 @@
 #include "ceguiproperty.hpp"
 #define _self wrap<CEGUI::PropertySet*>(self)
 VALUE rb_mCeguiPropertySet;
+
+std::map<VALUE,CEGUI::PropertySet*> propertysetholder;
+/*
+*/
+VALUE CeguiPropertySet_addProperty(VALUE self,VALUE prop)
+{
+	_self->addProperty(wrap<CEGUI::Property*>(prop));
+	return self;
+}
+/*
+*/
+VALUE CeguiPropertySet_isPropertyPresent(VALUE self,VALUE name)
+{
+	return wrap(_self->isPropertyPresent(wrap<CEGUI::String>(name)));
+}
+
+
 /*
 */
 VALUE CeguiPropertySet_getProperty(VALUE self,VALUE name)
@@ -77,6 +94,9 @@ void Init_CeguiPropertySet(VALUE rb_mCegui)
 	rb_define_method(rb_mCeguiPropertySet,"each_property",RUBY_METHOD_FUNC(CeguiPropertySet_each_property),0);
 	
 	rb_define_method(rb_mCeguiPropertySet,"method_missing",RUBY_METHOD_FUNC(CeguiPropertySet_method_missing),-1);
+
+	rb_define_method(rb_mCeguiPropertySet,"addProperty",RUBY_METHOD_FUNC(CeguiPropertySet_addProperty),1);
+	rb_define_method(rb_mCeguiPropertySet,"hasProperty?",RUBY_METHOD_FUNC(CeguiPropertySet_isPropertyPresent),1);
 
 	rb_define_method(rb_mCeguiPropertySet,"getProperty",RUBY_METHOD_FUNC(CeguiPropertySet_getProperty),1);
 	rb_define_method(rb_mCeguiPropertySet,"setProperty",RUBY_METHOD_FUNC(CeguiPropertySet_setProperty),2);

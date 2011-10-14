@@ -40,7 +40,6 @@ class Subscriberfunc
 public:
 	Subscriberfunc(VALUE val);
 	bool operator()(const CEGUI::EventArgs& e);
-	~Subscriberfunc();
 private:
 	VALUE value;
 };

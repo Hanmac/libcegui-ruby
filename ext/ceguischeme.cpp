@@ -145,7 +145,7 @@ void Init_CeguiScheme(VALUE rb_mCegui)
 
 	rb_define_singleton_method(rb_cCeguiScheme,"defined?",RUBY_METHOD_FUNC(CeguiScheme_Manager_isDefined),1);
 
-	rb_define_singleton_method(rb_cCeguiScheme,"create",RUBY_METHOD_FUNC(CeguiScheme_Manager_create),-1);
+	rb_define_singleton_method(rb_cCeguiScheme,"new",RUBY_METHOD_FUNC(CeguiScheme_Manager_create),-1);
 	rb_define_singleton_method(rb_cCeguiScheme,"createAll",RUBY_METHOD_FUNC(CeguiScheme_Manager_createAll),-1);
 
 	rb_define_singleton_method(rb_cCeguiScheme,"defaultResourceGroup",RUBY_METHOD_FUNC(CeguiScheme_Manager_getDefaultResourceGroup),0);

@@ -51,8 +51,9 @@ with_cflags("-x c++"){
 	#	have_header("XMLParserModules/#{n}Parser/CEGUI#{n}Parser.h")
 	#}
 	pkg_config("freetype2")
-	find_header("freetype/config/ftheader.h")
-	have_header("FreeTypeFont.h")
+	if(find_header("freetype/config/ftheader.h"))
+		have_header("FreeTypeFont.h")
+	end
 
 $CFLAGS += " -Wall"
 

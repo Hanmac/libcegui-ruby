@@ -19,6 +19,7 @@ inline VALUE wrap< CEGUI::Tree >(CEGUI::Tree *tree )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = tree;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiTree, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(tree,hold));
 		return hold->ruby;
 	}

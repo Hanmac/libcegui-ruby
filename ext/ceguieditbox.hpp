@@ -19,6 +19,7 @@ inline VALUE wrap< CEGUI::Editbox >(CEGUI::Editbox *editbox )
 		RubyWindowHolder* hold = new RubyWindowHolder;
 		hold->window = editbox;
 		hold->ruby = Data_Wrap_Struct(rb_cCeguiEditbox, NULL, NULL, hold);
+		rb_ary_push(rb_windowholder,hold->ruby);
 		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(editbox,hold));
 		return hold->ruby;
 	}
