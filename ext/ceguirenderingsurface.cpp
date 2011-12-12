@@ -6,7 +6,7 @@ VALUE rb_cCeguiRenderingSurface;
 void Init_CeguiRenderingSurface(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 #endif
 	rb_cCeguiRenderingSurface = rb_define_class_under(rb_mCegui,"RenderingSurface",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiRenderingSurface);

@@ -1,43 +1,46 @@
 #include "ceguicolor.hpp"
-
+#include "ceguiexception.hpp"
 #define _self wrap<CEGUI::Colour*>(self)
 VALUE rb_cCeguiColor;
 
-VALUE CeguiColor_alloc(VALUE self)
+namespace CeguiColor
+{
+
+VALUE _alloc(VALUE self)
 {
 	return wrap(new CEGUI::Colour);
 }
 
-macro_attr(Color,Red,float)
-macro_attr(Color,Green,float)
-macro_attr(Color,Blue,float)
-macro_attr(Color,Alpha,float)
+macro_attr(Red,float)
+macro_attr(Green,float)
+macro_attr(Blue,float)
+macro_attr(Alpha,float)
+
 /*
  * call-seq:
  *   Color.new(red,green,blue[,alpha])
  * 
  * creates a new Color Object. 
 */
-VALUE CeguiColor_initialize(int argc,VALUE *argv,VALUE self)
+VALUE _initialize(int argc,VALUE *argv,VALUE self)
 {
 	VALUE red,green,blue,alpha;
 	rb_scan_args(argc, argv, "31",&red,&green,&blue,&alpha);
-	CeguiColor_setRed(self,red);
-	CeguiColor_setGreen(self,green);
-	CeguiColor_setBlue(self,blue);
-	if(!NIL_P(alpha))
-		CeguiColor_setAlpha(self,alpha);
+	_setRed(self,red);
+	_setGreen(self,green);
+	_setBlue(self,blue);
+	_setAlpha(self,NIL_P(alpha) ? DBL2NUM(1) : alpha);
 	return self;
 }
 /*
 */
-VALUE CeguiColor_initialize_copy(VALUE self, VALUE other)
+VALUE _initialize_copy(VALUE self, VALUE other)
 {
 	VALUE result = rb_call_super(1,&other);
-	CeguiColor_setRed(self,CeguiColor_getRed(other));
-	CeguiColor_setGreen(self,CeguiColor_getGreen(other));
-	CeguiColor_setBlue(self,CeguiColor_getBlue(other));
-	CeguiColor_setAlpha(self,CeguiColor_getAlpha(other));
+	_setRed(self,_getRed(other));
+	_setGreen(self,_getGreen(other));
+	_setBlue(self,_getBlue(other));
+	_setAlpha(self,_getAlpha(other));
 	return result;
 }
 /*
@@ -48,18 +51,44 @@ VALUE CeguiColor_initialize_copy(VALUE self, VALUE other)
  * ===Return value
  * String
 */
-VALUE CeguiColor_inspect(VALUE self)
+VALUE _inspect(VALUE self)
 {
 	VALUE array[6];
 	array[0]=rb_str_new2("#<%s:(%f, %f, %f, %f)>");
 	array[1]=rb_class_of(self);
-	array[2]=CeguiColor_getRed(self);
-	array[3]=CeguiColor_getGreen(self);
-	array[4]=CeguiColor_getBlue(self);
-	array[5]=CeguiColor_getAlpha(self);
+	array[2]=_getRed(self);
+	array[3]=_getGreen(self);
+	array[4]=_getBlue(self);
+	array[5]=_getAlpha(self);
 	return rb_f_sprintf(6,array);
 }
 
+/*
+ * call-seq:
+ *   to_s -> String
+ *
+ * hexadecimal, #AARRGGBB
+ * ===Return value
+ * String
+*/
+VALUE _to_s(VALUE self)
+{
+	VALUE array[2];
+	array[0]=rb_str_new2("#%.8X");
+	array[1]=LONG2NUM(_self->getARGB());
+	return rb_f_sprintf(2,array);
+}
+/*
+ *
+ */
+VALUE _equal(VALUE self,VALUE val)
+{	if(self == val)
+		return true;
+	if(!is_wrapable<CEGUI::Colour>(val))
+		return false;
+	else
+		return wrap(*_self == wrap<CEGUI::Colour>(val));
+}
 /*
  * call-seq:
  *   color + other_color -> new_color
@@ -68,7 +97,7 @@ VALUE CeguiColor_inspect(VALUE self)
  * ===Return value
  * Color
 */
-VALUE OgreColor_plus(VALUE self,VALUE val)
+VALUE _plus(VALUE self,VALUE val)
 {
 	return wrap(*_self + wrap<CEGUI::Colour>(val));
 }
@@ -80,7 +109,7 @@ VALUE OgreColor_plus(VALUE self,VALUE val)
  * ===Return value
  * Color
 */
-VALUE OgreColor_minus(VALUE self,VALUE val)
+VALUE _minus(VALUE self,VALUE val)
 {
 	return wrap(*_self - wrap<CEGUI::Colour>(val));
 }
@@ -92,7 +121,7 @@ VALUE OgreColor_minus(VALUE self,VALUE val)
  * ===Return value
  * Color
 */
-VALUE OgreColor_mal(VALUE self,VALUE val)
+VALUE _mal(VALUE self,VALUE val)
 {
 	return wrap(*_self * (float)NUM2DBL(val));
 }
@@ -104,30 +133,17 @@ VALUE OgreColor_mal(VALUE self,VALUE val)
  * ===Return value
  * Color
 */
-VALUE OgreColor_durch(VALUE self,VALUE val)
+VALUE _durch(VALUE self,VALUE val)
 {
 	return wrap(*_self * (float)(1.0 / NUM2DBL(val)));
 }
-
+}
 /*
  * Document-class: CEGUI::Color
  * 
  * This class represents an Color. 
 */ 
 
-/* Document-const: Zero
- * Color(0.0,0.0,0.0,0.0). */
-/* Document-const: Black
- * Color(0.0,0.0,0.0,1.0). */
-/* Document-const: White
- * Color(1.0,1.0,1.0,1.0). */
-/* Document-const: Red
- * Color(1.0,0.0,0.0,1.0). */
-/* Document-const: Green
- * Color(0.0,1.0,0.0,1.0). */
-/* Document-const: Blue
- * Color(0.0,0.0,1.0,1.0). */
- 
 /* Document-attr: red
  * returns the red value of Color. */
 /* Document-attr: blue
@@ -140,7 +156,7 @@ VALUE OgreColor_durch(VALUE self,VALUE val)
 void Init_CeguiColor(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 	rb_define_attr(rb_cCeguiColor,"red",1,1);
 	rb_define_attr(rb_cCeguiColor,"blue",1,1);
@@ -152,18 +168,28 @@ void Init_CeguiColor(VALUE rb_mCegui)
 	rb_define_attr(rb_cCeguiColor,"brightness",1,1);
 	
 #endif
+
+	using namespace CeguiColor;
 	rb_cCeguiColor = rb_define_class_under(rb_mCegui,"Color",rb_cObject);
-	rb_define_alloc_func(rb_cCeguiColor,CeguiColor_alloc);
+	rb_define_alloc_func(rb_cCeguiColor,_alloc);
 	
-	rb_define_method(rb_cCeguiColor,"initialize",RUBY_METHOD_FUNC(CeguiColor_initialize),-1);
-	rb_define_private_method(rb_cCeguiColor,"initialize_copy",RUBY_METHOD_FUNC(CeguiColor_initialize_copy),1);
+	rb_define_method(rb_cCeguiColor,"initialize",RUBY_METHOD_FUNC(_initialize),-1);
+	rb_define_private_method(rb_cCeguiColor,"initialize_copy",RUBY_METHOD_FUNC(_initialize_copy),1);
 	
 
-	rb_define_attr_method(rb_cCeguiColor,"red",CeguiColor_getRed,CeguiColor_setRed);
-	rb_define_attr_method(rb_cCeguiColor,"blue",CeguiColor_getBlue,CeguiColor_setBlue);
-	rb_define_attr_method(rb_cCeguiColor,"green",CeguiColor_getGreen,CeguiColor_setGreen);
-	rb_define_attr_method(rb_cCeguiColor,"alpha",CeguiColor_getAlpha,CeguiColor_setAlpha);
+	rb_define_attr_method(rb_cCeguiColor,"red",_getRed,_setRed);
+	rb_define_attr_method(rb_cCeguiColor,"blue",_getBlue,_setBlue);
+	rb_define_attr_method(rb_cCeguiColor,"green",_getGreen,_setGreen);
+	rb_define_attr_method(rb_cCeguiColor,"alpha",_getAlpha,_setAlpha);
 
-	rb_define_method(rb_cCeguiColor,"inspect",RUBY_METHOD_FUNC(CeguiColor_inspect),0);
+	rb_define_method(rb_cCeguiColor,"inspect",RUBY_METHOD_FUNC(_inspect),0);
+	rb_define_method(rb_cCeguiColor,"to_s",RUBY_METHOD_FUNC(_to_s),0);
+
+	rb_define_method(rb_cCeguiColor,"==",RUBY_METHOD_FUNC(_equal),1);
+
+	rb_define_method(rb_cCeguiColor,"+",RUBY_METHOD_FUNC(_plus),1);
+	rb_define_method(rb_cCeguiColor,"-",RUBY_METHOD_FUNC(_minus),1);
+	rb_define_method(rb_cCeguiColor,"*",RUBY_METHOD_FUNC(_mal),1);
+	rb_define_method(rb_cCeguiColor,"/",RUBY_METHOD_FUNC(_durch),1);
 }
 

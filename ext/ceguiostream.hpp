@@ -10,7 +10,7 @@ class RubyStreamBuf : public std::streambuf{
 public:
 	RubyStreamBuf(VALUE val);
 	int overflow(int c);
-	size_t xsputn ( const char * s, size_t n );
+	virtual size_t xsputn ( const char * s, size_t n );
 private:
 	VALUE value;
 };

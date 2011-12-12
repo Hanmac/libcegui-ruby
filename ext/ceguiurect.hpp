@@ -27,7 +27,7 @@ inline CEGUI::URect* wrap< CEGUI::URect* >(const VALUE &vbox)
 		rect->d_max = wrap<CEGUI::UVector2>(rb_funcall(vbox,rb_intern("max"),0));
 	 	return rect;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiURect),rb_obj_classname(vbox));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiURect),rb_obj_classname(vbox));
 		return NULL;
 	}
 

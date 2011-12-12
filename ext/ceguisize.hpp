@@ -26,7 +26,7 @@ inline CEGUI::Sizef* wrap< CEGUI::Sizef* >(const VALUE &vsize)
 	 	size->d_height = NUM2DBL(rb_funcall(vsize,rb_intern("height"),0));
 	 	return size;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiSize),rb_obj_classname(vsize));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiSize),rb_obj_classname(vsize));
 		return NULL;
 	}
 

@@ -20,7 +20,7 @@ VALUE CeguiComboDropList_new(int argc,VALUE *argv,VALUE self)
 void Init_CeguiComboDropList(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 	rb_cCeguiListbox = rb_define_class_under(rb_mCegui,"Listbox",rb_cCeguiWindow);
 	

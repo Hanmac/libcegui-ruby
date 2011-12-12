@@ -22,7 +22,7 @@ inline CEGUI::RenderedStringImageComponent* wrap< CEGUI::RenderedStringImageComp
 		Data_Get_Struct( vcomponent, CEGUI::RenderedStringImageComponent, component);
 		return component;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",
 			rb_class2name(rb_cCeguiRenderedStringImageComponent),rb_obj_classname(vcomponent));
 		return NULL;
 	}

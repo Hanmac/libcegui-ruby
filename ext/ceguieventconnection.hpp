@@ -24,7 +24,7 @@ inline CEGUI::Event::Connection wrap< CEGUI::Event::Connection >(const VALUE &vc
 		Data_Get_Struct( vconnection, RubyConnection, connection);
 		return connection->con;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiEventConnection),rb_obj_classname(vconnection));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiEventConnection),rb_obj_classname(vconnection));
 		return NULL;
 	}
 }

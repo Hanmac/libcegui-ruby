@@ -20,7 +20,7 @@ inline CEGUI::WindowFactoryManager::FalagardWindowMapping* wrap< CEGUI::WindowFa
 		Data_Get_Struct( vlook, CEGUI::WindowFactoryManager::FalagardWindowMapping, look);
 		return look;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiFalagard),rb_obj_classname(vlook));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiFalagard),rb_obj_classname(vlook));
 		return NULL;
 	}
 }

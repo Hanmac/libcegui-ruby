@@ -13,31 +13,50 @@
 
 #include "ceguirenderer.hpp"
 
-#define _self CEGUI::System::getSingletonPtr()
+#include "ceguirenderedstringparser.hpp"
 
-VALUE rb_cCeguiSystem,vSystem;
+#define _self wrap< CEGUI::System* >(rb_mCeguiSystem)
 
-macro_attr(System,GUISheet,CEGUI::Window*)
-macro_attr(System,ModalTarget,CEGUI::Window*)
-macro_attr(System,ScriptingModule,CEGUI::ScriptModule*)
+VALUE rb_mCeguiSystem;
 
-macro_attr(System,DefaultMouseCursor,CEGUI::Image*)
+namespace CeguiSystem{
+
+macro_attr(GUISheet,CEGUI::Window*)
+macro_attr(ModalTarget,CEGUI::Window*)
+macro_attr(ScriptingModule,CEGUI::ScriptModule*)
+
+macro_attr(DefaultMouseCursor,CEGUI::Image*)
+
+macro_attr(DefaultFont,CEGUI::Font*)
+
+macro_attr(SingleClickTimeout,double)
+macro_attr(MultiClickTimeout,double)
+macro_attr(MultiClickToleranceAreaSize,CEGUI::Sizef)
+
+macro_attr_bool(MouseClickEventGenerationEnabled)
+
+macro_attr(MouseMoveScaling,float)
+
+macro_attr(DefaultCustomRenderedStringParser,CEGUI::RenderedStringParser*)
+
+singlefunc(signalRedraw)
+singlefunc(renderGUI)
 
 /*
 */
-VALUE CeguiSystem_getResourceProvider(VALUE self)
+VALUE _getResourceProvider(VALUE self)
 {
 	return wrap(_self->getResourceProvider());
 }
 /*
 */
-VALUE CeguiSystem_getDefaultTooltip(VALUE self)
+VALUE _getDefaultTooltip(VALUE self)
 {
 	return wrap(_self->getDefaultTooltip());
 }
 /*
 */
-VALUE CeguiSystem_setDefaultTooltip(VALUE self,VALUE val)
+VALUE _setDefaultTooltip(VALUE self,VALUE val)
 {
 	if(rb_obj_is_kind_of(val, rb_cString))
 		_self->setDefaultTooltip(wrap<CEGUI::String>(val));
@@ -47,29 +66,13 @@ VALUE CeguiSystem_setDefaultTooltip(VALUE self,VALUE val)
 }
 /*
 */
-VALUE CeguiSystem_getDefaultFont(VALUE self)
-{
-	return wrap(_self->getDefaultFont());
-}
-/*
-*/
-VALUE CeguiSystem_setDefaultFont(VALUE self,VALUE val)
-{
-	if(rb_obj_is_kind_of(val, rb_cString))
-		_self->setDefaultFont(wrap<CEGUI::String>(val));
-	else
-		_self->setDefaultFont(wrap<CEGUI::Font*>(val));
-	return val;
-}
-/*
-*/
-VALUE CeguiSystem_getXMLParser(VALUE self)
+VALUE _getXMLParser(VALUE self)
 {
 	return wrap(_self->getXMLParser());
 }
 /*
 */
-VALUE CeguiSystem_setXMLParser(VALUE self,VALUE val)
+VALUE _setXMLParser(VALUE self,VALUE val)
 {
 	try{
 		if(rb_obj_is_kind_of(val, rb_cString))
@@ -77,123 +80,125 @@ VALUE CeguiSystem_setXMLParser(VALUE self,VALUE val)
 		else
 			_self->setXMLParser(wrap<CEGUI::XMLParser*>(val));
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
+		rb_raise(e);
 	}
 	return val;
 }
 
 /*
 */
-VALUE CeguiSystem_renderGUI(VALUE self)
+VALUE _getImageCodec(VALUE self)
 {
-	_self->renderGUI();
-	return self;
+	return wrap(_self->getImageCodec());
 }
 /*
 */
-VALUE CeguiSystem_getImageCodec(VALUE self)
-{
-	return wrap_imagecodec(_self->getImageCodec());
-}
-/*
-*/
-VALUE CeguiSystem_setImageCodec(VALUE self,VALUE val)
+VALUE _setImageCodec(VALUE self,VALUE val)
 {
 	try{
 		if(rb_obj_is_kind_of(val, rb_cString))
 			_self->setImageCodec(wrap<CEGUI::String>(val));
 		else
-			_self->setImageCodec(wrap_imagecodec(val));
+			_self->setImageCodec(*wrap<CEGUI::ImageCodec*>(val));
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
+		rb_raise(e);
 	}
 	return val;
 }
 
 /*
 */
-VALUE CeguiSystem_signalRedraw(VALUE self)
-{
-	_self->signalRedraw();
-	return self;
-}
-
-/*
-*/
-VALUE CeguiSystem_isRedrawRequested(VALUE self)
+VALUE _isRedrawRequested(VALUE self)
 {
 	return wrap(_self->isRedrawRequested());
 }
 
 /*
 */
-VALUE CeguiSystem_injectMousePosition(VALUE self,VALUE x,VALUE y)
+VALUE _injectMousePosition(VALUE self,VALUE x,VALUE y)
 {
 	return wrap(_self->injectMousePosition(NUM2DBL(x),NUM2DBL(y)));
 }
 /*
 */
-VALUE CeguiSystem_injectMouseMove(VALUE self,VALUE x,VALUE y)
+VALUE _injectMouseMove(VALUE self,VALUE x,VALUE y)
 {
 	return wrap(_self->injectMouseMove(NUM2DBL(x),NUM2DBL(y)));
 }
 
 /*
 */
-VALUE CeguiSystem_injectMouseButtonDown(VALUE self,VALUE button)
+VALUE _injectMouseButtonDown(VALUE self,VALUE button)
 {
 	return wrap(_self->injectMouseButtonDown(wrap<CEGUI::MouseButton>(button)));
 }
 /*
 */
-VALUE CeguiSystem_injectMouseButtonUp(VALUE self,VALUE button)
+VALUE _injectMouseButtonUp(VALUE self,VALUE button)
 {
 	return wrap(_self->injectMouseButtonUp(wrap<CEGUI::MouseButton>(button)));
 }
 /*
 */
-VALUE CeguiSystem_injectKeyDown(VALUE self,VALUE button)
+VALUE _injectKeyDown(VALUE self,VALUE button)
 {
 	return wrap(_self->injectKeyDown(NUM2UINT(button)));
 }
 /*
 */
-VALUE CeguiSystem_injectKeyUp(VALUE self,VALUE button)
+VALUE _injectKeyUp(VALUE self,VALUE button)
 {
 	return wrap(_self->injectKeyUp(NUM2UINT(button)));
 }
 /*
 */
-VALUE CeguiSystem_injectChar(VALUE self,VALUE button)
+VALUE _injectChar(VALUE self,VALUE button)
 {
 	return wrap(_self->injectKeyUp(NUM2ULONG(button)));
 }
 
 /*
 */
-VALUE CeguiSystem_setDefaultXMLParserName(VALUE self,VALUE val)
+VALUE _setDefaultXMLParserName(VALUE self,VALUE val)
 {
 	CEGUI::System::setDefaultXMLParserName(wrap<CEGUI::String>(val));
  	return val;
 }
 /*
 */ 	
-VALUE CeguiSystem_getDefaultXMLParserName(VALUE self)
+VALUE _getDefaultXMLParserName(VALUE self)
 {
 	return wrap(CEGUI::System::getDefaultXMLParserName());
 }
 /*
 */
-VALUE CeguiSystem_setDefaultImageCodecName(VALUE self,VALUE val)
+VALUE _setDefaultImageCodecName(VALUE self,VALUE val)
 {
 	CEGUI::System::setDefaultImageCodecName(wrap<CEGUI::String>(val));
  	return val;
 }
 /*
 */
-VALUE CeguiSystem_getDefaultImageCodecName(VALUE self)
+VALUE _getDefaultImageCodecName(VALUE self)
 {
 	return wrap(CEGUI::System::getDefaultImageCodecName());
+}
+
+/*
+*/
+VALUE _create(int argc,VALUE *argv,VALUE self)
+{
+	VALUE renderer;
+	rb_scan_args(argc, argv, "10",&renderer);
+	try {
+		CEGUI::System::create(*wrap<CEGUI::Renderer*>(renderer));
+		return self;
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+
 }
 
 void ruby_bootstrap()
@@ -201,93 +206,154 @@ void ruby_bootstrap()
 	CEGUI::String str = CEGUI::WindowManager::EventWindowDestroyed;
 	CEGUI::WindowManager::getSingletonPtr()->subscribeEvent(str,CEGUI::Event::Subscriber(ruby_window_destroyed_callback));
 }
-/*
+
+/* Document-method: guiSheet 
 
 */
-VALUE CeguiSystem_methodmissing(int argc,VALUE *argv,VALUE self)
-{
-	VALUE methId,args;
-	rb_scan_args(argc, argv, "1*",&methId,&args);
-	//TODO add check if system is created
-	return rb_funcall2(vSystem,SYM2ID(methId),argc-1,RARRAY_PTR(args));
-}
-/*
-*/
-VALUE CeguiSystem_new(int argc,VALUE *argv,VALUE self)
-{
-	VALUE renderer;
-	rb_scan_args(argc, argv, "10",&renderer);
-	try {
-		CEGUI::System::create(*wrap<CEGUI::Renderer*>(renderer));
-		VALUE result = rb_funcall(self,rb_intern("allocate"),0);
-		rb_funcall2(result,rb_intern("initialize"),argc,argv);
-		return result;
-	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
-		return Qnil;
-	}
-}
+/* Document-method: modalTarget 
 
+*/
+/* Document-method: defaultMouseCursor 
+
+*/
+
+/* Document-method: defaultFont
+
+*/
+
+/* Document-method: singleClickTimeout
+
+*/
+/* Document-method: multiClickTimeout
+
+*/
+/* Document-method: multiClickToleranceAreaSize
+
+*/
+
+/* Document-method: mouseClickEventGenerationEnabled
+
+*/
+/* Document-method: mouseMoveScaling
+
+*/
+/* Document-method: defaultCustomRenderedStringParser
+
+*/
+
+
+
+/* Document-method: guiSheet=
+
+*/
+/* Document-method: modalTarget=
+
+*/
+/* Document-method: defaultMouseCursor=
+
+*/
+
+/* Document-method: defaultFont=
+
+*/
+/* Document-method: singleClickTimeout=
+
+*/
+/* Document-method: multiClickTimeout=
+
+*/
+/* Document-method: multiClickToleranceAreaSize=
+
+*/
+
+
+/* Document-method: mouseClickEventGenerationEnabled=
+
+*/
+/* Document-method: mouseMoveScaling=
+
+*/
+/* Document-method: defaultCustomRenderedStringParser=
+
+*/
+
+/* Document-method: renderGUI
+
+*/
+/* Document-method: signalRedraw
+
+*/
 
 /*
 */
 void Init_CeguiSystem(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
-	
-	rb_define_attr(rb_cCeguiSystem,"guiSheet",1,1);
-	rb_define_attr(rb_cCeguiSystem,"modalTarget",1,1);
-	rb_define_attr(rb_cCeguiSystem,"defaultTooltip",1,1);
-	rb_define_attr(rb_cCeguiSystem,"defaultFont",1,1);
-	rb_define_attr(rb_cCeguiSystem,"xmlparser",1,1);
-	rb_define_attr(rb_cCeguiSystem,"imagecodec",1,1);
+	rb_mCegui = rb_define_module("CEGUI");
 #endif
 
-	rb_cCeguiSystem = rb_define_class_under(rb_mCegui,"System",rb_cObject);
-	//rb_undef_alloc_func(rb_cCeguiSystem);
-	rb_define_singleton_method(rb_cCeguiSystem,"resourceProvider",RUBY_METHOD_FUNC(CeguiSystem_getResourceProvider),0);
+	using namespace CeguiSystem;
 
-	rb_include_module(rb_cCeguiSystem,rb_mCeguiEventSet);
+	rb_mCeguiSystem = rb_define_class_under(rb_mCegui,"System",rb_cObject);
+	rb_define_module_function(rb_mCeguiSystem,"resourceProvider",RUBY_METHOD_FUNC(_getResourceProvider),0);
 
-	rb_define_attr_method(rb_cCeguiSystem,"guiSheet",CeguiSystem_getGUISheet,CeguiSystem_setGUISheet);
-	rb_define_attr_method(rb_cCeguiSystem,"modalTarget",CeguiSystem_getModalTarget,CeguiSystem_setModalTarget);
-	rb_define_attr_method(rb_cCeguiSystem,"defaultTooltip",
-		CeguiSystem_getDefaultTooltip,CeguiSystem_setDefaultTooltip);
-	rb_define_attr_method(rb_cCeguiSystem,"defaultFont",CeguiSystem_getDefaultFont,CeguiSystem_setDefaultFont);
-	rb_define_attr_method(rb_cCeguiSystem,"defaultMouseCursor",
-		CeguiSystem_getDefaultMouseCursor,CeguiSystem_setDefaultMouseCursor);
-	rb_define_attr_method(rb_cCeguiSystem,"xmlparser",CeguiSystem_getXMLParser,CeguiSystem_setXMLParser);
+	rb_extend_object(rb_mCeguiSystem,rb_mCeguiEventSet);
 
-	rb_define_attr_method(rb_cCeguiSystem,"imagecodec",CeguiSystem_getImageCodec,CeguiSystem_setImageCodec);
+	rb_define_module_function(rb_mCeguiSystem,"guiSheet",RUBY_METHOD_FUNC(_getGUISheet),0);
+	rb_define_module_function(rb_mCeguiSystem,"modalTarget",RUBY_METHOD_FUNC(_getModalTarget),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultTooltip",RUBY_METHOD_FUNC(_getDefaultTooltip),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultFont",RUBY_METHOD_FUNC(_getDefaultFont),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultMouseCursor",RUBY_METHOD_FUNC(_getDefaultMouseCursor),0);
+	rb_define_module_function(rb_mCeguiSystem,"xmlparser",RUBY_METHOD_FUNC(_getXMLParser),0);
+	rb_define_module_function(rb_mCeguiSystem,"imagecodec",RUBY_METHOD_FUNC(_getImageCodec),0);
 
-
-	rb_define_method(rb_cCeguiSystem,"renderGUI",RUBY_METHOD_FUNC(CeguiSystem_renderGUI),0);
-	rb_define_method(rb_cCeguiSystem,"signalRedraw",RUBY_METHOD_FUNC(CeguiSystem_signalRedraw),0);
-	rb_define_method(rb_cCeguiSystem,"redrawRequested?",RUBY_METHOD_FUNC(CeguiSystem_isRedrawRequested),0);
+	rb_define_module_function(rb_mCeguiSystem,"singleClickTimeout",RUBY_METHOD_FUNC(_getSingleClickTimeout),0);
+	rb_define_module_function(rb_mCeguiSystem,"multiClickTimeout",RUBY_METHOD_FUNC(_getMultiClickTimeout),0);
+	rb_define_module_function(rb_mCeguiSystem,"multiClickToleranceAreaSize",RUBY_METHOD_FUNC(_getMultiClickToleranceAreaSize),0);
+	rb_define_module_function(rb_mCeguiSystem,"mouseClickEventGenerationEnabled",RUBY_METHOD_FUNC(_getMouseClickEventGenerationEnabled),0);
+	rb_define_module_function(rb_mCeguiSystem,"mouseMoveScaling",RUBY_METHOD_FUNC(_getMouseMoveScaling),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultCustomRenderedStringParser",RUBY_METHOD_FUNC(_getDefaultCustomRenderedStringParser),0);
 	
-	rb_define_method(rb_cCeguiSystem,"injectMousePosition",RUBY_METHOD_FUNC(CeguiSystem_injectMousePosition),2);
-	rb_define_method(rb_cCeguiSystem,"injectMouseMove",RUBY_METHOD_FUNC(CeguiSystem_injectMouseMove),2);
+	rb_define_module_function(rb_mCeguiSystem,"guiSheet=",RUBY_METHOD_FUNC(_setGUISheet),1);
+	rb_define_module_function(rb_mCeguiSystem,"modalTarget=",RUBY_METHOD_FUNC(_setModalTarget),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultTooltip=",RUBY_METHOD_FUNC(_setDefaultTooltip),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultFont=",RUBY_METHOD_FUNC(_setDefaultFont),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultMouseCursor=",RUBY_METHOD_FUNC(_setDefaultMouseCursor),1);
+	rb_define_module_function(rb_mCeguiSystem,"xmlparser=",RUBY_METHOD_FUNC(_setXMLParser),1);
+	rb_define_module_function(rb_mCeguiSystem,"imagecodec=",RUBY_METHOD_FUNC(_setImageCodec),1);
 
-	rb_define_method(rb_cCeguiSystem,"injectMouseButtonDown",RUBY_METHOD_FUNC(CeguiSystem_injectMouseButtonDown),1);
-	rb_define_method(rb_cCeguiSystem,"injectMouseButtonUp",RUBY_METHOD_FUNC(CeguiSystem_injectMouseButtonUp),1);
+	rb_define_module_function(rb_mCeguiSystem,"singleClickTimeout=",RUBY_METHOD_FUNC(_setSingleClickTimeout),1);
+	rb_define_module_function(rb_mCeguiSystem,"multiClickTimeout=",RUBY_METHOD_FUNC(_setMultiClickTimeout),1);
+	rb_define_module_function(rb_mCeguiSystem,"multiClickToleranceAreaSize=",RUBY_METHOD_FUNC(_setMultiClickToleranceAreaSize),1);
+	rb_define_module_function(rb_mCeguiSystem,"mouseClickEventGenerationEnabled=",RUBY_METHOD_FUNC(_setMouseClickEventGenerationEnabled),1);
+	rb_define_module_function(rb_mCeguiSystem,"mouseMoveScaling=",RUBY_METHOD_FUNC(_setMouseMoveScaling),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultCustomRenderedStringParser=",RUBY_METHOD_FUNC(_setDefaultCustomRenderedStringParser),1);
 
-	rb_define_method(rb_cCeguiSystem,"injectKeyDown",RUBY_METHOD_FUNC(CeguiSystem_injectKeyDown),1);
-	rb_define_method(rb_cCeguiSystem,"injectKeyUp",RUBY_METHOD_FUNC(CeguiSystem_injectKeyUp),1);
-	rb_define_method(rb_cCeguiSystem,"injectChar",RUBY_METHOD_FUNC(CeguiSystem_injectChar),1);
 
-	rb_define_singleton_method(rb_cCeguiSystem,"new",RUBY_METHOD_FUNC(CeguiSystem_new),-1);
+	rb_define_module_function(rb_mCeguiSystem,"renderGUI",RUBY_METHOD_FUNC(_renderGUI),0);
+	rb_define_module_function(rb_mCeguiSystem,"signalRedraw",RUBY_METHOD_FUNC(_signalRedraw),0);
+	rb_define_module_function(rb_mCeguiSystem,"redrawRequested?",RUBY_METHOD_FUNC(_isRedrawRequested),0);
 	
-	rb_define_singleton_method(rb_cCeguiSystem,"method_missing",RUBY_METHOD_FUNC(CeguiSystem_methodmissing),-1);
+	rb_define_module_function(rb_mCeguiSystem,"injectMousePosition",RUBY_METHOD_FUNC(_injectMousePosition),2);
+	rb_define_module_function(rb_mCeguiSystem,"injectMouseMove",RUBY_METHOD_FUNC(_injectMouseMove),2);
+
+	rb_define_module_function(rb_mCeguiSystem,"injectMouseButtonDown",RUBY_METHOD_FUNC(_injectMouseButtonDown),1);
+	rb_define_module_function(rb_mCeguiSystem,"injectMouseButtonUp",RUBY_METHOD_FUNC(_injectMouseButtonUp),1);
+
+	rb_define_module_function(rb_mCeguiSystem,"injectKeyDown",RUBY_METHOD_FUNC(_injectKeyDown),1);
+	rb_define_module_function(rb_mCeguiSystem,"injectKeyUp",RUBY_METHOD_FUNC(_injectKeyUp),1);
+	rb_define_module_function(rb_mCeguiSystem,"injectChar",RUBY_METHOD_FUNC(_injectChar),1);
+
+	rb_define_module_function(rb_mCeguiSystem,"create",RUBY_METHOD_FUNC(_create),-1);
 	
-	rb_define_singleton_method(rb_cCeguiSystem,"defaultxmlparser",
-		RUBY_METHOD_FUNC(CeguiSystem_getDefaultXMLParserName),0);
-	rb_define_singleton_method(rb_cCeguiSystem,"defaultxmlparser=",
-		RUBY_METHOD_FUNC(CeguiSystem_setDefaultXMLParserName),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultxmlparser",
+		RUBY_METHOD_FUNC(_getDefaultXMLParserName),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultxmlparser=",
+		RUBY_METHOD_FUNC(_setDefaultXMLParserName),1);
 	
-	rb_define_singleton_method(rb_cCeguiSystem,"defaultimagecodec",
-		RUBY_METHOD_FUNC(CeguiSystem_getDefaultImageCodecName),0);
-	rb_define_singleton_method(rb_cCeguiSystem,"defaultimagecodec=",
-		RUBY_METHOD_FUNC(CeguiSystem_setDefaultImageCodecName),1);
+	rb_define_module_function(rb_mCeguiSystem,"defaultimagecodec",
+		RUBY_METHOD_FUNC(_getDefaultImageCodecName),0);
+	rb_define_module_function(rb_mCeguiSystem,"defaultimagecodec=",
+		RUBY_METHOD_FUNC(_setDefaultImageCodecName),1);
 	
 }

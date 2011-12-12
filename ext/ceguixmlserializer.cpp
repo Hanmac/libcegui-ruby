@@ -80,7 +80,7 @@ VALUE CeguiXMLSerializer_method_missing(int argc,VALUE *argv,VALUE self)
 void Init_CeguiXMLSerializer(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 #endif
 	rb_cCeguiXMLSerializer = rb_define_class_under(rb_mCegui,"XMLSerializer",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiXMLSerializer);

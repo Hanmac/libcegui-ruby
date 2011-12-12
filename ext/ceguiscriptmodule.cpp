@@ -48,7 +48,7 @@ VALUE CeguiScriptModule_Manager_setDefaultResourceGroup(VALUE self,VALUE val)
 void Init_CeguiScriptModule(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 #endif
 	rb_cCeguiScriptModule = rb_define_class_under(rb_mCegui,"ScriptModule",rb_cObject);

@@ -10,19 +10,7 @@ extern VALUE rb_cCeguiCombobox;
 template <>
 inline VALUE wrap< CEGUI::Combobox >(CEGUI::Combobox *box )
 {
-	if(box==NULL)
-		return Qnil;
-	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(box);
-	if(it != rubywindowholder.end()){
-		return it->second->ruby;
-	}else{
-		RubyWindowHolder* hold = new RubyWindowHolder;
-		hold->window = box;
-		hold->ruby = Data_Wrap_Struct(rb_cCeguiCombobox, NULL, NULL, hold);
-		rb_ary_push(rb_windowholder,hold->ruby);
-		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(box,hold));
-		return hold->ruby;
-	}
+	return RubyWindowHolder::get(box,rb_cCeguiCombobox);
 }
 
 template <>
@@ -31,7 +19,7 @@ inline CEGUI::Combobox* wrap< CEGUI::Combobox* >(const VALUE &vbox)
 	if(rb_obj_is_kind_of(vbox, rb_cCeguiCombobox)){
 		return (CEGUI::Combobox*)(wrap< CEGUI::Window* >(vbox));
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiCombobox),rb_obj_classname(vbox));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiCombobox),rb_obj_classname(vbox));
 		return NULL;
 	}
 }

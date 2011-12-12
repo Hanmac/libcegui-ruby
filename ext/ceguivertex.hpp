@@ -20,7 +20,7 @@ inline CEGUI::Vertex* wrap< CEGUI::Vertex* >(const VALUE &vvertex)
 		Data_Get_Struct( vvertex, CEGUI::Vertex, vertex);
 		return vertex;
 	}else{ //TODO add struct support later
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiVertex),rb_obj_classname(vvertex));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiVertex),rb_obj_classname(vvertex));
 		return NULL;
 	}
 }

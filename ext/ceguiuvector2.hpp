@@ -27,7 +27,7 @@ inline CEGUI::UVector2* wrap< CEGUI::UVector2* >(const VALUE &vvector)
 	 	vector->d_y = wrap<CEGUI::UDim>(rb_funcall(vvector,rb_intern("y"),0));
 	 	return vector;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiUVector2),rb_obj_classname(vvector));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUVector2),rb_obj_classname(vvector));
 		return NULL;
 	}
 

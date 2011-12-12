@@ -5,6 +5,7 @@
 void Init_CeguiRenderedStringComponent(VALUE rb_mCegui);
 extern VALUE rb_cCeguiRenderedStringComponent;
 
+#include "ceguiexception.hpp"
 #include "ceguirenderedstringtextcomponent.hpp"
 #include "ceguirenderedstringimagecomponent.hpp"
 
@@ -24,7 +25,7 @@ inline CEGUI::RenderedStringComponent* wrap< CEGUI::RenderedStringComponent* >(c
 		Data_Get_Struct( vcomponent, CEGUI::RenderedStringComponent, component);
 		return component;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",
 			rb_class2name(rb_cCeguiRenderedStringComponent),rb_obj_classname(vcomponent));
 		return NULL;
 	}

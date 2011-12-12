@@ -22,7 +22,7 @@ inline CEGUI::RenderedStringTextComponent* wrap< CEGUI::RenderedStringTextCompon
 		Data_Get_Struct( vcomponent, CEGUI::RenderedStringTextComponent, component);
 		return component;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",
 			rb_class2name(rb_cCeguiRenderedStringTextComponent),rb_obj_classname(vcomponent));
 		return NULL;
 	}

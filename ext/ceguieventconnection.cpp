@@ -23,7 +23,7 @@ VALUE CeguiEventConnection_disconnect(VALUE self)
 void Init_CeguiEventConnection(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 	rb_cCeguiEvent = rb_define_class_under(rb_mCegui,"Event",rb_cObject);
 #endif

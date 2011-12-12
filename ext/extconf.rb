@@ -27,16 +27,17 @@ require 'mkmf'
 #RbConfig::CONFIG["CPP"] = RbConfig::CONFIG["CXX"] + " -E"
 #CONFIG["warnflags"] = RbConfig::CONFIG["warnflags"] = " -Wall"
 
-dir_config("cegui")
+dir_config("CEGUI")
 with_cflags("-x c++"){
-	unless(!pkg_config("CEGUI-NULL-0.8") && !pkg_config("CEGUI-OPENGL-0.8"))
-		pkg_config("CEGUI-0.8")
-	end
+	["CEGUI-NULL-0.8","CEGUI-OPENGL-0.8","CEGUI-OGRE-0.8","CEGUI-IRRLICHT-0.8"].each {|s| pkg_config(s)}
+	
+	pkg_config("CEGUI-0.8")
+	
 	unless(find_library("CEGUIBase","main") && find_header("CEGUI.h"))
 		abort("need cegui-dev package.")
 	end
 
-	["Null","OpenGL"].each{|n|
+	["Null","OpenGL","Ogre","Irrlicht"].each{|n|
 		find_library("CEGUI#{n}Renderer","main")
 		have_header("RendererModules/#{n}/Renderer.h")
 	}
@@ -57,7 +58,7 @@ with_cflags("-x c++"){
 
 $CFLAGS += " -Wall"
 
-$CFLAGS = $CFLAGS.split(" ").uniq.join(" ")
+#$CFLAGS = $CFLAGS.split(" ").uniq.join(" ")
 unless have_func("rb_string_value_cstr","ruby.h")
 	abort("missing VALUE to char convert! You need ruby version >= 1.8.7")
 end

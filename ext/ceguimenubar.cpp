@@ -25,7 +25,7 @@ VALUE CeguiMenubar_new(int argc,VALUE *argv,VALUE self)
 void Init_CeguiMenubar(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 	rb_cCeguiItemListBase = rb_define_class_under(rb_mCegui,"ItemListBase",rb_cCeguiWindow);
 	rb_cCeguiMenuBase = rb_define_class_under(rb_mCegui,"MenuBase",rb_cCeguiItemListBase);

@@ -13,6 +13,21 @@ inline VALUE wrap< CEGUI::Colour >(CEGUI::Colour *color )
 }
 
 template <>
+inline bool is_wrapable< CEGUI::Colour >(const VALUE &vcolor)
+{
+	if (rb_obj_is_kind_of(vcolor, rb_cCeguiColor)){
+		return true;
+	}else if(rb_respond_to(vcolor,rb_intern("red")) &&
+		rb_respond_to(vcolor,rb_intern("blue")) &&
+		rb_respond_to(vcolor,rb_intern("green")) &&
+		rb_respond_to(vcolor,rb_intern("alpha"))){
+		return true;
+	}else
+		return false;
+}
+
+
+template <>
 inline CEGUI::Colour* wrap< CEGUI::Colour* >(const VALUE &vcolor)
 {
 	if (rb_obj_is_kind_of(vcolor, rb_cCeguiColor)){
@@ -45,7 +60,7 @@ inline CEGUI::Colour* wrap< CEGUI::Colour* >(const VALUE &vcolor)
 	 color->setAlpha(temp);
 	 return color;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiColor),rb_obj_classname(vcolor));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiColor),rb_obj_classname(vcolor));
 		return NULL;
 	}
 }

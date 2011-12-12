@@ -3,34 +3,79 @@
 #define _self wrap<CEGUI::URect*>(self)
 VALUE rb_cCeguiURect;
 
-VALUE CeguiURect_alloc(VALUE self)
+namespace CeguiURect
+{
+VALUE _alloc(VALUE self)
 {
 	return wrap(new CEGUI::URect);
 }
-macro_attr_prop(URect,d_min,CEGUI::UVector2)
-macro_attr_prop(URect,d_max,CEGUI::UVector2)
+macro_attr_prop(d_min,CEGUI::UVector2)
+macro_attr_prop(d_max,CEGUI::UVector2)
 
-macro_attr(URect,Position,CEGUI::UVector2)
-macro_attr(URect,Size,CEGUI::USize)
-macro_attr(URect,Width,CEGUI::UDim)
-macro_attr(URect,Height,CEGUI::UDim)
+macro_attr(Position,CEGUI::UVector2)
+macro_attr(Size,CEGUI::USize)
+macro_attr(Width,CEGUI::UDim)
+macro_attr(Height,CEGUI::UDim)
+
+
+VALUE _get_d_top(VALUE self)
+{
+	return wrap(_self->top());
+}
+VALUE _get_d_bottom(VALUE self)
+{
+	return wrap(_self->bottom());
+}
+
+VALUE _get_d_left(VALUE self)
+{
+	return wrap(_self->left());
+}
+VALUE _get_d_right(VALUE self)
+{
+	return wrap(_self->right());
+}
+
+
+VALUE _set_d_top(VALUE self,VALUE v)
+{
+	_self->top(wrap<CEGUI::UDim>(v));
+	return v;
+}
+VALUE _set_d_bottom(VALUE self,VALUE v)
+{
+	_self->bottom(wrap<CEGUI::UDim>(v));
+	return v;
+}
+
+VALUE _set_d_left(VALUE self,VALUE v)
+{
+	_self->left(wrap<CEGUI::UDim>(v));
+	return v;
+}
+VALUE _set_d_right(VALUE self,VALUE v)
+{
+	_self->right(wrap<CEGUI::UDim>(v));
+	return v;
+}
+
 /*
 
-VALUE CeguiURect_initialize(VALUE self,VALUE top,VALUE left,VALUE bottom,VALUE right)
+VALUE _initialize(VALUE self,VALUE top,VALUE left,VALUE bottom,VALUE right)
 {
-	CeguiURect_set_d_top(self,top);
-	CeguiURect_set_d_left(self,left);
-	CeguiURect_set_d_bottom(self,bottom);
-	CeguiURect_set_d_right(self,right);
+	_set_d_top(self,top);
+	_set_d_left(self,left);
+	_set_d_bottom(self,bottom);
+	_set_d_right(self,right);
 	return self;
 }
-VALUE CeguiURect_initialize_copy(VALUE self, VALUE other)
+VALUE _initialize_copy(VALUE self, VALUE other)
 {
 	VALUE result = rb_call_super(1,&other);
-	CeguiURect_set_d_top(self,CeguiURect_get_d_top(other));
-	CeguiURect_set_d_left(self,CeguiURect_get_d_left(other));
-	CeguiURect_set_d_bottom(self,CeguiURect_get_d_bottom(other));
-	CeguiURect_set_d_right(self,CeguiURect_get_d_right(other));
+	_set_d_top(self,_get_d_top(other));
+	_set_d_left(self,_get_d_left(other));
+	_set_d_bottom(self,_get_d_bottom(other));
+	_set_d_right(self,_get_d_right(other));
 	return result;
 }
 //*/
@@ -43,18 +88,18 @@ VALUE CeguiURect_initialize_copy(VALUE self, VALUE other)
  * ===Return value
  * String
 */
-VALUE CeguiURect_inspect(VALUE self)
+VALUE _inspect(VALUE self)
 {
 	VALUE array[4];
 	array[0]=rb_str_new2("#<%s:(%s, %s)>");
 	array[1]=rb_class_of(self);
-	array[2]=rb_funcall(CeguiURect_get_d_min(self),rb_intern("inpect"),0);
-	array[3]=rb_funcall(CeguiURect_get_d_max(self),rb_intern("inpect"),0);
+	array[2]=rb_funcall(_get_d_min(self),rb_intern("inpect"),0);
+	array[3]=rb_funcall(_get_d_max(self),rb_intern("inpect"),0);
 	return rb_f_sprintf(4,array);
 }
 /*
 */
-VALUE CeguiURect_swap(VALUE self,VALUE other)
+VALUE _swap(VALUE self,VALUE other)
 {
 	CEGUI::URect* cother = wrap<CEGUI::URect*>(other);
 	std::swap(_self->d_min,cother->d_min);
@@ -63,13 +108,13 @@ VALUE CeguiURect_swap(VALUE self,VALUE other)
 }
 /*
 */
-VALUE CeguiURect_plus(VALUE self,VALUE other)
+VALUE _plus(VALUE self,VALUE other)
 {
 	return wrap(*_self + wrap<CEGUI::URect>(other));
 }
 /*
 */
-VALUE CeguiURect_mal(VALUE self,VALUE other)
+VALUE _mal(VALUE self,VALUE other)
 {
 	return wrap(*_self * wrap<CEGUI::UDim>(other));
 }
@@ -81,11 +126,11 @@ VALUE CeguiURect_mal(VALUE self,VALUE other)
  * ===Return value
  * Integer
 */
-VALUE CeguiURect_hash(VALUE self)
+VALUE _hash(VALUE self)
 {
 	VALUE result = rb_ary_new();
-	rb_ary_push(result,CeguiURect_get_d_min(self));
-	rb_ary_push(result,CeguiURect_get_d_max(self));
+	rb_ary_push(result,_get_d_min(self));
+	rb_ary_push(result,_get_d_max(self));
 	return rb_funcall(result,rb_intern("hash"),0);
 }
 /*
@@ -94,7 +139,7 @@ VALUE CeguiURect_hash(VALUE self)
  * 
  * packs a URect into an string.
 */
-VALUE CeguiURect_marshal_dump(VALUE self)
+VALUE _marshal_dump(VALUE self)
 {
 	VALUE result = rb_ary_new();
 	rb_ary_push(result,DBL2NUM(_self->d_min.d_x.d_scale));
@@ -113,7 +158,7 @@ VALUE CeguiURect_marshal_dump(VALUE self)
  * 
  * loads a string into an URect.
 */
-VALUE CeguiURect_marshal_load(VALUE self,VALUE load)
+VALUE _marshal_load(VALUE self,VALUE load)
 {
 	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddddddd"));
 	_self->d_max.d_y.d_offset=NUM2DBL(rb_ary_pop(result));
@@ -127,6 +172,7 @@ VALUE CeguiURect_marshal_load(VALUE self,VALUE load)
 	return self;
 }
 
+}
 /*
  * Document-class: CEGUI::URect
  * 
@@ -136,40 +182,64 @@ VALUE CeguiURect_marshal_load(VALUE self,VALUE load)
  * the min Cordinate */
 /* Document-attr: max
  * the max Cordinate */
+/* Document-attr: top
+ * the top Cordinate */
+/* Document-attr: left
+ * the left Cordinate */
+/* Document-attr: bottom
+ * the bottom Cordinate */
+/* Document-attr: right
+ * the right Cordinate */
 void Init_CeguiURect(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
+	
+	rb_define_attr(rb_cCeguiURect,"top",1,1);
+	rb_define_attr(rb_cCeguiURect,"left",1,1);
+	rb_define_attr(rb_cCeguiURect,"bottom",1,1);
+	rb_define_attr(rb_cCeguiURect,"right",1,1);
+
 	rb_define_attr(rb_cCeguiURect,"min",1,1);
 	rb_define_attr(rb_cCeguiURect,"max",1,1);
+	
 	rb_define_attr(rb_cCeguiURect,"position",1,1);
-	rb_define_attr(rb_cCeguiURect,"size",1,1);
-	rb_define_attr(rb_cCeguiURect,"width",1,1);
 	rb_define_attr(rb_cCeguiURect,"height",1,1);
+	rb_define_attr(rb_cCeguiURect,"width",1,1);
+	rb_define_attr(rb_cCeguiURect,"size",1,1);
 #endif
-	rb_cCeguiURect = rb_define_class_under(rb_mCegui,"UDim",rb_cObject);
-	rb_define_alloc_func(rb_cCeguiURect,CeguiURect_alloc);
-//	rb_define_method(rb_cCeguiURect,"initialize",RUBY_METHOD_FUNC(CeguiURect_initialize),2);
-//	rb_define_private_method(rb_cCeguiURect,"initialize_copy",RUBY_METHOD_FUNC(CeguiURect_initialize_copy),1);
+	using namespace CeguiURect;
+
+	rb_cCeguiURect = rb_define_class_under(rb_mCegui,"URect",rb_cObject);
+	rb_define_alloc_func(rb_cCeguiURect,_alloc);
+//	rb_define_method(rb_cCeguiURect,"initialize",RUBY_METHOD_FUNC(_initialize),2);
+//	rb_define_private_method(rb_cCeguiURect,"initialize_copy",RUBY_METHOD_FUNC(_initialize_copy),1);
 	
-	rb_define_attr_method(rb_cCeguiURect,"min",CeguiURect_get_d_min,CeguiURect_set_d_min);
-	rb_define_attr_method(rb_cCeguiURect,"max",CeguiURect_get_d_max,CeguiURect_set_d_max);
+	rb_define_attr_method(rb_cCeguiURect,"min",_get_d_min,_set_d_min);
+	rb_define_attr_method(rb_cCeguiURect,"max",_get_d_max,_set_d_max);
 	
-	rb_define_attr_method(rb_cCeguiURect,"position",CeguiURect_getPosition,CeguiURect_setPosition);
-	rb_define_attr_method(rb_cCeguiURect,"size",CeguiURect_getSize,CeguiURect_setSize);
-	rb_define_attr_method(rb_cCeguiURect,"width",CeguiURect_getWidth,CeguiURect_setWidth);
-	rb_define_attr_method(rb_cCeguiURect,"height",CeguiURect_getHeight,CeguiURect_setHeight);
+	rb_define_attr_method(rb_cCeguiURect,"position",_getPosition,_setPosition);
+	rb_define_attr_method(rb_cCeguiURect,"size",_getSize,_setSize);
+	rb_define_attr_method(rb_cCeguiURect,"width",_getWidth,_setWidth);
+	rb_define_attr_method(rb_cCeguiURect,"height",_getHeight,_setHeight);
 	
-	rb_define_method(rb_cCeguiURect,"inspect",RUBY_METHOD_FUNC(CeguiURect_inspect),0);
+	
+	rb_define_attr_method(rb_cCeguiURect,"top",_get_d_top,_set_d_top);
+	rb_define_attr_method(rb_cCeguiURect,"bottom",_get_d_bottom,_set_d_bottom);
+	rb_define_attr_method(rb_cCeguiURect,"left",_get_d_left,_set_d_left);
+	rb_define_attr_method(rb_cCeguiURect,"right",_get_d_left,_set_d_right);
 
-	rb_define_method(rb_cCeguiURect,"+",RUBY_METHOD_FUNC(CeguiURect_plus),1);
-	rb_define_method(rb_cCeguiURect,"*",RUBY_METHOD_FUNC(CeguiURect_mal),1);
+	
+	rb_define_method(rb_cCeguiURect,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
-	rb_define_method(rb_cCeguiURect,"hash",RUBY_METHOD_FUNC(CeguiURect_hash),0);
+	rb_define_method(rb_cCeguiURect,"+",RUBY_METHOD_FUNC(_plus),1);
+	rb_define_method(rb_cCeguiURect,"*",RUBY_METHOD_FUNC(_mal),1);
 
-	rb_define_method(rb_cCeguiURect,"swap",RUBY_METHOD_FUNC(CeguiURect_swap),1);
+	rb_define_method(rb_cCeguiURect,"hash",RUBY_METHOD_FUNC(_hash),0);
 
-	rb_define_method(rb_cCeguiURect,"marshal_dump",RUBY_METHOD_FUNC(CeguiURect_marshal_dump),0);
-	rb_define_method(rb_cCeguiURect,"marshal_load",RUBY_METHOD_FUNC(CeguiURect_marshal_load),1);
+	rb_define_method(rb_cCeguiURect,"swap",RUBY_METHOD_FUNC(_swap),1);
+
+	rb_define_method(rb_cCeguiURect,"marshal_dump",RUBY_METHOD_FUNC(_marshal_dump),0);
+	rb_define_method(rb_cCeguiURect,"marshal_load",RUBY_METHOD_FUNC(_marshal_load),1);
 
 }

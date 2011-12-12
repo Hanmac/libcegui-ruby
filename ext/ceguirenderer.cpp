@@ -12,45 +12,35 @@
 #define _self wrap<CEGUI::Renderer*>(self)
 VALUE rb_cCeguiRenderer;
 
-macro_attr(Renderer,DisplaySize,CEGUI::Sizef)
+namespace CeguiRenderer {
+
+macro_attr(DisplaySize,CEGUI::Sizef)
+singlefunc(beginRendering)
+singlefunc(endRendering)
 /*
 */
-VALUE CeguiRenderer_getName(VALUE self)
+VALUE _getName(VALUE self)
 {
 	return wrap(_self->getIdentifierString());
 }
 
 /*
 */
-VALUE CeguiRenderer_beginRendering(VALUE self)
-{
-	_self->beginRendering();
-	return self;
-}
-/*
-*/
-VALUE CeguiRenderer_endRendering(VALUE self)
-{
-	_self->endRendering();
-	return self;
-}
-/*
-*/
-VALUE CeguiRenderer_createGeometryBuffer(VALUE self)
+VALUE _createGeometryBuffer(VALUE self)
 {
 	return wrap(_self->createGeometryBuffer());
 }
 
 /*
 */
-VALUE CeguiRenderer_createTextureTarget(VALUE self)
+VALUE _createTextureTarget(VALUE self)
 {
 	return wrap(_self->createTextureTarget());
 }
 
 /*
 */
-VALUE CeguiRenderer_createTexture(int argc,VALUE *argv,VALUE self)
+VALUE _createTexture(int argc,VALUE *argv,VALUE self)
 {
 	VALUE name,obj,resource_group;
 	rb_scan_args(argc, argv, "12",&name,&obj,&resource_group);
@@ -70,94 +60,192 @@ VALUE CeguiRenderer_createTexture(int argc,VALUE *argv,VALUE self)
  * ===Return value
  * String
 */
-VALUE CeguiRenderer_inspect(VALUE self)
+VALUE _inspect(VALUE self)
 {
 	VALUE array[2];
 	array[0]=rb_str_new2("#<%s>");
-	array[1]=CeguiRenderer_getName(self);
+	array[1]=_getName(self);
 	return rb_f_sprintf(2,array);
 }
 
+}
 
-
-VALUE rb_cCeguiOpenGLRenderer;
 #if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
+VALUE rb_cCeguiOpenGLRenderer;
+namespace CeguiRenderer {
+
 /*
 */
-VALUE CeguiOpenGLRenderer_bootstrap(VALUE self)
+VALUE _opengl_bootstrap(VALUE self)
 {
 	try {
 		VALUE val = wrap(CEGUI::OpenGLRenderer::bootstrapSystem());
 		ruby_bootstrap();
-		vSystem = rb_funcall(rb_cCeguiSystem,rb_intern("allocate"),0);
-		rb_global_variable(&vSystem);
 		return val;
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
-		return Qnil;
+		rb_raise(e);
 	}
+	return Qnil;
 }
 /*
 */
-VALUE CeguiOpenGLRenderer_alloc(VALUE self)
+VALUE _opengl_alloc(VALUE self)
 {
 	try {
 		return wrap(CEGUI::OpenGLRenderer::create());
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
-		return Qnil;
+		rb_raise(e);
 	}
+	return Qnil;
+}
 }
 #endif
-VALUE rb_cCeguiNullRenderer;
 #if HAVE_RENDERERMODULES_NULL_RENDERER_H
+VALUE rb_cCeguiNullRenderer;
+namespace CeguiRenderer {
 /*
 */
-VALUE CeguiNullRenderer_bootstrap(VALUE self)
+VALUE _null_bootstrap(VALUE self)
 {
-	VALUE val = wrap(CEGUI::NullRenderer::bootstrapSystem());
-	ruby_bootstrap();
-	return val;
+	try {
+		VALUE val = wrap(CEGUI::NullRenderer::bootstrapSystem());
+		ruby_bootstrap();
+		return val;
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
 }
 /*
 */
-VALUE CeguiNullRenderer_alloc(VALUE self)
+VALUE _null_alloc(VALUE self)
 {
-	return wrap(CEGUI::NullRenderer::create());
+	try {
+		return wrap(CEGUI::NullRenderer::create());
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
 }
 #endif
+#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+VALUE rb_cCeguiOgreRenderer;
+namespace CeguiRenderer {
+/*
+*/
+VALUE _ogre_bootstrap(VALUE self)
+{
+	try {
+		VALUE val = wrap(CEGUI::OgreRenderer::bootstrapSystem());
+		ruby_bootstrap();
+		return val;
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+/*
+*/
+VALUE _ogre_alloc(VALUE self)
+{
+	try {
+		return wrap(CEGUI::OgreRenderer::create());
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+}
+#endif
+
+#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+VALUE rb_cCeguiIrrlichtRenderer;
+namespace CeguiRenderer {
+
+/*
+*/
+VALUE _irrlicht_bootstrap(VALUE self,VALUE irr)
+{
+	try {
+		irr::IrrlichtDevice *obj = wrap<irr::IrrlichtDevice*>(irr);
+		VALUE val = wrap(CEGUI::IrrlichtRenderer::bootstrapSystem(*obj));
+		ruby_bootstrap();
+		return val;
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+/*
+*/
+VALUE _irrlicht_alloc(VALUE self,VALUE irr)
+{
+	try {
+		irr::IrrlichtDevice *obj = wrap<irr::IrrlichtDevice*>(irr);
+		return wrap(CEGUI::IrrlichtRenderer::create(*obj));
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+}
+#endif
+
+/* Document-method: beginRendering
+
+*/
+
+/* Document-method: endRendering
+
+*/
+
 
 void Init_CeguiRenderer(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_define_attr(rb_cCeguiRenderer,"displaySize",1,1);
 #endif
+	using namespace CeguiRenderer;
+
 	rb_cCeguiRenderer = rb_define_class_under(rb_mCegui,"Renderer",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiRenderer);
 	
-	rb_define_attr_method(rb_cCeguiRenderer,"displaySize",CeguiRenderer_getDisplaySize,CeguiRenderer_setDisplaySize);
+	rb_define_attr_method(rb_cCeguiRenderer,"displaySize",_getDisplaySize,_setDisplaySize);
 
-	rb_define_method(rb_cCeguiRenderer,"inspect",RUBY_METHOD_FUNC(CeguiRenderer_inspect),0);
-	rb_define_method(rb_cCeguiRenderer,"name",RUBY_METHOD_FUNC(CeguiRenderer_getName),0);
+	rb_define_method(rb_cCeguiRenderer,"inspect",RUBY_METHOD_FUNC(_inspect),0);
+	rb_define_method(rb_cCeguiRenderer,"name",RUBY_METHOD_FUNC(_getName),0);
 
-	rb_define_method(rb_cCeguiRenderer,"beginRendering",RUBY_METHOD_FUNC(CeguiRenderer_beginRendering),0);
-	rb_define_method(rb_cCeguiRenderer,"endRendering",RUBY_METHOD_FUNC(CeguiRenderer_endRendering),0);
+	rb_define_method(rb_cCeguiRenderer,"beginRendering",RUBY_METHOD_FUNC(_beginRendering),0);
+	rb_define_method(rb_cCeguiRenderer,"endRendering",RUBY_METHOD_FUNC(_endRendering),0);
 
-	rb_define_method(rb_cCeguiRenderer,"createGeometryBuffer",RUBY_METHOD_FUNC(CeguiRenderer_createGeometryBuffer),0);
-	rb_define_method(rb_cCeguiRenderer,"createTexture",RUBY_METHOD_FUNC(CeguiRenderer_createTexture),-1);
-	rb_define_method(rb_cCeguiRenderer,"createTextureTarget",RUBY_METHOD_FUNC(CeguiRenderer_createTextureTarget),0);
+	rb_define_method(rb_cCeguiRenderer,"createGeometryBuffer",RUBY_METHOD_FUNC(_createGeometryBuffer),0);
+	rb_define_method(rb_cCeguiRenderer,"createTexture",RUBY_METHOD_FUNC(_createTexture),-1);
+	rb_define_method(rb_cCeguiRenderer,"createTextureTarget",RUBY_METHOD_FUNC(_createTextureTarget),0);
 
 
 #if HAVE_RENDERERMODULES_NULL_RENDERER_H
 	rb_cCeguiNullRenderer = rb_define_class_under(rb_mCegui,"NullRenderer",rb_cCeguiRenderer);
-	rb_define_alloc_func(rb_cCeguiNullRenderer,CeguiNullRenderer_alloc);
-	rb_define_singleton_method(rb_cCeguiNullRenderer,"bootstrap",RUBY_METHOD_FUNC(CeguiNullRenderer_bootstrap),0);
+	rb_define_alloc_func(rb_cCeguiNullRenderer,_null_alloc);
+	rb_define_singleton_method(rb_cCeguiNullRenderer,"bootstrap",RUBY_METHOD_FUNC(_null_bootstrap),0);
 #endif
 
 #if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
 	rb_cCeguiOpenGLRenderer = rb_define_class_under(rb_mCegui,"OpenGLRenderer",rb_cCeguiRenderer);
-	rb_define_alloc_func(rb_cCeguiOpenGLRenderer,CeguiOpenGLRenderer_alloc);
-	rb_define_singleton_method(rb_cCeguiOpenGLRenderer,"bootstrap",RUBY_METHOD_FUNC(CeguiOpenGLRenderer_bootstrap),0);
+	rb_define_alloc_func(rb_cCeguiOpenGLRenderer,_opengl_alloc);
+	rb_define_singleton_method(rb_cCeguiOpenGLRenderer,"bootstrap",RUBY_METHOD_FUNC(_opengl_bootstrap),0);
+#endif
+
+#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+	rb_cCeguiOgreRenderer = rb_define_class_under(rb_mCegui,"OgreRenderer",rb_cCeguiRenderer);
+	rb_define_alloc_func(rb_cCeguiOgreRenderer,_ogre_alloc);
+	rb_define_singleton_method(rb_cCeguiOgreRenderer,"bootstrap",RUBY_METHOD_FUNC(_ogre_bootstrap),0);
+#endif
+
+#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+	rb_cCeguiIrrlichtRenderer = rb_define_class_under(rb_mCegui,"IrrlichtRenderer",rb_cCeguiRenderer);
+	rb_define_singleton_method(rb_cCeguiIrrlichtRenderer,"new",RUBY_METHOD_FUNC(_irrlicht_alloc),1);
+	rb_define_singleton_method(rb_cCeguiIrrlichtRenderer,"bootstrap",RUBY_METHOD_FUNC(_irrlicht_bootstrap),1);
 #endif
 }

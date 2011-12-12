@@ -28,7 +28,7 @@ inline CEGUI::Vector3f* wrap< CEGUI::Vector3f* >(const VALUE &vvector)
 	 	vector->d_z = NUM2DBL(rb_funcall(vvector,rb_intern("z"),0));
 	 	return vector;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiVector3),rb_obj_classname(vvector));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiVector3),rb_obj_classname(vvector));
 		return NULL;
 	}
 }

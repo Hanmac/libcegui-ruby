@@ -22,7 +22,7 @@ inline CEGUI::RenderingWindow* wrap< CEGUI::RenderingWindow* >(const VALUE &vwin
 		Data_Get_Struct( vwindow, CEGUI::RenderingWindow, window);
 		return window;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiRenderingWindow),rb_obj_classname(vwindow));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderingWindow),rb_obj_classname(vwindow));
 		return NULL;
 	}
 }

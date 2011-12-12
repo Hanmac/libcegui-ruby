@@ -8,9 +8,46 @@
 #define _self wrap<CEGUI::Listbox*>(self)
 VALUE rb_cCeguiListbox;
 
+namespace CeguiListbox {
+
+macro_attr_bool(MultiselectEnabled)
+macro_attr_bool(ItemTooltipsEnabled)
+
+singlefunc(resetList)
+
+VALUE _getSortEnabled(VALUE self)
+{
+	return wrap(_self->isSortEnabled());
+}
+VALUE _setSortEnabled(VALUE self,VALUE val)
+{
+	_self->setSortingEnabled(wrap<bool>(val));
+	return val;
+}
+
+VALUE _getShowVertScrollbar(VALUE self)
+{
+	return wrap(_self->isVertScrollbarAlwaysShown());
+}
+VALUE _setShowVertScrollbar(VALUE self,VALUE val)
+{
+	_self->setShowVertScrollbar(wrap<bool>(val));
+	return val;
+}
+
+VALUE _getShowHorzScrollbar(VALUE self)
+{
+	return wrap(_self->isHorzScrollbarAlwaysShown());
+}
+VALUE _setShowHorzScrollbar(VALUE self,VALUE val)
+{
+	_self->setShowHorzScrollbar(wrap<bool>(val));
+	return val;
+}
+
 /*
 */
-VALUE CeguiListbox_new(int argc,VALUE *argv,VALUE self)
+VALUE _new(int argc,VALUE *argv,VALUE self)
 {
 	VALUE name;
 	if(argc==2)
@@ -25,33 +62,42 @@ VALUE CeguiListbox_new(int argc,VALUE *argv,VALUE self)
 }
 /*
 */
-VALUE CeguiListbox_addItem(VALUE self,VALUE item)
+VALUE _addItem(VALUE self,VALUE item)
 {
 	_self->addItem(wrap<CEGUI::ListboxItem*>(item));
 	return self;
 }
 /*
 */
-VALUE CeguiListbox_insertItem(VALUE self,VALUE pos,VALUE item)
+VALUE _insertItem(VALUE self,VALUE pos,VALUE item)
 {
 	if(rb_obj_is_kind_of(pos, rb_cCeguiListboxItem)){
 		_self->insertItem(wrap<CEGUI::ListboxItem*>(pos),wrap<CEGUI::ListboxItem*>(item));
+	}else	if(rb_obj_is_kind_of(pos, rb_cString)){
+		CEGUI::ListboxItem* cpos = _self->findItemWithText(wrap<CEGUI::String>(pos),NULL);
+		_self->insertItem(cpos,wrap<CEGUI::ListboxItem*>(item));
 	}else
 		_self->insertItem(_self->getListboxItemFromIndex(NUM2UINT(pos)),wrap<CEGUI::ListboxItem*>(item));
 	return self;
 }
 /*
 */
-VALUE CeguiListbox_removeItem(VALUE self,VALUE item)
+VALUE _removeItem(VALUE self,VALUE item)
 {
-	_self->removeItem(wrap<CEGUI::ListboxItem*>(item));
+	CEGUI::ListboxItem* citem;
+	if(rb_obj_is_kind_of(item, rb_cString))
+		citem = _self->findItemWithText(wrap<CEGUI::String>(item),NULL);
+	else
+		citem = wrap<CEGUI::ListboxItem*>(item);
+	if(citem)
+		_self->removeItem(citem);
 	return self;
 }
 
 
 /*
 */
-VALUE CeguiListbox_each_item(VALUE self)
+VALUE _each_item(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
 	for (unsigned int i = 0; i < _self->getItemCount(); ++i)
@@ -62,7 +108,7 @@ VALUE CeguiListbox_each_item(VALUE self)
 }
 /*
 */
-VALUE CeguiListbox_each_selected(VALUE self)
+VALUE _each_selected(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
 	CEGUI::ListboxItem *sel = _self->getFirstSelectedItem();
@@ -77,51 +123,63 @@ VALUE CeguiListbox_each_selected(VALUE self)
 
 /*
 */
-VALUE CeguiListbox_getVertScrollbar(VALUE self)
+VALUE _getVertScrollbar(VALUE self)
 {
 	return wrap(_self->getVertScrollbar());
 }
 /*
 */
-VALUE CeguiListbox_getHorzScrollbar(VALUE self)
+VALUE _getHorzScrollbar(VALUE self)
 {
 	return wrap(_self->getHorzScrollbar());
 }
-/*
-*/
-VALUE CeguiListbox_reset(VALUE self)
-{
-	_self->resetList();
-	return Qnil;
+
 }
+/* Document-method: clear
+
+*/
+
 
 /*
 */
 void Init_CeguiListbox(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 
+	rb_define_attr(rb_cCeguiListbox,"multiselectEnabled",1,1);
+	rb_define_attr(rb_cCeguiListbox,"itemTooltipsEnabled",1,1);
+
+	rb_define_attr(rb_cCeguiListbox,"sortEnabled",1,1);
+	rb_define_attr(rb_cCeguiListbox,"showVertScrollbar",1,1);
+	rb_define_attr(rb_cCeguiListbox,"showHorzScrollbar",1,1);
+
 #endif
+	using namespace CeguiListbox;
 
 	rb_cCeguiListbox = rb_define_class_under(rb_mCegui,"Listbox",rb_cCeguiWindow);
 	
-	rb_define_singleton_method(rb_cCeguiListbox,"new",RUBY_METHOD_FUNC(CeguiListbox_new),-1);
+	rb_define_singleton_method(rb_cCeguiListbox,"new",RUBY_METHOD_FUNC(_new),-1);
 
+	rb_define_attr_method(rb_cCeguiListbox,"multiselectEnabled",_getMultiselectEnabled,_setMultiselectEnabled);
+	rb_define_attr_method(rb_cCeguiListbox,"itemTooltipsEnabled",_getItemTooltipsEnabled,_setItemTooltipsEnabled);
 
+	rb_define_attr_method(rb_cCeguiListbox,"sortEnabled",_getSortEnabled,_setSortEnabled);
+	rb_define_attr_method(rb_cCeguiListbox,"showVertScrollbar",_getShowVertScrollbar,_setShowVertScrollbar);
+	rb_define_attr_method(rb_cCeguiListbox,"showHorzScrollbar",_getShowHorzScrollbar,_setShowHorzScrollbar);
 
-	rb_define_method(rb_cCeguiListbox,"addItem",RUBY_METHOD_FUNC(CeguiListbox_addItem),1);
-	rb_define_method(rb_cCeguiListbox,"insertItem",RUBY_METHOD_FUNC(CeguiListbox_insertItem),2);
-	rb_define_method(rb_cCeguiListbox,"removeItem",RUBY_METHOD_FUNC(CeguiListbox_removeItem),1);
+	rb_define_method(rb_cCeguiListbox,"addItem",RUBY_METHOD_FUNC(_addItem),1);
+	rb_define_method(rb_cCeguiListbox,"insertItem",RUBY_METHOD_FUNC(_insertItem),2);
+	rb_define_method(rb_cCeguiListbox,"removeItem",RUBY_METHOD_FUNC(_removeItem),1);
 	
-	rb_define_method(rb_cCeguiListbox,"each_item",RUBY_METHOD_FUNC(CeguiListbox_each_item),0);
-	rb_define_method(rb_cCeguiListbox,"each_selected",RUBY_METHOD_FUNC(CeguiListbox_each_selected),0);
+	rb_define_method(rb_cCeguiListbox,"each_item",RUBY_METHOD_FUNC(_each_item),0);
+	rb_define_method(rb_cCeguiListbox,"each_selected",RUBY_METHOD_FUNC(_each_selected),0);
 	
-	rb_define_method(rb_cCeguiListbox,"vertScrollbar",RUBY_METHOD_FUNC(CeguiListbox_getVertScrollbar),0);
-	rb_define_method(rb_cCeguiListbox,"horzScrollbar",RUBY_METHOD_FUNC(CeguiListbox_getHorzScrollbar),0);
+	rb_define_method(rb_cCeguiListbox,"vertScrollbar",RUBY_METHOD_FUNC(_getVertScrollbar),0);
+	rb_define_method(rb_cCeguiListbox,"horzScrollbar",RUBY_METHOD_FUNC(_getHorzScrollbar),0);
 	
-	rb_define_method(rb_cCeguiListbox,"reset",RUBY_METHOD_FUNC(CeguiListbox_reset),0);
+	rb_define_method(rb_cCeguiListbox,"clear",RUBY_METHOD_FUNC(_resetList),0);
 	
 	rb_define_const(rb_cCeguiListbox,"EventNamespace",wrap(CEGUI::Listbox::EventNamespace));
 	rb_define_const(rb_cCeguiListbox,"WidgetTypeName",wrap(CEGUI::Listbox::WidgetTypeName));	

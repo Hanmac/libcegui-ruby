@@ -3,6 +3,7 @@
 
 #include "main.hpp"
 #include "ceguiwindow.hpp"
+#include "ceguifont.hpp"
 void Init_CeguiPropertySet(VALUE rb_mCegui);
 extern VALUE rb_mCeguiPropertySet;
 
@@ -13,6 +14,9 @@ inline VALUE wrap< CEGUI::PropertySet >(CEGUI::PropertySet* set)
 	CEGUI::Window *window = dynamic_cast<CEGUI::Window*>(set);
 	if(window)
 		return wrap(window);
+	CEGUI::Font *font = dynamic_cast<CEGUI::Font*>(set);
+	if(font)
+		return wrap(font);
 	std::map<VALUE,CEGUI::PropertySet*>::iterator it;
 	for(it = propertysetholder.begin();it != propertysetholder.end();++it)
 	{
@@ -27,6 +31,8 @@ inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 {
 	if (rb_obj_is_kind_of(vset, rb_cCeguiWindow))
 		return wrap< CEGUI::Window* >(vset);
+	if (rb_obj_is_kind_of(vset, rb_cCeguiFont))
+		return wrap< CEGUI::Font* >(vset);
 	
 	if (rb_obj_is_kind_of(vset, rb_mCeguiPropertySet)){
 		std::map<VALUE,CEGUI::PropertySet*>::iterator it = propertysetholder.find(vset);
@@ -38,7 +44,7 @@ inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 			return temp;
 		}
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_mCeguiPropertySet),rb_obj_classname(vset));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_mCeguiPropertySet),rb_obj_classname(vset));
 		return NULL;
 	}
 }

@@ -22,7 +22,7 @@ inline CEGUI::Property* wrap< CEGUI::Property* >(const VALUE &vproperty)
 		Data_Get_Struct( vproperty, CEGUI::Property, property);
 		return property;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiProperty),rb_obj_classname(vproperty));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiProperty),rb_obj_classname(vproperty));
 		return NULL;
 	}
 }

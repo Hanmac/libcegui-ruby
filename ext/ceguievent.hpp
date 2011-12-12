@@ -23,7 +23,7 @@ inline CEGUI::Event* wrap< CEGUI::Event* >(const VALUE &vevent)
 		Data_Get_Struct( vevent, CEGUI::Event, event);
 		return event;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiEvent),rb_obj_classname(vevent));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiEvent),rb_obj_classname(vevent));
 		return NULL;
 	}
 }
@@ -34,11 +34,11 @@ inline CEGUI::Event wrap< CEGUI::Event >(const VALUE &vevent)
 	return *wrap< CEGUI::Event* >(vevent);
 }
 */
-
 class Subscriberfunc
 {
 public:
 	Subscriberfunc(VALUE val);
+	~Subscriberfunc();
 	bool operator()(const CEGUI::EventArgs& e);
 private:
 	VALUE value;

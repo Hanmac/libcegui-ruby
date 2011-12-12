@@ -31,7 +31,7 @@ inline CEGUI::UBox* wrap< CEGUI::UBox* >(const VALUE &vbox)
 		box->d_right = wrap<CEGUI::UDim>(rb_funcall(vbox,rb_intern("right"),0));
 	 	return box;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiUBox),rb_obj_classname(vbox));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUBox),rb_obj_classname(vbox));
 		return NULL;
 	}
 

@@ -3,12 +3,16 @@
 #define _self wrap<CEGUI::Combobox*>(self)
 VALUE rb_cCeguiCombobox;
 
-macro_attr(Combobox,ValidationString,CEGUI::String)
-macro_attr_with_func(Combobox,CaretIndex,UINT2NUM,NUM2UINT)
+namespace CeguiCombobox {
+macro_attr(ValidationString,CEGUI::String)
+macro_attr_with_func(CaretIndex,UINT2NUM,NUM2UINT)
 
+macro_attr_bool(ReadOnly)
+
+singlefunc(resetList)
 /*
 */
-VALUE CeguiCombobox_new(int argc,VALUE *argv,VALUE self)
+VALUE _new(int argc,VALUE *argv,VALUE self)
 {
 	VALUE name;
 	rb_scan_args(argc, argv, "01",&name);
@@ -18,39 +22,26 @@ VALUE CeguiCombobox_new(int argc,VALUE *argv,VALUE self)
 	return rb_call_super(2,result);
 }
 
-VALUE CeguiCombobox_isReadOnly(VALUE self)
-{
-	return RBOOL(_self->isReadOnly());
-}
-
-VALUE CeguiCombobox_setReadOnly(VALUE self,VALUE val)
-{
-	_self->setReadOnly(RTEST(val));
-	return val;
-}
-
-
-
 /*
 */
-VALUE CeguiCombobox_isTextValid(VALUE self)
+VALUE _isTextValid(VALUE self)
 {
 	return RBOOL(_self->isTextValid());
 }
 /*
 */
-VALUE CeguiCombobox_hasInputFocus(VALUE self)
+VALUE _hasInputFocus(VALUE self)
 {
 	return RBOOL(_self->hasInputFocus());
 }
 
 
-VALUE CeguiCombobox_getSelection(VALUE self)
+VALUE _getSelection(VALUE self)
 {
 	return rb_range_new(UINT2NUM(_self->getSelectionStartIndex()),UINT2NUM(_self->getSelectionEndIndex()),0);
 }
 
-VALUE CeguiCombobox_setSelection(VALUE self,VALUE val)
+VALUE _setSelection(VALUE self,VALUE val)
 {
 	VALUE b= rb_funcall(val,rb_intern("begin"),0);
 	VALUE e= rb_funcall(val,rb_intern("end"),0);
@@ -61,14 +52,14 @@ VALUE CeguiCombobox_setSelection(VALUE self,VALUE val)
 
 /*
 */
-VALUE CeguiCombobox_addItem(VALUE self,VALUE item)
+VALUE _addItem(VALUE self,VALUE item)
 {
 	_self->addItem(wrap<CEGUI::ListboxItem*>(item));
 	return self;
 }
 /*
 */
-VALUE CeguiCombobox_insertItem(VALUE self,VALUE pos,VALUE item)
+VALUE _insertItem(VALUE self,VALUE pos,VALUE item)
 {
 	if(rb_obj_is_kind_of(pos, rb_cCeguiListboxItem)){
 		_self->insertItem(wrap<CEGUI::ListboxItem*>(pos),wrap<CEGUI::ListboxItem*>(item));
@@ -78,7 +69,7 @@ VALUE CeguiCombobox_insertItem(VALUE self,VALUE pos,VALUE item)
 }
 /*
 */
-VALUE CeguiCombobox_removeItem(VALUE self,VALUE item)
+VALUE _removeItem(VALUE self,VALUE item)
 {
 	_self->removeItem(wrap<CEGUI::ListboxItem*>(item));
 	return self;
@@ -87,7 +78,7 @@ VALUE CeguiCombobox_removeItem(VALUE self,VALUE item)
 
 /*
 */
-VALUE CeguiCombobox_each_item(VALUE self)
+VALUE _each_item(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
 	for (unsigned int i = 0; i < _self->getItemCount(); ++i)
@@ -98,43 +89,42 @@ VALUE CeguiCombobox_each_item(VALUE self)
 }
 /*
 */
-VALUE CeguiCombobox_selected(VALUE self)
+VALUE _selected(VALUE self)
 {
 	return wrap(_self->getSelectedItem());
 }
 
 /*
 */
-VALUE CeguiCombobox_reset(VALUE self)
-{
-	_self->resetList();
-	return Qnil;
-}
-
-/*
-*/
-VALUE CeguiCombobox_getEditbox(VALUE self)
+VALUE _getEditbox(VALUE self)
 {
 	return wrap(_self->getEditbox());
 }
 /*
 */
-VALUE CeguiCombobox_getPushButton(VALUE self)
+VALUE _getPushButton(VALUE self)
 {
 	return wrap(_self->getPushButton());
 }
 /*
 */
-VALUE CeguiCombobox_getDropList(VALUE self)
+VALUE _getDropList(VALUE self)
 {
 	return wrap(_self->getDropList());
 }
+
+}
+
+/* Document-method: clear
+
+*/
+
 /*
 */
 void Init_CeguiCombobox(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 
 	rb_define_attr(rb_cCeguiCombobox,"validationString",1,1);
@@ -147,33 +137,34 @@ void Init_CeguiCombobox(VALUE rb_mCegui)
 	rb_define_attr(rb_cCeguiCombobox,"textMasked",1,1);
 
 #endif
+	using namespace CeguiCombobox;
 
 	rb_cCeguiCombobox = rb_define_class_under(rb_mCegui,"Combobox",rb_cCeguiWindow);
 	
-	rb_define_singleton_method(rb_cCeguiCombobox,"new",RUBY_METHOD_FUNC(CeguiCombobox_new),-1);
+	rb_define_singleton_method(rb_cCeguiCombobox,"new",RUBY_METHOD_FUNC(_new),-1);
 
-	rb_define_attr_method(rb_cCeguiCombobox,"validationString",CeguiCombobox_getValidationString,CeguiCombobox_setValidationString);
-	rb_define_attr_method(rb_cCeguiCombobox,"caret",CeguiCombobox_getCaretIndex,CeguiCombobox_setCaretIndex);
-	rb_define_attr_method(rb_cCeguiCombobox,"selection",CeguiCombobox_getSelection,CeguiCombobox_setSelection);
+	rb_define_attr_method(rb_cCeguiCombobox,"validationString",_getValidationString, _setValidationString);
+	rb_define_attr_method(rb_cCeguiCombobox,"caret",_getCaretIndex,_setCaretIndex);
+	rb_define_attr_method(rb_cCeguiCombobox,"selection",_getSelection,_setSelection);
 	
-	rb_define_attr_method(rb_cCeguiCombobox,"readOnly",CeguiCombobox_isReadOnly,CeguiCombobox_setReadOnly);
+	rb_define_attr_method(rb_cCeguiCombobox,"readOnly",_getReadOnly,_setReadOnly);
 
-	rb_define_method(rb_cCeguiWindow,"text_valid?",RUBY_METHOD_FUNC(CeguiCombobox_isTextValid),0);
-	rb_define_method(rb_cCeguiWindow,"inputfocus?",RUBY_METHOD_FUNC(CeguiCombobox_hasInputFocus),0);
+	rb_define_method(rb_cCeguiCombobox,"text_valid?",RUBY_METHOD_FUNC(_isTextValid),0);
+	rb_define_method(rb_cCeguiCombobox,"inputfocus?",RUBY_METHOD_FUNC(_hasInputFocus),0);
 
 
-	rb_define_method(rb_cCeguiCombobox,"addItem",RUBY_METHOD_FUNC(CeguiCombobox_addItem),1);
-	rb_define_method(rb_cCeguiCombobox,"insertItem",RUBY_METHOD_FUNC(CeguiCombobox_insertItem),2);
-	rb_define_method(rb_cCeguiCombobox,"removeItem",RUBY_METHOD_FUNC(CeguiCombobox_removeItem),1);
+	rb_define_method(rb_cCeguiCombobox,"addItem",RUBY_METHOD_FUNC(_addItem),1);
+	rb_define_method(rb_cCeguiCombobox,"insertItem",RUBY_METHOD_FUNC(_insertItem),2);
+	rb_define_method(rb_cCeguiCombobox,"removeItem",RUBY_METHOD_FUNC(_removeItem),1);
 	
-	rb_define_method(rb_cCeguiCombobox,"reset",RUBY_METHOD_FUNC(CeguiCombobox_reset),0);
+	rb_define_method(rb_cCeguiCombobox,"clear",RUBY_METHOD_FUNC(_resetList),0);
 	
-	rb_define_method(rb_cCeguiCombobox,"each_item",RUBY_METHOD_FUNC(CeguiCombobox_each_item),0);
-	rb_define_method(rb_cCeguiCombobox,"selected",RUBY_METHOD_FUNC(CeguiCombobox_selected),0);
+	rb_define_method(rb_cCeguiCombobox,"each_item",RUBY_METHOD_FUNC(_each_item),0);
+	rb_define_method(rb_cCeguiCombobox,"selected",RUBY_METHOD_FUNC(_selected),0);
 	
-	rb_define_method(rb_cCeguiCombobox,"editbox",RUBY_METHOD_FUNC(CeguiCombobox_getEditbox),0);
-	rb_define_method(rb_cCeguiCombobox,"pushButton",RUBY_METHOD_FUNC(CeguiCombobox_getPushButton),0);
-	rb_define_method(rb_cCeguiCombobox,"dropList",RUBY_METHOD_FUNC(CeguiCombobox_getDropList),0);
+	rb_define_method(rb_cCeguiCombobox,"editbox",RUBY_METHOD_FUNC(_getEditbox),0);
+	rb_define_method(rb_cCeguiCombobox,"pushButton",RUBY_METHOD_FUNC(_getPushButton),0);
+	rb_define_method(rb_cCeguiCombobox,"dropList",RUBY_METHOD_FUNC(_getDropList),0);
 
 	rb_define_const(rb_cCeguiCombobox,"EventNamespace",wrap(CEGUI::Combobox::EventNamespace));
 	rb_define_const(rb_cCeguiCombobox,"WidgetTypeName",wrap(CEGUI::Combobox::WidgetTypeName));	

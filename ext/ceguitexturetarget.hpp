@@ -22,7 +22,7 @@ inline CEGUI::TextureTarget* wrap< CEGUI::TextureTarget* >(const VALUE &vtarget)
 		Data_Get_Struct( vtarget, CEGUI::TextureTarget, target);
 		return target;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiTextureTarget),rb_obj_classname(vtarget));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTextureTarget),rb_obj_classname(vtarget));
 		return NULL;
 	}
 }

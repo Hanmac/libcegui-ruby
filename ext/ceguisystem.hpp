@@ -4,9 +4,18 @@
 #include "main.hpp"
 
 void Init_CeguiSystem(VALUE rb_mCegui);
-extern VALUE rb_cCeguiSystem,vSystem;
+extern VALUE rb_mCeguiSystem;
 
 
+
+template <>
+inline CEGUI::System* wrap< CEGUI::System* >(const VALUE &obj)
+{
+	CEGUI::System* temp = CEGUI::System::getSingletonPtr();
+	if(temp == NULL)
+		rb_raise(rb_eRuntimeError,"%s is not created!",rb_class2name(rb_mCeguiSystem));
+	return temp;
+}
 //template <>
 //inline VALUE wrap< CEGUI::MouseButton >(CEGUI::MouseButton &button )
 //{

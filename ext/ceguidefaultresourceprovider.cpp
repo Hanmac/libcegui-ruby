@@ -29,7 +29,7 @@ VALUE CeguiDefaultResourceProvider_set(VALUE self,VALUE name,VALUE path)
 void Init_CeguiDefaultResourceProvider(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 	rb_cCeguiResourceProvider = rb_define_class_under(rb_mCegui,"ResourceProvider",rb_cObject);
 #endif

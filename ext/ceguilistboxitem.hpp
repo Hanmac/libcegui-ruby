@@ -20,12 +20,14 @@ inline VALUE wrap< CEGUI::ListboxItem >(CEGUI::ListboxItem *listboxitem )
 template <>
 inline CEGUI::ListboxItem* wrap< CEGUI::ListboxItem* >(const VALUE &vlistboxitem)
 {
-	if (rb_obj_is_kind_of(vlistboxitem, rb_cCeguiListboxItem)){
+	if (rb_obj_is_kind_of(vlistboxitem, rb_cString)){
+		return wrap< CEGUI::ListboxTextItem* >(vlistboxitem);
+	}else	if (rb_obj_is_kind_of(vlistboxitem, rb_cCeguiListboxItem)){
 		CEGUI::ListboxItem *listboxitem;
 		Data_Get_Struct( vlistboxitem, CEGUI::ListboxItem, listboxitem);
 		return listboxitem;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiListboxItem),rb_obj_classname(vlistboxitem));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiListboxItem),rb_obj_classname(vlistboxitem));
 		return NULL;
 	}
 }

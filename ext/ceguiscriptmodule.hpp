@@ -20,7 +20,7 @@ inline CEGUI::ScriptModule* wrap< CEGUI::ScriptModule* >(const VALUE &vscriptmod
 		Data_Get_Struct( vscriptmodule, CEGUI::ScriptModule, scriptmodule);
 		return scriptmodule;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiScriptModule),rb_obj_classname(vscriptmodule));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiScriptModule),rb_obj_classname(vscriptmodule));
 		return NULL;
 	}
 }

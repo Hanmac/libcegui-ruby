@@ -22,7 +22,7 @@ inline CEGUI::RenderingSurface* wrap< CEGUI::RenderingSurface* >(const VALUE &vs
 		Data_Get_Struct( vsurface, CEGUI::RenderingSurface, surface);
 		return surface;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiRenderingSurface),rb_obj_classname(vsurface));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderingSurface),rb_obj_classname(vsurface));
 		return NULL;
 	}
 }

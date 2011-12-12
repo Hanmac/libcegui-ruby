@@ -5,6 +5,7 @@
 void Init_CeguiUDim(VALUE rb_mCegui);
 extern VALUE rb_cCeguiUDim;
 
+#include "ceguiexception.hpp"
 
 template <>
 inline VALUE wrap< CEGUI::UDim >(CEGUI::UDim *dim )
@@ -26,7 +27,7 @@ inline CEGUI::UDim* wrap< CEGUI::UDim* >(const VALUE &vdim)
 	 	dim->d_offset = NUM2DBL(rb_funcall(vdim,rb_intern("offset"),0));
 	 	return dim;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiUDim),rb_obj_classname(vdim));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUDim),rb_obj_classname(vdim));
 		return NULL;
 	}
 

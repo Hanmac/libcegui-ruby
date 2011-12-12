@@ -9,35 +9,39 @@ extern VALUE rb_eCeguiUnknownObjectException,rb_eCeguiAlreadyExistsException,rb_
 template <>
 inline VALUE wrap< CEGUI::UnknownObjectException >(CEGUI::UnknownObjectException *exception )
 {
-	return Data_Wrap_Struct(rb_eCeguiUnknownObjectException, NULL, free, exception);
+	return Data_Wrap_Struct(rb_eCeguiUnknownObjectException, NULL, NULL, exception);
 }
 template <>
 inline VALUE wrap< CEGUI::AlreadyExistsException >(CEGUI::AlreadyExistsException *exception )
 {
-	return Data_Wrap_Struct(rb_eCeguiAlreadyExistsException, NULL, free, exception);
+	return Data_Wrap_Struct(rb_eCeguiAlreadyExistsException, NULL, NULL, exception);
 }
 template <>
 inline VALUE wrap< CEGUI::InvalidRequestException >(CEGUI::InvalidRequestException *exception )
 {
-	return Data_Wrap_Struct(rb_eCeguiInvalidRequestException, NULL, free, exception);
+	return Data_Wrap_Struct(rb_eCeguiInvalidRequestException, NULL, NULL, exception);
 }
 
 
 template <>
-inline VALUE wrap< CEGUI::Exception >(const CEGUI::Exception &exception )
+inline VALUE wrap< CEGUI::Exception >(CEGUI::Exception *exception )
 {
-	const CEGUI::UnknownObjectException *unknownObject = dynamic_cast<const CEGUI::UnknownObjectException*>(&exception);
+	CEGUI::UnknownObjectException *unknownObject = dynamic_cast<CEGUI::UnknownObjectException*>(exception);
 	if(unknownObject)
-		return wrap(*unknownObject);
-	const CEGUI::AlreadyExistsException *alreadyExists = dynamic_cast<const CEGUI::AlreadyExistsException*>(&exception);
+		return wrap(unknownObject);
+	CEGUI::AlreadyExistsException *alreadyExists = dynamic_cast<CEGUI::AlreadyExistsException*>(exception);
 	if(alreadyExists)
-		return wrap(*alreadyExists);
-	const CEGUI::InvalidRequestException *invalidRequest = dynamic_cast<const CEGUI::InvalidRequestException*>(&exception);
+		return wrap(alreadyExists);
+	CEGUI::InvalidRequestException *invalidRequest = dynamic_cast<CEGUI::InvalidRequestException*>(exception);
 	if(invalidRequest)
-		return wrap(*invalidRequest);
+		return wrap(invalidRequest);
 	return Qnil;
 }
 
+inline void rb_raise(CEGUI::Exception &exception )
+{
+	return rb_raise(wrap(&exception));
+}
 
 template <>
 inline CEGUI::Exception* wrap< CEGUI::Exception* >(const VALUE &vexception)

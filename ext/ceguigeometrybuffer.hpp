@@ -27,7 +27,7 @@ inline CEGUI::GeometryBuffer* wrap< CEGUI::GeometryBuffer* >(const VALUE &vgeome
 		Data_Get_Struct( vgeometrybuffer, CEGUI::GeometryBuffer, geometrybuffer);
 		return geometrybuffer;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiGeometryBuffer),rb_obj_classname(vgeometrybuffer));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiGeometryBuffer),rb_obj_classname(vgeometrybuffer));
 		return NULL;
 	}
 }

@@ -26,7 +26,7 @@ inline CEGUI::Texture* wrap< CEGUI::Texture* >(const VALUE &vtexture)
 		Data_Get_Struct( vtexture, CEGUI::Texture, texture);
 		return texture;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiTexture),rb_obj_classname(vtexture));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTexture),rb_obj_classname(vtexture));
 		return NULL;
 	}
 }

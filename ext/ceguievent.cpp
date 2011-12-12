@@ -1,5 +1,7 @@
 #include "ceguievent.hpp"
 #include "ceguieventargs.hpp"
+#include "ceguiexception.hpp"
+#include <iostream>
 #define _self wrap<CEGUI::Event*>(self)
 VALUE rb_cCeguiEvent,subscriberholder;
 
@@ -7,7 +9,13 @@ VALUE rb_cCeguiEvent,subscriberholder;
 		rb_ary_push(subscriberholder,val);//TODO find a way to GC them
 	};
 	bool Subscriberfunc::operator()(const CEGUI::EventArgs& e){
-		return RTEST(rb_funcall(value,rb_intern("call"),1,wrap(e)));
+		if(NUM2INT(rb_funcall(value,rb_intern("arity"),0)) == 0)
+			return RTEST(rb_funcall(value,rb_intern("call"),0));
+		else
+			return RTEST(rb_funcall(value,rb_intern("call"),1,wrap(&e)));
+	}
+	Subscriberfunc::~Subscriberfunc(){
+		std::cout << "FREE" << std::endl;
 	}
 
 /*
@@ -43,14 +51,25 @@ VALUE CeguiEvent_call(VALUE self,VALUE vargs)
 }
 /*
 */
-VALUE CeguiEvent_subscribe(VALUE self)
+VALUE CeguiEvent_subscribe(int argc,VALUE *argv,VALUE self)
 {
-	return wrap(_self->subscribe(CEGUI::SubscriberSlot(Subscriberfunc(rb_block_proc()))));
+	VALUE subscriber_name;
+	rb_scan_args(argc, argv, "01",&subscriber_name);
+	try{
+		if(NIL_P(subscriber_name)){
+			return wrap(_self->subscribe(new Subscriberfunc(rb_block_proc())));
+		}else
+			return wrap(_self->subscribe(new Subscriberfunc(subscriber_name)));
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+
 }
 void Init_CeguiEvent(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 #endif
 	rb_cCeguiEvent = rb_define_class_under(rb_mCegui,"Event",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiEvent);

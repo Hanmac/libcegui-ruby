@@ -26,7 +26,7 @@ inline CEGUI::RenderTarget* wrap< CEGUI::RenderTarget* >(const VALUE &vtarget)
 		Data_Get_Struct( vtarget, CEGUI::RenderTarget, target);
 		return target;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiRenderTarget),rb_obj_classname(vtarget));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderTarget),rb_obj_classname(vtarget));
 		return NULL;
 	}
 }

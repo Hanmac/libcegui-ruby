@@ -25,7 +25,7 @@ inline CEGUI::ResourceProvider* wrap< CEGUI::ResourceProvider* >(const VALUE &vp
 		Data_Get_Struct( vprovider, CEGUI::ResourceProvider, provider);
 		return provider;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiResourceProvider),rb_obj_classname(vprovider));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiResourceProvider),rb_obj_classname(vprovider));
 		return NULL;
 	}
 }

@@ -26,7 +26,7 @@ VALUE CeguiPushButton_new(int argc,VALUE *argv,VALUE self)
 void Init_CeguiPushButton(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 	rb_cCeguiButtonBase = rb_define_class_under(rb_mCegui,"ButtonBase",rb_cCeguiButtonBase);
 #endif

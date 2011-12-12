@@ -5,6 +5,7 @@
 #include "ceguiwindow.hpp"
 #include "ceguischeme.hpp"
 #include "ceguifont.hpp"
+#include "ceguisystem.hpp"
 //#include "ceguiimageset.hpp"
 void Init_CeguiEventSet(VALUE rb_mCegui);
 extern VALUE rb_mCeguiEventSet;
@@ -29,15 +30,18 @@ inline VALUE wrap< CEGUI::EventSet >(CEGUI::EventSet *set)
 template <>
 inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 {
+	CEGUI::EventSet* result;
 	if (rb_obj_is_kind_of(vset, rb_cCeguiWindow))
-		return wrap< CEGUI::Window* >(vset);
+		result = wrap< CEGUI::Window* >(vset);
 	else if(vset == rb_cCeguiWindow)
-		return CEGUI::WindowManager::getSingletonPtr();
+		result = CEGUI::WindowManager::getSingletonPtr();
 	else if(vset == rb_cCeguiScheme)
-		return CEGUI::SchemeManager::getSingletonPtr();
+		result = CEGUI::SchemeManager::getSingletonPtr();
 	else if(vset == rb_cCeguiFont)
-		return CEGUI::FontManager::getSingletonPtr();
-	if (rb_obj_is_kind_of(vset, rb_mCeguiEventSet)){
+		result = CEGUI::FontManager::getSingletonPtr();
+	else if(vset == rb_mCeguiSystem)
+		result = CEGUI::System::getSingletonPtr();
+	else if (rb_obj_is_kind_of(vset, rb_mCeguiEventSet)){
 		std::map<VALUE,CEGUI::EventSet*>::iterator it = eventsetholder.find(vset);
 		if(it != eventsetholder.end()){
 			return it->second;
@@ -48,8 +52,13 @@ inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 		}
 	}
 	else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_mCeguiEventSet),rb_obj_classname(vset));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_mCeguiEventSet),rb_obj_classname(vset));
 		return NULL;
 	}
+	
+	if(result == NULL)
+		rb_raise(rb_eRuntimeError,"%s is not created!",rb_class2name(rb_mCeguiSystem));
+	return result;
+	
 }
 #endif /* __RubyCeguiEventSet_H__ */

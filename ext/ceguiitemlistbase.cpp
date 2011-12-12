@@ -16,7 +16,7 @@ VALUE CeguiItemListBase_each_item(VALUE self)
 			rb_yield(wrap(_self->getItemFromIndex(i)));
 		}
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
+		rb_raise(e);
 	}
 	return self;
 }
@@ -54,7 +54,7 @@ VALUE CeguiItemListBase_getContentPane(VALUE self)
 void Init_CeguiItemListBase(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	rb_cCeguiWindow = rb_define_class_under(rb_mCegui,"Window",rb_cObject);
 
 #endif
@@ -69,7 +69,7 @@ void Init_CeguiItemListBase(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiItemListBase,"itemRenderArea",RUBY_METHOD_FUNC(CeguiItemListBase_getItemRenderArea),0);
 	rb_define_method(rb_cCeguiItemListBase,"contentPane",RUBY_METHOD_FUNC(CeguiItemListBase_getContentPane),0);
 
-	rb_define_const(rb_cCeguiItemListBase,"EventNamespace",wrap(CEGUI::ItemListBase::EventNamespace));	
+	rb_define_const(rb_cCeguiItemListBase,"EventNamespace",wrap(CEGUI::ItemListBase::EventNamespace));
 	
 	rb_define_const(rb_cCeguiItemListBase,"EventListContentsChanged",wrap(CEGUI::ItemListBase::EventListContentsChanged));
 	rb_define_const(rb_cCeguiItemListBase,"EventSortEnabledChanged",wrap(CEGUI::ItemListBase::EventSortEnabledChanged));

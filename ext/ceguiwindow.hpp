@@ -6,6 +6,8 @@ void Init_CeguiWindow(VALUE rb_mCegui);
 
 #include "ceguiwindowimpl.hpp"
 
+#include "ceguiexception.hpp"
+
 #include "ceguitooltip.hpp"
 #include "ceguilistbox.hpp"
 #include "ceguiscrollbar.hpp"
@@ -17,6 +19,23 @@ void Init_CeguiWindow(VALUE rb_mCegui);
 #include "ceguieditbox.hpp"
 #include "ceguicombobox.hpp"
 #include "ceguitree.hpp"
+
+#include "ceguislider.hpp"
+#include "ceguispinner.hpp"
+#include "ceguiprogressbar.hpp"
+
+#include "ceguitabcontrol.hpp"
+#include "ceguilistheader.hpp"
+#include "ceguilistheadersegment.hpp"
+
+#include "ceguilayoutcontainer.hpp"
+
+#include "ceguiclippedcontainer.hpp"
+#include "ceguiscrolledcontainer.hpp"
+#include "ceguidragcontainer.hpp"
+
+#include "ceguidefaultwindow.hpp"
+#include "ceguiframewindow.hpp"
 template <>
 inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 {
@@ -46,24 +65,67 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 	if(editbox)
 		return wrap(editbox);
 	CEGUI::Combobox *combobox = dynamic_cast<CEGUI::Combobox*>(window);
-	if(combobox)
-		return wrap(combobox);
+		if(combobox)
+			return wrap(combobox);
+
+	CEGUI::GroupBox *groupbox = dynamic_cast<CEGUI::GroupBox*>(window);
+	if(groupbox)
+		return wrap(groupbox);
 
 	CEGUI::Tree *tree = dynamic_cast<CEGUI::Tree*>(window);
 	if(tree)
 		return wrap(tree);
 
-	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(window);
-	if(it != rubywindowholder.end()){
-		return it->second->ruby;
-	}else{
-		RubyWindowHolder* hold = new RubyWindowHolder;
-		hold->window = window;
-		hold->ruby = Data_Wrap_Struct(rb_cCeguiWindow, NULL, NULL, hold);
-		rb_ary_push(rb_windowholder,hold->ruby);
-		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(window,hold));
-		return hold->ruby;
-	}
+	CEGUI::Slider *slider = dynamic_cast<CEGUI::Slider*>(window);
+	if(slider)
+		return wrap(slider);
+
+	CEGUI::Spinner *spinner = dynamic_cast<CEGUI::Spinner*>(window);
+	if(spinner)
+		return wrap(spinner);
+
+	CEGUI::ProgressBar *progressbar = dynamic_cast<CEGUI::ProgressBar*>(window);
+	if(progressbar)
+		return wrap(progressbar);
+
+	CEGUI::TabControl *tabcontrol = dynamic_cast<CEGUI::TabControl*>(window);
+	if(tabcontrol)
+		return wrap(tabcontrol);
+
+	CEGUI::ListHeader *listheader = dynamic_cast<CEGUI::ListHeader*>(window);
+	if(listheader)
+		return wrap(listheader);
+
+	CEGUI::ListHeaderSegment *listheadersegment = dynamic_cast<CEGUI::ListHeaderSegment*>(window);
+	if(listheadersegment)
+		return wrap(listheadersegment);
+
+	CEGUI::LayoutContainer *layoutcontainer = dynamic_cast<CEGUI::LayoutContainer*>(window);
+	if(layoutcontainer)
+		return wrap(layoutcontainer);
+
+	CEGUI::ClippedContainer *clippedcontainer = dynamic_cast<CEGUI::ClippedContainer*>(window);
+	if(clippedcontainer)
+		return wrap(clippedcontainer);
+
+	CEGUI::ScrolledContainer *scrolledcontainer = dynamic_cast<CEGUI::ScrolledContainer*>(window);
+	if(scrolledcontainer)
+		return wrap(scrolledcontainer);
+
+	CEGUI::DragContainer *dragcontainer = dynamic_cast<CEGUI::DragContainer*>(window);
+	if(dragcontainer)
+		return wrap(dragcontainer);
+
+
+	CEGUI::DefaultWindow *defaultwindow = dynamic_cast<CEGUI::DefaultWindow*>(window);
+	if(defaultwindow)
+		return wrap(defaultwindow);
+
+	CEGUI::FrameWindow *framewindow = dynamic_cast<CEGUI::FrameWindow*>(window);
+	if(framewindow)
+		return wrap(framewindow);
+
+	return RubyWindowHolder::get(window,rb_cCeguiWindow);
 }
 template <>
 inline void wrap_each<CEGUI::WindowFactory* >(CEGUI::ConstMapIterator<std::map<CEGUI::String, CEGUI::WindowFactory*, CEGUI::StringFastLessCompare> > it)
@@ -77,4 +139,20 @@ inline VALUE wrap< CEGUI::WindowFactoryManager::AliasTargetStack >(const CEGUI::
 {
 	return wrap(stack.getActiveTarget());
 }
+
+
+template <>
+inline VALUE wrap< CEGUI::WindowUpdateMode >(const CEGUI::WindowUpdateMode &format )
+{
+	return ID2SYM(rb_intern(CEGUI::PropertyHelper<CEGUI::WindowUpdateMode>::toString(format).c_str()));
+}
+
+template <>
+inline CEGUI::WindowUpdateMode wrap< CEGUI::WindowUpdateMode >(const VALUE &vformat)
+{
+	VALUE result = rb_funcall(vformat,rb_intern("to_sym"),0);
+	return CEGUI::PropertyHelper<CEGUI::WindowUpdateMode>::fromString(rb_id2name(SYM2ID(result)));
+}
+
+
 #endif /* __RubyCeguiWindow_H__ */

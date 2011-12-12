@@ -29,7 +29,7 @@ VALUE CeguiXMLHandler_alloc(VALUE self)
 void Init_CeguiXMLHandler(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 #endif
 	rb_cCeguiXMLHandler = rb_define_class_under(rb_mCegui,"XMLHandler",rb_cObject);

@@ -18,17 +18,7 @@ inline VALUE wrap< CEGUI::MenuBase >(CEGUI::MenuBase *menubase )
 	CEGUI::Menubar *menubar = dynamic_cast<CEGUI::Menubar*>(menubase);
 	if(menubar)
 		return wrap(menubar);
-	
-	std::map<CEGUI::Window*,RubyWindowHolder*>::iterator it = rubywindowholder.find(menubase);
-	if(it != rubywindowholder.end()){
-		return it->second->ruby;
-	}else{
-		RubyWindowHolder* hold = new RubyWindowHolder;
-		hold->window = menubase;
-		hold->ruby = Data_Wrap_Struct(rb_cCeguiMenuBase, NULL, NULL, menubase);
-		rubywindowholder.insert(std::pair<CEGUI::Window*,RubyWindowHolder*>(menubase,hold));
-		return hold->ruby;
-	}
+	return RubyWindowHolder::get(menubase,rb_cCeguiMenuBase);
 }
 
 template <>
@@ -37,7 +27,7 @@ inline CEGUI::MenuBase* wrap< CEGUI::MenuBase* >(const VALUE &vmenubase)
 	if (rb_obj_is_kind_of(vmenubase, rb_cCeguiMenuBase)){
 		return (CEGUI::MenuBase*)wrap<CEGUI::Window*>(vmenubase);
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiMenuBase),rb_obj_classname(vmenubase));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiMenuBase),rb_obj_classname(vmenubase));
 		return NULL;
 	}
 }

@@ -22,7 +22,7 @@ inline CEGUI::TreeItem* wrap< CEGUI::TreeItem* >(const VALUE &vitem)
 		Data_Get_Struct( vitem, CEGUI::TreeItem, item);
 		return item;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiTreeItem),rb_obj_classname(vitem));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTreeItem),rb_obj_classname(vitem));
 		return NULL;
 	}
 }

@@ -20,7 +20,7 @@ inline CEGUI::WidgetLookFeel* wrap< CEGUI::WidgetLookFeel* >(const VALUE &vlook)
 		Data_Get_Struct( vlook, CEGUI::WidgetLookFeel, look);
 		return look;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiWidgetLook),rb_obj_classname(vlook));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiWidgetLook),rb_obj_classname(vlook));
 		return NULL;
 	}
 }

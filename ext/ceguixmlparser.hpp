@@ -20,7 +20,7 @@ inline CEGUI::XMLParser* wrap< CEGUI::XMLParser* >(const VALUE &vparser)
 		Data_Get_Struct( vparser, CEGUI::XMLParser, parser);
 		return parser;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiXMLParser),rb_obj_classname(vparser));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiXMLParser),rb_obj_classname(vparser));
 		return NULL;
 	}
 }

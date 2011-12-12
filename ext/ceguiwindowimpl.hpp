@@ -2,12 +2,15 @@
 #define __RubyCeguiWindowImpl_H__
 
 #include "main.hpp"
-struct RubyWindowHolder
+class RubyWindowHolder
 {
+public:
+	RubyWindowHolder(CEGUI::Window* wnd,VALUE klass);
 	CEGUI::Window* window;
 	VALUE ruby;
-
+	static VALUE get(CEGUI::Window* obj,VALUE klass);
 };
+
 extern VALUE rb_cCeguiWindow;
 extern std::map<CEGUI::Window*,RubyWindowHolder*> rubywindowholder;
 extern VALUE rb_windowholder;
@@ -22,7 +25,7 @@ inline RubyWindowHolder* wrap< RubyWindowHolder* >(const VALUE &vwindow)
 		Data_Get_Struct( vwindow, RubyWindowHolder, window);
 		return window;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiWindow),rb_obj_classname(vwindow));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiWindow),rb_obj_classname(vwindow));
 		return NULL;
 	}
 }

@@ -22,7 +22,7 @@ inline CEGUI::RenderedString* wrap< CEGUI::RenderedString* >(const VALUE &vrende
 		Data_Get_Struct( vrenderedstring, CEGUI::RenderedString, renderedstring);
 		return renderedstring;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",
 			rb_class2name(rb_cCeguiRenderedString),rb_obj_classname(vrenderedstring));
 		return NULL;
 	}

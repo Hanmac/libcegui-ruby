@@ -1,42 +1,44 @@
 #include "ceguiwindow.hpp"
 #include "ceguitreeitem.hpp"
 #include "ceguirect.hpp"
-
+#include "ceguiexception.hpp"
 #define _self wrap<CEGUI::TreeItem*>(self)
 VALUE rb_cCeguiTreeItem;
+namespace CeguiTreeItem {
 
-macro_attr(TreeItem,Font,CEGUI::Font*)
-macro_attr(TreeItem,Text,CEGUI::String)
-macro_attr(TreeItem,TooltipText,CEGUI::String)
-
-
-macro_attr(TreeItem,TextColours,CEGUI::ColourRect)
-macro_attr(TreeItem,SelectionColours,CEGUI::ColourRect)
-
-macro_attr(TreeItem,SelectionBrushImage,CEGUI::Image*)
-
-macro_attr(TreeItem,OwnerWindow,CEGUI::Window*)
-//macro_attr(TreeItem,ButtonLocation,CEGUI::Rectf)
+macro_attr(Font,CEGUI::Font*)
+macro_attr(Text,CEGUI::String)
+macro_attr(TooltipText,CEGUI::String)
 
 
-VALUE CeguiTreeItem_alloc(VALUE self)
+macro_attr(TextColours,CEGUI::ColourRect)
+macro_attr(SelectionColours,CEGUI::ColourRect)
+
+macro_attr(SelectionBrushImage,CEGUI::Image*)
+
+macro_attr(OwnerWindow,CEGUI::Window*)
+
+macro_attr_bool(Selected)
+macro_attr_bool(Disabled)
+
+VALUE _alloc(VALUE self)
 {
 	return wrap(new CEGUI::TreeItem(""));
 }
 /*
 */
-VALUE CeguiTreeItem_addItem(VALUE self,VALUE item)
+VALUE _addItem(VALUE self,VALUE item)
 {
 	try{
 		_self->addItem(wrap<CEGUI::TreeItem*>(item));
 	}catch(CEGUI::Exception& e){
-		rb_raise(wrap(e));
+		rb_raise(e);
 	}
 	return self;
 }
 /*
 */
-VALUE CeguiTreeItem_removeItem(VALUE self,VALUE item)
+VALUE _removeItem(VALUE self,VALUE item)
 {
 	_self->removeItem(wrap<CEGUI::TreeItem*>(item));
 	return self;
@@ -44,7 +46,7 @@ VALUE CeguiTreeItem_removeItem(VALUE self,VALUE item)
 
 /*
 */
-VALUE CeguiTreeItem_each(VALUE self)
+VALUE _each(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
 	for (unsigned int i = 0; i < _self->getItemCount(); ++i)
@@ -56,7 +58,7 @@ VALUE CeguiTreeItem_each(VALUE self)
 
 /*
 */
-VALUE CeguiTreeItem_compare(VALUE self,VALUE other)
+VALUE _compare(VALUE self,VALUE other)
 {
 	if (rb_obj_is_kind_of(other, rb_cCeguiTreeItem)){
 		CEGUI::TreeItem *cother = wrap<CEGUI::TreeItem*>(other);
@@ -69,14 +71,14 @@ VALUE CeguiTreeItem_compare(VALUE self,VALUE other)
 
 /*
 */
-VALUE CeguiTreeItem_getButtonLocation(VALUE self)
+VALUE _getButtonLocation(VALUE self)
 {
 	return wrap(_self->getButtonLocation());
 }
 
 /*
 */
-VALUE CeguiTreeItem_setButtonLocation(VALUE self,VALUE val)
+VALUE _setButtonLocation(VALUE self,VALUE val)
 {
 	CEGUI::Rectf temp(wrap<CEGUI::Rectf>(val));
 	_self->setButtonLocation(temp);
@@ -84,13 +86,13 @@ VALUE CeguiTreeItem_setButtonLocation(VALUE self,VALUE val)
 }
 
 
-
+}
 /*
 */
 void Init_CeguiTreeItem(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 
 
 	rb_define_attr(rb_cCeguiTreeItem,"font",1,1);
@@ -103,31 +105,38 @@ void Init_CeguiTreeItem(VALUE rb_mCegui)
 	
 	rb_define_attr(rb_cCeguiTreeItem,"ownerWindow",1,1);
 	rb_define_attr(rb_cCeguiTreeItem,"buttonLocation",1,1);
+
+	rb_define_attr(rb_cCeguiTreeItem,"selected",1,1);
+	rb_define_attr(rb_cCeguiTreeItem,"disabled",1,1);
 #endif
+	using namespace CeguiTreeItem;
 
 	rb_cCeguiTreeItem = rb_define_class_under(rb_mCegui,"TreeItem",rb_cObject);
 	
 
-	rb_define_attr_method(rb_cCeguiTreeItem,"font",CeguiTreeItem_getFont,CeguiTreeItem_setFont);
-	rb_define_attr_method(rb_cCeguiTreeItem,"text",CeguiTreeItem_getText,CeguiTreeItem_setText);
-	rb_define_attr_method(rb_cCeguiTreeItem,"tooltipText",CeguiTreeItem_getTooltipText,CeguiTreeItem_setTooltipText);
+	rb_define_attr_method(rb_cCeguiTreeItem,"font",_getFont,_setFont);
+	rb_define_attr_method(rb_cCeguiTreeItem,"text",_getText,_setText);
+	rb_define_attr_method(rb_cCeguiTreeItem,"tooltipText",_getTooltipText,_setTooltipText);
 	
-	rb_define_attr_method(rb_cCeguiTreeItem,"textColours",CeguiTreeItem_getTextColours,CeguiTreeItem_setTextColours);
-	rb_define_attr_method(rb_cCeguiTreeItem,"selectionColours",CeguiTreeItem_getSelectionColours,CeguiTreeItem_setSelectionColours);
-	rb_define_attr_method(rb_cCeguiTreeItem,"selectionBrushImage",CeguiTreeItem_getSelectionBrushImage,CeguiTreeItem_setSelectionBrushImage);
+	rb_define_attr_method(rb_cCeguiTreeItem,"textColours",_getTextColours,_setTextColours);
+	rb_define_attr_method(rb_cCeguiTreeItem,"selectionColours",_getSelectionColours,_setSelectionColours);
+	rb_define_attr_method(rb_cCeguiTreeItem,"selectionBrushImage",_getSelectionBrushImage,_setSelectionBrushImage);
 	
-	rb_define_attr_method(rb_cCeguiTreeItem,"ownerWindow",CeguiTreeItem_getOwnerWindow,CeguiTreeItem_setOwnerWindow);
-	rb_define_attr_method(rb_cCeguiTreeItem,"buttonLocation",CeguiTreeItem_getButtonLocation,CeguiTreeItem_setButtonLocation);
-	
-	rb_define_alloc_func(rb_cCeguiTreeItem,CeguiTreeItem_alloc);
+	rb_define_attr_method(rb_cCeguiTreeItem,"ownerWindow",_getOwnerWindow,_setOwnerWindow);
+	rb_define_attr_method(rb_cCeguiTreeItem,"buttonLocation",_getButtonLocation,_setButtonLocation);
 
-	rb_define_method(rb_cCeguiTreeItem,"each",RUBY_METHOD_FUNC(CeguiTreeItem_each),0);
-	rb_define_method(rb_cCeguiTreeItem,"<=>",RUBY_METHOD_FUNC(CeguiTreeItem_compare),1);
+	rb_define_attr_method(rb_cCeguiTreeItem,"selected",_getSelected,_setSelected);
+	rb_define_attr_method(rb_cCeguiTreeItem,"disabled",_getDisabled,_setDisabled);
+	
+	rb_define_alloc_func(rb_cCeguiTreeItem,_alloc);
+
+	rb_define_method(rb_cCeguiTreeItem,"each",RUBY_METHOD_FUNC(_each),0);
+	rb_define_method(rb_cCeguiTreeItem,"<=>",RUBY_METHOD_FUNC(_compare),1);
 	rb_include_module(rb_cCeguiWindow,rb_mEnumerable);
 	rb_include_module(rb_cCeguiWindow,rb_mComparable);
 	
-	rb_define_method(rb_cCeguiTreeItem,"addItem",RUBY_METHOD_FUNC(CeguiTreeItem_addItem),1);
-	rb_define_method(rb_cCeguiTreeItem,"removeItem",RUBY_METHOD_FUNC(CeguiTreeItem_removeItem),1);
+	rb_define_method(rb_cCeguiTreeItem,"addItem",RUBY_METHOD_FUNC(_addItem),1);
+	rb_define_method(rb_cCeguiTreeItem,"removeItem",RUBY_METHOD_FUNC(_removeItem),1);
 
 
 }

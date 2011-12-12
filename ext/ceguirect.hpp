@@ -1,7 +1,7 @@
 #ifndef __RubyCeguiRect_H__
 #define __RubyCeguiRect_H__
 
-#include "main.hpp"
+#include "ceguivector2.hpp"
 void Init_CeguiRect(VALUE rb_mCegui);
 extern VALUE rb_cCeguiRect;
 
@@ -11,7 +11,26 @@ inline VALUE wrap< CEGUI::Rectf >(CEGUI::Rectf *rect )
 {
 	return Data_Wrap_Struct(rb_cCeguiRect, NULL, free, rect);
 }
-//*
+
+
+template <>
+inline bool is_wrapable< CEGUI::Rectf >(const VALUE &vrect)
+{
+	if(rb_obj_is_kind_of(vrect, rb_cCeguiRect)){
+		return true;
+	}else if(rb_respond_to(vrect,rb_intern("min")) &&
+		rb_respond_to(vrect,rb_intern("max"))){
+		return is_wrapable<CEGUI::Vector2f>(rb_funcall(vrect,rb_intern("min"),0))
+				&& is_wrapable<CEGUI::Vector2f>(rb_funcall(vrect,rb_intern("max"),0));
+	}else if(rb_respond_to(vrect,rb_intern("top")) &&
+		rb_respond_to(vrect,rb_intern("bottom")) &&
+		rb_respond_to(vrect,rb_intern("left")) &&
+		rb_respond_to(vrect,rb_intern("right"))){
+		return true;
+	}else
+		return false;
+}
+
 
 template <>
 inline CEGUI::Rectf* wrap< CEGUI::Rectf* >(const VALUE &vrect)
@@ -38,7 +57,7 @@ inline CEGUI::Rectf* wrap< CEGUI::Rectf* >(const VALUE &vrect)
 		rect->d_max.d_y = NUM2DBL(rb_funcall(vrect,rb_intern("right"),0));
 		return rect;
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiRect),rb_obj_classname(vrect));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRect),rb_obj_classname(vrect));
 		return NULL;
 	}
 }

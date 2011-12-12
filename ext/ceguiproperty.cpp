@@ -9,6 +9,19 @@ VALUE CeguiProperty_getName(VALUE self)
 {
 	return wrap(_self->getName());
 }
+/*
+*/
+VALUE CeguiProperty_getDataType(VALUE self)
+{
+	return wrap(_self->getDataType());
+}
+
+/*
+*/
+VALUE CeguiProperty_getOrigin(VALUE self)
+{
+	return wrap(_self->getOrigin());
+}
 
 
 /*
@@ -58,14 +71,17 @@ VALUE CeguiProperty_writeXML(VALUE self,VALUE set,VALUE xml)
 void Init_CeguiProperty(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 #endif
 	rb_cCeguiProperty = rb_define_class_under(rb_mCegui,"Property",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiProperty);
 	
 	rb_define_method(rb_cCeguiProperty,"inspect",RUBY_METHOD_FUNC(CeguiProperty_inspect),0);
+
 	rb_define_method(rb_cCeguiProperty,"name",RUBY_METHOD_FUNC(CeguiProperty_getName),0);
-	
+	rb_define_method(rb_cCeguiProperty,"dataType",RUBY_METHOD_FUNC(CeguiProperty_getDataType),0);
+	rb_define_method(rb_cCeguiProperty,"origin",RUBY_METHOD_FUNC(CeguiProperty_getOrigin),0);
+
 	rb_define_method(rb_cCeguiProperty,"get",RUBY_METHOD_FUNC(CeguiProperty_get),1);
 	rb_define_method(rb_cCeguiProperty,"set",RUBY_METHOD_FUNC(CeguiProperty_set),2);
 	

@@ -3,20 +3,22 @@
 #define _self wrap<CEGUI::RenderedStringImageComponent*>(self)
 VALUE rb_cCeguiRenderedStringImageComponent;
 
-macro_attr(RenderedStringImageComponent,Image ,CEGUI::Image*)
-macro_attr(RenderedStringImageComponent,Size ,CEGUI::Sizef)
-macro_attr(RenderedStringImageComponent,Colours ,CEGUI::ColourRect)
+namespace CeguiRenderedStringImageComponent {
+	macro_attr(Image, CEGUI::Image*)
+	macro_attr(Size, CEGUI::Sizef)
+	macro_attr(Colours, CEGUI::ColourRect)
 
-VALUE CeguiRenderedStringImageComponent_alloc(VALUE self)
-{
-	return wrap(new CEGUI::RenderedStringImageComponent);
+	VALUE _alloc(VALUE self)
+	{
+		return wrap(new CEGUI::RenderedStringImageComponent);
+	}
 }
 /*
 */
 void Init_CeguiRenderedStringImageComponent(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 	rb_define_attr(rb_cCeguiRenderedStringImageComponent,"image",1,1);
 	rb_define_attr(rb_cCeguiRenderedStringImageComponent,"size",1,1);
@@ -25,13 +27,14 @@ void Init_CeguiRenderedStringImageComponent(VALUE rb_mCegui)
 	rb_cCeguiRenderedStringComponent = rb_define_class_under(rb_mCegui,"RenderedStringComponent",rb_cObject);
 #endif
 
+	using namespace CeguiRenderedStringImageComponent;
 	rb_cCeguiRenderedStringImageComponent = rb_define_class_under(rb_mCegui,"RenderedStringImageComponent", rb_cCeguiRenderedStringComponent);
-	rb_define_alloc_func(rb_cCeguiRenderedStringImageComponent,CeguiRenderedStringImageComponent_alloc);
+	rb_define_alloc_func(rb_cCeguiRenderedStringImageComponent,_alloc);
 
 	rb_define_attr_method(rb_cCeguiRenderedStringImageComponent,"image",
-		CeguiRenderedStringImageComponent_getImage,CeguiRenderedStringImageComponent_setImage);
+		_getImage,_setImage);
 	rb_define_attr_method(rb_cCeguiRenderedStringImageComponent,"size",
-		CeguiRenderedStringImageComponent_getSize,CeguiRenderedStringImageComponent_setSize);
+		_getSize,_setSize);
 	rb_define_attr_method(rb_cCeguiRenderedStringImageComponent,"colors",
-		CeguiRenderedStringImageComponent_getColours,CeguiRenderedStringImageComponent_setColours);
+		_getColours,_setColours);
 }

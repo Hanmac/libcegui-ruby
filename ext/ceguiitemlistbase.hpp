@@ -6,6 +6,7 @@ void Init_CeguiItemListBase(VALUE rb_mCegui);
 extern VALUE rb_cCeguiItemListBase;
 
 #include "ceguimenubase.hpp"
+#include "ceguiscrolleditemlistbase.hpp"
 
 template <>
 inline VALUE wrap< CEGUI::ItemListBase >(CEGUI::ItemListBase *itemlistbase )
@@ -15,18 +16,20 @@ inline VALUE wrap< CEGUI::ItemListBase >(CEGUI::ItemListBase *itemlistbase )
 	CEGUI::MenuBase *menubase = dynamic_cast<CEGUI::MenuBase*>(itemlistbase);
 	if(menubase)
 		return wrap(menubase);
-	return Data_Wrap_Struct(rb_cCeguiItemListBase, NULL, NULL, itemlistbase);
+	CEGUI::ScrolledItemListBase *scrolleditemlistbase = dynamic_cast<CEGUI::ScrolledItemListBase*>(itemlistbase);
+	if(scrolleditemlistbase)
+		return wrap(scrolleditemlistbase);
+
+	return RubyWindowHolder::get(itemlistbase,rb_cCeguiItemListBase);
 }
 
 template <>
 inline CEGUI::ItemListBase* wrap< CEGUI::ItemListBase* >(const VALUE &vitemlistbase)
 {
 	if (rb_obj_is_kind_of(vitemlistbase, rb_cCeguiItemListBase)){
-		CEGUI::ItemListBase *itemlistbase;
-		Data_Get_Struct( vitemlistbase, CEGUI::ItemListBase, itemlistbase);
-		return itemlistbase;
+		return (CEGUI::ItemListBase*)wrap<CEGUI::Window*>(vitemlistbase);
 	}else{
-		rb_raise(rb_eTypeError,"Exepted %s got %s!",rb_class2name(rb_cCeguiItemListBase),rb_obj_classname(vitemlistbase));
+		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiItemListBase),rb_obj_classname(vitemlistbase));
 		return NULL;
 	}
 }

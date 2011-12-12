@@ -12,7 +12,7 @@ VALUE CeguiEventArgs_alloc(VALUE self)
 void Init_CeguiEventArgs(VALUE rb_mCegui)
 {
 #if 0
-	rb_mCegui = rb_define_module("Cegui");
+	rb_mCegui = rb_define_module("CEGUI");
 	
 	rb_cCeguiEvent = rb_define_class_under(rb_mCegui,"Event",rb_cObject);
 #endif
