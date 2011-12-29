@@ -17,7 +17,11 @@ void Init_CeguiWindow(VALUE rb_mCegui);
 #include "ceguiitemlistbase.hpp"
 
 #include "ceguieditbox.hpp"
+#include "ceguimultilineeditbox.hpp"
 #include "ceguicombobox.hpp"
+
+#include "ceguigroupbox.hpp"
+
 #include "ceguitree.hpp"
 
 #include "ceguislider.hpp"
@@ -33,6 +37,8 @@ void Init_CeguiWindow(VALUE rb_mCegui);
 #include "ceguiclippedcontainer.hpp"
 #include "ceguiscrolledcontainer.hpp"
 #include "ceguidragcontainer.hpp"
+
+#include "ceguimulticolumnlist.hpp"
 
 #include "ceguidefaultwindow.hpp"
 #include "ceguiframewindow.hpp"
@@ -61,9 +67,15 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 	CEGUI::ItemListBase *itemlistbase = dynamic_cast<CEGUI::ItemListBase*>(window);
 	if(itemlistbase)
 		return wrap(itemlistbase);
+
 	CEGUI::Editbox *editbox = dynamic_cast<CEGUI::Editbox*>(window);
-	if(editbox)
-		return wrap(editbox);
+		if(editbox)
+			return wrap(editbox);
+
+	CEGUI::MultiLineEditbox *multilineeditbox = dynamic_cast<CEGUI::MultiLineEditbox*>(window);
+		if(multilineeditbox)
+			return wrap(multilineeditbox);
+
 	CEGUI::Combobox *combobox = dynamic_cast<CEGUI::Combobox*>(window);
 		if(combobox)
 			return wrap(combobox);
@@ -83,6 +95,11 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 	CEGUI::Spinner *spinner = dynamic_cast<CEGUI::Spinner*>(window);
 	if(spinner)
 		return wrap(spinner);
+
+	CEGUI::MultiColumnList *multicolumnlist = dynamic_cast<CEGUI::MultiColumnList*>(window);
+	if(multicolumnlist)
+		return wrap(multicolumnlist);
+
 
 	CEGUI::ProgressBar *progressbar = dynamic_cast<CEGUI::ProgressBar*>(window);
 	if(progressbar)
@@ -127,6 +144,8 @@ inline VALUE wrap< CEGUI::Window >(CEGUI::Window *window )
 
 	return RubyWindowHolder::get(window,rb_cCeguiWindow);
 }
+
+
 template <>
 inline void wrap_each<CEGUI::WindowFactory* >(CEGUI::ConstMapIterator<std::map<CEGUI::String, CEGUI::WindowFactory*, CEGUI::StringFastLessCompare> > it)
 {

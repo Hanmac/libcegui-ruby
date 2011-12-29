@@ -31,6 +31,14 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	return result;
 }
 /*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::Vector3f>::toString(*_self));
+}
+
+/*
  * call-seq:
  *   vector2.inspect -> String
  * 
@@ -40,13 +48,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[5];
-	array[0]=rb_str_new2("#<%s:(%f, %f, %f)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_x(self);
-	array[3]=_get_d_y(self);
-	array[4]=_get_d_z(self);
-	return rb_f_sprintf(5,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -112,7 +118,7 @@ VALUE _marshal_dump(VALUE self)
 	rb_ary_push(result,_get_d_x(self));
 	rb_ary_push(result,_get_d_y(self));
 	rb_ary_push(result,_get_d_z(self));
-	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("ddd"));
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
 }
 /*
  * call-seq:
@@ -122,7 +128,7 @@ VALUE _marshal_dump(VALUE self)
 */
 VALUE _marshal_load(VALUE self,VALUE load)
 {
-	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("ddd"));
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
 	_set_d_z(self,rb_ary_pop(result));
 	_set_d_y(self,rb_ary_pop(result));
 	_set_d_x(self,rb_ary_pop(result));
@@ -137,6 +143,10 @@ VALUE _marshal_load(VALUE self,VALUE load)
 */
 VALUE _equal(VALUE self,VALUE other)
 {
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::Vector3f>(other))
+		return Qfalse;
 	return wrap(*_self == wrap<CEGUI::Vector3f>(other));
 }
 
@@ -172,6 +182,7 @@ void Init_CeguiVector3(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiVector3,"y",_get_d_y,_set_d_y);
 	rb_define_attr_method(rb_cCeguiVector3,"z",_get_d_z,_set_d_z);
 
+	rb_define_method(rb_cCeguiVector3,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiVector3,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiVector3,"+",RUBY_METHOD_FUNC(_plus),1);

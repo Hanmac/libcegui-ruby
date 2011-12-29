@@ -15,13 +15,6 @@ inline VALUE wrap< CEGUI::DefaultResourceProvider >(CEGUI::DefaultResourceProvid
 template <>
 inline CEGUI::DefaultResourceProvider* wrap< CEGUI::DefaultResourceProvider* >(const VALUE &vprovider)
 {
-	if (rb_obj_is_kind_of(vprovider, rb_cCeguiDefaultResourceProvider)){
-		CEGUI::DefaultResourceProvider *provider;
-		Data_Get_Struct( vprovider, CEGUI::DefaultResourceProvider, provider);
-		return provider;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiDefaultResourceProvider),rb_obj_classname(vprovider));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::DefaultResourceProvider>(vprovider, rb_cCeguiDefaultResourceProvider);
 }
 #endif /* __RubyCeguiDefaultResourceProvider_H__ */

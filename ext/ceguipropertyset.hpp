@@ -44,7 +44,7 @@ inline CEGUI::PropertySet* wrap< CEGUI::PropertySet* >(const VALUE &vset)
 			return temp;
 		}
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_mCeguiPropertySet),rb_obj_classname(vset));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_mCeguiPropertySet),rb_obj_classname(vset));
 		return NULL;
 	}
 }

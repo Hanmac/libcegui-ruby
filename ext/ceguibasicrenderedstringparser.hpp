@@ -21,14 +21,7 @@ inline VALUE wrap< CEGUI::BasicRenderedStringParser >(CEGUI::BasicRenderedString
 template <>
 inline CEGUI::BasicRenderedStringParser* wrap< CEGUI::BasicRenderedStringParser* >(const VALUE &vparser)
 {
-	if(rb_obj_is_kind_of(vparser, rb_cCeguiBasicRenderedStringParser)){
-		CEGUI::BasicRenderedStringParser *parser;
-		Data_Get_Struct( vparser, CEGUI::BasicRenderedStringParser, parser);
-		return parser;
-	}else {
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiBasicRenderedStringParser),rb_obj_classname(vparser));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::BasicRenderedStringParser>(vparser, rb_cCeguiBasicRenderedStringParser);
 }
 
 #endif /* __RubyCeguiBasicRenderedStringParser_H__ */

@@ -3,12 +3,14 @@
 #define _self wrap<CEGUI::Scrollbar*>(self)
 VALUE rb_cCeguiScrollbar;
 namespace CeguiScrollbar {
+
 macro_attr(DocumentSize,float)
 macro_attr(PageSize,float)
 macro_attr(StepSize,float)
 macro_attr(OverlapSize,float)
 macro_attr(ScrollPosition,float)
 
+macro_attr_bool(EndLockEnabled)
 /*
 */
 VALUE _new(int argc,VALUE *argv,VALUE self)
@@ -21,26 +23,18 @@ VALUE _new(int argc,VALUE *argv,VALUE self)
 	return rb_call_super(2,result);
 }
 
-/*
-*/
-VALUE _getIncreaseButton(VALUE self)
-{
-	return wrap(_self->getIncreaseButton());
-}
-/*
-*/
-VALUE _getDecreaseButton(VALUE self)
-{
-	return wrap(_self->getDecreaseButton());
-}
-/*
-*/
-VALUE _getThumb(VALUE self)
-{
-	return wrap(_self->getThumb());
-}
+singlereturn(getIncreaseButton)
+singlereturn(getDecreaseButton)
+singlereturn(getThumb)
 
 }
+
+/* Document-method: increaseButton
+*/
+/* Document-method: decreaseButton
+*/
+/* Document-method: thumb
+*/
 
 /*
 */
@@ -56,6 +50,8 @@ void Init_CeguiScrollbar(VALUE rb_mCegui)
 	rb_define_attr(rb_cCeguiScrollbar,"overlapSize",1,1);
 	rb_define_attr(rb_cCeguiScrollbar,"scrollPosition",1,1);
 
+	rb_define_attr(rb_cCeguiScrollbar,"endLockEnabled",1,1);
+
 #endif
 	using namespace CeguiScrollbar;
 
@@ -67,6 +63,8 @@ void Init_CeguiScrollbar(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiScrollbar,"stepSize",_getStepSize,_setStepSize);
 	rb_define_attr_method(rb_cCeguiScrollbar,"overlapSize",_getOverlapSize,_setOverlapSize);
 	rb_define_attr_method(rb_cCeguiScrollbar,"scrollPosition",_getScrollPosition,_setScrollPosition);
+
+	rb_define_attr_method(rb_cCeguiScrollbar,"endLockEnabled",_getEndLockEnabled,_setEndLockEnabled);
 
 	rb_define_singleton_method(rb_cCeguiScrollbar,"new",RUBY_METHOD_FUNC(_new),-1);
 

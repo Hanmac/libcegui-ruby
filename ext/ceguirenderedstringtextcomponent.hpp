@@ -17,14 +17,6 @@ inline VALUE wrap< CEGUI::RenderedStringTextComponent >(CEGUI::RenderedStringTex
 template <>
 inline CEGUI::RenderedStringTextComponent* wrap< CEGUI::RenderedStringTextComponent* >(const VALUE &vcomponent)
 {
-	if (rb_obj_is_kind_of(vcomponent, rb_cCeguiRenderedStringTextComponent)){
-		CEGUI::RenderedStringTextComponent *component;
-		Data_Get_Struct( vcomponent, CEGUI::RenderedStringTextComponent, component);
-		return component;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",
-			rb_class2name(rb_cCeguiRenderedStringTextComponent),rb_obj_classname(vcomponent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderedStringTextComponent>(vcomponent, rb_cCeguiRenderedStringTextComponent);
 }
 #endif /* __RubyCeguiRenderedStringTextComponent_H__ */

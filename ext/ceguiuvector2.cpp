@@ -28,6 +28,13 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	return result;
 }
 /*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::UVector2>::toString(*_self));
+}
+/*
  * call-seq:
  *   udim.inspect -> String
  * 
@@ -37,12 +44,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[4];
-	array[0]=rb_str_new2("#<%s:(%s, %s)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=rb_funcall(_get_d_x(self),rb_intern("inpect"),0);
-	array[3]=rb_funcall(_get_d_y(self),rb_intern("inpect"),0);
-	return rb_f_sprintf(4,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -93,6 +99,21 @@ VALUE _durch(VALUE self,VALUE other)
 
 /*
  * call-seq:
+ *   ==(uvector2) -> Boolean
+ *
+ * compare with UVector2.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::UVector2>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::UVector2>(other));
+}
+
+/*
+ * call-seq:
  *   vector.hash -> Integer
  * 
  * hash from the combined udim values.
@@ -119,7 +140,7 @@ VALUE _marshal_dump(VALUE self)
 	rb_ary_push(result,DBL2NUM(_self->d_x.d_offset));
 	rb_ary_push(result,DBL2NUM(_self->d_y.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_y.d_offset));
-	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("dddd"));
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
 }
 /*
  * call-seq:
@@ -129,7 +150,7 @@ VALUE _marshal_dump(VALUE self)
 */
 VALUE _marshal_load(VALUE self,VALUE load)
 {
-	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddd"));
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
 	_self->d_y.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_y.d_scale=NUM2DBL(rb_ary_pop(result));
 	_self->d_x.d_offset=NUM2DBL(rb_ary_pop(result));
@@ -163,6 +184,8 @@ void Init_CeguiUVector2(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiUVector2,"x",_get_d_x,_set_d_x);
 	rb_define_attr_method(rb_cCeguiUVector2,"y",_get_d_y,_set_d_y);
 
+	rb_define_method(rb_cCeguiUVector2,"to_s",RUBY_METHOD_FUNC(_to_s),0);
+
 	rb_define_method(rb_cCeguiUVector2,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiUVector2,"-@",RUBY_METHOD_FUNC(_minusself),0);
@@ -173,6 +196,8 @@ void Init_CeguiUVector2(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiUVector2,"/",RUBY_METHOD_FUNC(_durch),1);
 
 	rb_define_method(rb_cCeguiUVector2,"hash",RUBY_METHOD_FUNC(_hash),0);
+
+	rb_define_method(rb_cCeguiUVector2,"==",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiUVector2,"swap",RUBY_METHOD_FUNC(_swap),1);
 

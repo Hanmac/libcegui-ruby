@@ -36,11 +36,6 @@ inline VALUE wrap< CEGUI::ButtonBase >(CEGUI::ButtonBase *buttonbase )
 template <>
 inline CEGUI::ButtonBase* wrap< CEGUI::ButtonBase* >(const VALUE &vbuttonbase)
 {
-	if (rb_obj_is_kind_of(vbuttonbase, rb_cCeguiButtonBase)){
-		return (CEGUI::ButtonBase*)(wrap< CEGUI::Window* >(vbuttonbase));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiButtonBase),rb_obj_classname(vbuttonbase));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ButtonBase>(vbuttonbase, rb_cCeguiButtonBase);
 }
 #endif /* __RubyCeguiButtonBase_H__ */

@@ -19,13 +19,6 @@ inline VALUE wrap< CEGUI::Event::Connection >(const CEGUI::Event::Connection &co
 template <>
 inline CEGUI::Event::Connection wrap< CEGUI::Event::Connection >(const VALUE &vconnection)
 {
-	if (rb_obj_is_kind_of(vconnection, rb_cCeguiEventConnection)){
-		RubyConnection *connection;
-		Data_Get_Struct( vconnection, RubyConnection, connection);
-		return connection->con;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiEventConnection),rb_obj_classname(vconnection));
-		return NULL;
-	}
+	return unwrapPtr<RubyConnection>(vconnection, rb_cCeguiEventConnection)->con;
 }
 #endif /* __RubyCeguiEventConnection_H__ */

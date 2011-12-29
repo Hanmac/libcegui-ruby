@@ -42,18 +42,12 @@ macro_attr(DefaultCustomRenderedStringParser,CEGUI::RenderedStringParser*)
 singlefunc(signalRedraw)
 singlefunc(renderGUI)
 
-/*
-*/
-VALUE _getResourceProvider(VALUE self)
-{
-	return wrap(_self->getResourceProvider());
-}
-/*
-*/
-VALUE _getDefaultTooltip(VALUE self)
-{
-	return wrap(_self->getDefaultTooltip());
-}
+singlereturn(isRedrawRequested)
+singlereturn(getXMLParser)
+singlereturn(getImageCodec)
+singlereturn(getDefaultTooltip)
+singlereturn(getResourceProvider)
+
 /*
 */
 VALUE _setDefaultTooltip(VALUE self,VALUE val)
@@ -63,12 +57,6 @@ VALUE _setDefaultTooltip(VALUE self,VALUE val)
 	else
 		_self->setDefaultTooltip(wrap<CEGUI::Tooltip*>(val));
 	return val;
-}
-/*
-*/
-VALUE _getXMLParser(VALUE self)
-{
-	return wrap(_self->getXMLParser());
 }
 /*
 */
@@ -84,13 +72,6 @@ VALUE _setXMLParser(VALUE self,VALUE val)
 	}
 	return val;
 }
-
-/*
-*/
-VALUE _getImageCodec(VALUE self)
-{
-	return wrap(_self->getImageCodec());
-}
 /*
 */
 VALUE _setImageCodec(VALUE self,VALUE val)
@@ -105,14 +86,6 @@ VALUE _setImageCodec(VALUE self,VALUE val)
 	}
 	return val;
 }
-
-/*
-*/
-VALUE _isRedrawRequested(VALUE self)
-{
-	return wrap(_self->isRedrawRequested());
-}
-
 /*
 */
 VALUE _injectMousePosition(VALUE self,VALUE x,VALUE y)
@@ -203,8 +176,10 @@ VALUE _create(int argc,VALUE *argv,VALUE self)
 
 void ruby_bootstrap()
 {
-	CEGUI::String str = CEGUI::WindowManager::EventWindowDestroyed;
-	CEGUI::WindowManager::getSingletonPtr()->subscribeEvent(str,CEGUI::Event::Subscriber(ruby_window_destroyed_callback));
+	CEGUI::WindowManager::getSingletonPtr()->subscribeEvent(
+			CEGUI::WindowManager::EventWindowDestroyed,
+			CEGUI::Event::Subscriber(ruby_window_destroyed_callback)
+	);
 }
 
 /* Document-method: guiSheet 
@@ -283,6 +258,18 @@ void ruby_bootstrap()
 /* Document-method: signalRedraw
 
 */
+/* Document-method: redrawRequested?
+
+*/
+/* Document-method: xmlparser
+
+*/
+/* Document-method: defaultTooltip
+
+*/
+/* Document-method: imagecodec
+
+*/
 
 /*
 */
@@ -294,7 +281,7 @@ void Init_CeguiSystem(VALUE rb_mCegui)
 
 	using namespace CeguiSystem;
 
-	rb_mCeguiSystem = rb_define_class_under(rb_mCegui,"System",rb_cObject);
+	rb_mCeguiSystem = rb_define_module_under(rb_mCegui,"System");
 	rb_define_module_function(rb_mCeguiSystem,"resourceProvider",RUBY_METHOD_FUNC(_getResourceProvider),0);
 
 	rb_extend_object(rb_mCeguiSystem,rb_mCeguiEventSet);

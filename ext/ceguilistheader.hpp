@@ -23,11 +23,6 @@ inline VALUE wrap< CEGUI::ListHeader >(CEGUI::ListHeader *listheader )
 template <>
 inline CEGUI::ListHeader* wrap< CEGUI::ListHeader* >(const VALUE &vlistheader)
 {
-	if (rb_obj_is_kind_of(vlistheader, rb_cCeguiListHeader)){
-		return (CEGUI::ListHeader*)(wrap< CEGUI::Window* >(vlistheader));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiListHeader),rb_obj_classname(vlistheader));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ListHeader>(vlistheader, rb_cCeguiListHeader);
 }
 #endif /* __RubyCeguiListHeader_H__ */

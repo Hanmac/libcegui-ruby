@@ -21,13 +21,6 @@ inline VALUE wrap< CEGUI::RenderTarget >(CEGUI::RenderTarget *target )
 template <>
 inline CEGUI::RenderTarget* wrap< CEGUI::RenderTarget* >(const VALUE &vtarget)
 {
-	if (rb_obj_is_kind_of(vtarget, rb_cCeguiRenderTarget)){
-		CEGUI::RenderTarget *target;
-		Data_Get_Struct( vtarget, CEGUI::RenderTarget, target);
-		return target;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderTarget),rb_obj_classname(vtarget));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderTarget>(vtarget, rb_cCeguiRenderTarget);
 }
 #endif /* __RubyCeguiRenderTarget_H__ */

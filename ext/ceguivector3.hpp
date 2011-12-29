@@ -13,6 +13,20 @@ inline VALUE wrap< CEGUI::Vector3f >(CEGUI::Vector3f *vector )
 }
 
 template <>
+inline bool is_wrapable< CEGUI::Vector3f >(const VALUE &vvector)
+{
+	if (rb_obj_is_kind_of(vvector, rb_cCeguiVector3)){
+		return true;
+	}else if(rb_respond_to(vvector,rb_intern("x")) &&
+			rb_respond_to(vvector,rb_intern("y")) &&
+			rb_respond_to(vvector,rb_intern("z"))){
+		return true;
+	}else
+		return false;
+}
+
+
+template <>
 inline CEGUI::Vector3f* wrap< CEGUI::Vector3f* >(const VALUE &vvector)
 {
 	if (rb_obj_is_kind_of(vvector, rb_cCeguiVector3)){
@@ -28,13 +42,16 @@ inline CEGUI::Vector3f* wrap< CEGUI::Vector3f* >(const VALUE &vvector)
 	 	vector->d_z = NUM2DBL(rb_funcall(vvector,rb_intern("z"),0));
 	 	return vector;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiVector3),rb_obj_classname(vvector));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiVector3),rb_obj_classname(vvector));
 		return NULL;
 	}
 }
 template <>
 inline CEGUI::Vector3f wrap< CEGUI::Vector3f >(const VALUE &vvector)
 {
-	return *wrap< CEGUI::Vector3f* >(vvector);
+	if (rb_obj_is_kind_of(vvector, rb_cString))
+		return CEGUI::PropertyHelper<CEGUI::Vector3f>::fromString(wrap<CEGUI::String>(vvector));
+	else
+		return *wrap< CEGUI::Vector3f* >(vvector);
 }
 #endif /* __RubyCeguiVector3_H__ */

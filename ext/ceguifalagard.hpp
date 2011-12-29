@@ -15,13 +15,6 @@ inline VALUE wrap< CEGUI::WindowFactoryManager::FalagardWindowMapping >(CEGUI::W
 template <>
 inline CEGUI::WindowFactoryManager::FalagardWindowMapping* wrap< CEGUI::WindowFactoryManager::FalagardWindowMapping* >(const VALUE &vlook)
 {
-	if (rb_obj_is_kind_of(vlook, rb_cCeguiFalagard)){
-		CEGUI::WindowFactoryManager::FalagardWindowMapping *look;
-		Data_Get_Struct( vlook, CEGUI::WindowFactoryManager::FalagardWindowMapping, look);
-		return look;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiFalagard),rb_obj_classname(vlook));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::WindowFactoryManager::FalagardWindowMapping>(vlook, rb_cCeguiFalagard);
 }
 #endif /* __RubyCeguiFalagard_H__ */

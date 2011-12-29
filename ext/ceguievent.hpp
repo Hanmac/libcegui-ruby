@@ -18,14 +18,7 @@ inline VALUE wrap< CEGUI::Event >(CEGUI::Event *event )
 template <>
 inline CEGUI::Event* wrap< CEGUI::Event* >(const VALUE &vevent)
 {
-	if (rb_obj_is_kind_of(vevent, rb_cCeguiEvent)){
-		CEGUI::Event *event;
-		Data_Get_Struct( vevent, CEGUI::Event, event);
-		return event;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiEvent),rb_obj_classname(vevent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::Event>(vevent, rb_cCeguiEvent);
 }
 /*
 template <>

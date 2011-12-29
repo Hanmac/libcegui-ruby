@@ -35,7 +35,7 @@ inline CEGUI::XMLHandler* wrap< CEGUI::XMLHandler* >(const VALUE &vhandler)
 		Data_Get_Struct( vhandler, CEGUI::XMLHandler, handler);
 		return handler;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiXMLHandler),rb_obj_classname(vhandler));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiXMLHandler),rb_obj_classname(vhandler));
 		return NULL;
 	}
 }

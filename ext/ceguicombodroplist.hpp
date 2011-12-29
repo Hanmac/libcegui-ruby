@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::ComboDropList >(CEGUI::ComboDropList *list )
 template <>
 inline CEGUI::ComboDropList* wrap< CEGUI::ComboDropList* >(const VALUE &vlist)
 {
-	if (rb_obj_is_kind_of(vlist, rb_cCeguiComboDropList)){
-		return (CEGUI::ComboDropList*)(wrap< CEGUI::Window* >(vlist));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiComboDropList),rb_obj_classname(vlist));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ComboDropList>(vlist, rb_cCeguiComboDropList);
 }
 #endif /* __RubyCeguiComboDropList_H__ */

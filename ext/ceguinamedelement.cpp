@@ -8,6 +8,7 @@ namespace CeguiNamedElement {
 
 macro_attr(Name,CEGUI::String)
 
+singlereturn(getNamePath)
 
 /*
  * call-seq:
@@ -22,7 +23,7 @@ VALUE _inspect(VALUE self)
 	VALUE array[3];
 	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=rb_funcall(self,rb_intern("name"),0);
+	array[2]=rb_funcall(self,"name");
 	return rb_f_sprintf(3,array);
 }
 
@@ -34,7 +35,7 @@ VALUE _isChild(VALUE self,VALUE val)
 	if(rb_obj_is_kind_of(val, rb_cCeguiElement)){
 		return rb_call_super(1,&val);
 	}
-	return RBOOL(_self->isChild(wrap<CEGUI::String>(val)));
+	return wrap(_self->isChild(wrap<CEGUI::String>(val)));
 }
 /*
 */
@@ -43,7 +44,7 @@ VALUE _isAncestor(VALUE self,VALUE val)
 	if(rb_obj_is_kind_of(val, rb_cCeguiElement)){
 		return rb_call_super(1,&val);
 	}
-	return RBOOL(_self->isAncestor(wrap<CEGUI::String>(val)));
+	return wrap(_self->isAncestor(wrap<CEGUI::String>(val)));
 }
 
 
@@ -56,12 +57,6 @@ VALUE _removeChild(VALUE self,VALUE obj)
 	}
 	_self->removeChild(wrap<CEGUI::String>(obj));
 	return self;
-}
-/*
-*/
-VALUE _getNamePath(VALUE self)
-{
-	return wrap(_self->getNamePath());
 }
 
 /*
@@ -81,6 +76,8 @@ VALUE _get(VALUE self,VALUE name)
 }
 
 }
+/* Document-method: namePath
+*/
 /*
 */
 void Init_CeguiNamedElement(VALUE rb_mCegui)

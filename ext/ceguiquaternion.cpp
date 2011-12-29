@@ -41,6 +41,14 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	return result;
 }
 /*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::Quaternion>::toString(*_self));
+}
+
+/*
  * call-seq:
  *   vector2.inspect -> String
  *
@@ -50,14 +58,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[6];
-	array[0]=rb_str_new2("#<%s:(%f, %f, %f, %f)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_w(self);
-	array[3]=_get_d_x(self);
-	array[4]=_get_d_y(self);
-	array[5]=_get_d_z(self);
-	return rb_f_sprintf(6,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -153,6 +158,10 @@ VALUE _marshal_load(VALUE self,VALUE load)
 */
 VALUE _equal(VALUE self,VALUE other)
 {
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::Quaternion>(other))
+		return Qfalse;
 	return wrap(*_self == wrap<CEGUI::Quaternion>(other));
 }
 
@@ -188,6 +197,7 @@ void Init_CeguiQuaternion(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiQuaternion,"y",_get_d_y,_set_d_y);
 	rb_define_attr_method(rb_cCeguiQuaternion,"z",_get_d_z,_set_d_z);
 
+	rb_define_method(rb_cCeguiQuaternion,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiQuaternion,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiQuaternion,"+",RUBY_METHOD_FUNC(_plus),1);

@@ -7,6 +7,9 @@ VALUE rb_cCeguiRenderTarget;
 
 namespace CeguiRenderTarget {
 macro_attr(Area,CEGUI::Rectf)
+
+singlefunc(activate)
+singlefunc(deactivate)
 }
 
 void Init_CeguiRenderTarget(VALUE rb_mCegui)
@@ -22,4 +25,8 @@ void Init_CeguiRenderTarget(VALUE rb_mCegui)
 	rb_undef_alloc_func(rb_cCeguiRenderTarget);
 	
 	rb_define_attr_method(rb_cCeguiRenderTarget,"area",_getArea,_setArea);
+
+	rb_define_method(rb_cCeguiRenderTarget,"activate",RUBY_METHOD_FUNC(_activate),0);
+	rb_define_method(rb_cCeguiRenderTarget,"deactivate",RUBY_METHOD_FUNC(_deactivate),0);
+
 }

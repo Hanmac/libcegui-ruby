@@ -38,7 +38,7 @@ VALUE _inspect(VALUE self)
 VALUE _each(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
-	for (unsigned int i = 0; i < _self->getNumAffectors(); ++i)
+	for (uint i = 0; i < _self->getNumAffectors(); ++i)
 		rb_yield(wrap( _self->getAffectorAtIdx(i)));
 	return self;
 }
@@ -72,7 +72,7 @@ VALUE _Manager_setDefaultResourceGroup(VALUE self,VALUE val)
 VALUE _Manager_each(VALUE self)
 {
 	RETURN_ENUMERATOR(self,0,NULL);
-	for (unsigned int i = 0; i < _manager->getNumAnimations(); ++i)
+	for (uint i = 0; i < _manager->getNumAnimations(); ++i)
 		rb_yield(wrap(_manager->getAnimationAtIdx(i)));
 	return self;
 }

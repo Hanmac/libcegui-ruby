@@ -22,11 +22,6 @@ inline VALUE wrap< CEGUI::GroupBox >(CEGUI::GroupBox *groupbox )
 template <>
 inline CEGUI::GroupBox* wrap< CEGUI::GroupBox* >(const VALUE &vgroupbox)
 {
-	if (rb_obj_is_kind_of(vgroupbox, rb_cCeguiGroupBox)){
-		return (CEGUI::GroupBox*)(wrap< CEGUI::Window* >(vgroupbox));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiGroupBox),rb_obj_classname(vgroupbox));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::GroupBox>(vgroupbox, rb_cCeguiGroupBox);
 }
 #endif /* __RubyCeguiGroupBox_H__ */

@@ -17,13 +17,6 @@ inline VALUE wrap< CEGUI::Property >(CEGUI::Property *property )
 template <>
 inline CEGUI::Property* wrap< CEGUI::Property* >(const VALUE &vproperty)
 {
-	if (rb_obj_is_kind_of(vproperty, rb_cCeguiProperty)){
-		CEGUI::Property *property;
-		Data_Get_Struct( vproperty, CEGUI::Property, property);
-		return property;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiProperty),rb_obj_classname(vproperty));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::Property>(vproperty, rb_cCeguiProperty);
 }
 #endif /* __RubyCeguiProperty_H__ */

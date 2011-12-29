@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::Combobox >(CEGUI::Combobox *box )
 template <>
 inline CEGUI::Combobox* wrap< CEGUI::Combobox* >(const VALUE &vbox)
 {
-	if(rb_obj_is_kind_of(vbox, rb_cCeguiCombobox)){
-		return (CEGUI::Combobox*)(wrap< CEGUI::Window* >(vbox));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiCombobox),rb_obj_classname(vbox));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Combobox>(vbox, rb_cCeguiCombobox);
 }
 #endif /* __RubyCeguiCombobox_H__ */

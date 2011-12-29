@@ -17,13 +17,6 @@ inline VALUE wrap< CEGUI::TextureTarget >(CEGUI::TextureTarget *target )
 template <>
 inline CEGUI::TextureTarget* wrap< CEGUI::TextureTarget* >(const VALUE &vtarget)
 {
-	if (rb_obj_is_kind_of(vtarget, rb_cCeguiTextureTarget)){
-		CEGUI::TextureTarget *target;
-		Data_Get_Struct( vtarget, CEGUI::TextureTarget, target);
-		return target;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTextureTarget),rb_obj_classname(vtarget));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::TextureTarget>(vtarget, rb_cCeguiTextureTarget);
 }
 #endif /* __RubyCeguiTextureTarget_H__ */

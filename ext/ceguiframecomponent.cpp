@@ -44,7 +44,9 @@ VALUE _each(VALUE self)
 	RETURN_ENUMERATOR(self,0,NULL);
 	for(unsigned int i = 0;i<CEGUI::FIC_FRAME_IMAGE_COUNT;++i)
 	{
-		rb_yield_values(2,wrap((CEGUI::FrameImageComponent)i),wrap(_self->getImage((CEGUI::FrameImageComponent)i)));
+		const CEGUI::Image *image = _self->getImage((CEGUI::FrameImageComponent)i);
+		if(image)
+			rb_yield_values(2,wrap((CEGUI::FrameImageComponent)i),wrap(image));
 	}
 	return self;
 }

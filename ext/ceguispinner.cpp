@@ -78,7 +78,9 @@ void Init_CeguiSpinner(VALUE rb_mCegui)
 
 	rb_define_singleton_method(rb_cCeguiSpinner,"new",RUBY_METHOD_FUNC(_new),-1);
 
-//rb_define_method(rb_cCeguiSpinner,"thumb",RUBY_METHOD_FUNC(_getThumb),0);
+	rb_define_method(rb_cCeguiSpinner,"increaseButton",RUBY_METHOD_FUNC(_getIncreaseButton),0);
+	rb_define_method(rb_cCeguiSpinner,"decreaseButton",RUBY_METHOD_FUNC(_getDecreaseButton),0);
+	rb_define_method(rb_cCeguiSpinner,"editbox",RUBY_METHOD_FUNC(_getEditbox),0);
 
 	rb_define_const(rb_cCeguiSpinner,"WidgetTypeName",wrap(CEGUI::Spinner::WidgetTypeName));
 	rb_define_const(rb_cCeguiSpinner,"EventNamespace",wrap(CEGUI::Spinner::EventNamespace));
@@ -88,6 +90,7 @@ void Init_CeguiSpinner(VALUE rb_mCegui)
 	rb_define_const(rb_cCeguiSpinner,"EventMaximumValueChanged",wrap(CEGUI::Spinner::EventMaximumValueChanged));
 	rb_define_const(rb_cCeguiSpinner,"EventMinimumValueChanged",wrap(CEGUI::Spinner::EventMinimumValueChanged));
 	rb_define_const(rb_cCeguiSpinner,"EventTextInputModeChanged",wrap(CEGUI::Spinner::EventTextInputModeChanged));
+
 	rb_define_const(rb_cCeguiSpinner,"EditboxName",wrap(CEGUI::Spinner::EditboxName));
 	rb_define_const(rb_cCeguiSpinner,"IncreaseButtonName",wrap(CEGUI::Spinner::IncreaseButtonName));
 	rb_define_const(rb_cCeguiSpinner,"DecreaseButtonName",wrap(CEGUI::Spinner::DecreaseButtonName));

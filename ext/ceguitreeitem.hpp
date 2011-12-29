@@ -17,13 +17,6 @@ inline VALUE wrap< CEGUI::TreeItem >(CEGUI::TreeItem *item )
 template <>
 inline CEGUI::TreeItem* wrap< CEGUI::TreeItem* >(const VALUE &vitem)
 {
-	if (rb_obj_is_kind_of(vitem, rb_cCeguiTreeItem)){
-		CEGUI::TreeItem *item;
-		Data_Get_Struct( vitem, CEGUI::TreeItem, item);
-		return item;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTreeItem),rb_obj_classname(vitem));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::TreeItem>(vitem, rb_cCeguiTreeItem);
 }
 #endif /* __RubyCeguiTree_H__ */

@@ -50,7 +50,7 @@ inline CEGUI::ColourRect* wrap< CEGUI::ColourRect* >(const VALUE &vcolor)
 	}else if (is_wrapable<CEGUI::Colour>(vcolor)){
 		return new CEGUI::ColourRect(wrap< CEGUI::Colour >(vcolor));
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiColorRect),rb_obj_classname(vcolor));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiColorRect),rb_obj_classname(vcolor));
 		return NULL;
 	}
 }

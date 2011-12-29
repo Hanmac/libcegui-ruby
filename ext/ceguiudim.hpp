@@ -14,6 +14,18 @@ inline VALUE wrap< CEGUI::UDim >(CEGUI::UDim *dim )
 }
 
 template <>
+inline bool is_wrapable< CEGUI::UDim >(const VALUE &vdim)
+{
+	if (rb_obj_is_kind_of(vdim, rb_cCeguiUDim)){
+		return true;
+	}else if(rb_respond_to(vdim,rb_intern("scale")) &&
+		rb_respond_to(vdim,rb_intern("offset"))){
+		return true;
+	}else
+		return false;
+}
+
+template <>
 inline CEGUI::UDim* wrap< CEGUI::UDim* >(const VALUE &vdim)
 {
 	if (rb_obj_is_kind_of(vdim, rb_cCeguiUDim)){
@@ -27,7 +39,7 @@ inline CEGUI::UDim* wrap< CEGUI::UDim* >(const VALUE &vdim)
 	 	dim->d_offset = NUM2DBL(rb_funcall(vdim,rb_intern("offset"),0));
 	 	return dim;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUDim),rb_obj_classname(vdim));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiUDim),rb_obj_classname(vdim));
 		return NULL;
 	}
 

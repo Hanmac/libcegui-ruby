@@ -5,11 +5,19 @@ VALUE rb_cCeguiCombobox;
 
 namespace CeguiCombobox {
 macro_attr(ValidationString,CEGUI::String)
-macro_attr_with_func(CaretIndex,UINT2NUM,NUM2UINT)
+macro_attr(CaretIndex,uint)
 
 macro_attr_bool(ReadOnly)
 
 singlefunc(resetList)
+singlefunc(isTextValid)
+singlefunc(hasInputFocus)
+
+singlefunc(getSelectedItem)
+singlefunc(getEditbox)
+singlefunc(getPushButton)
+singlefunc(getDropList)
+
 /*
 */
 VALUE _new(int argc,VALUE *argv,VALUE self)
@@ -17,24 +25,10 @@ VALUE _new(int argc,VALUE *argv,VALUE self)
 	VALUE name;
 	rb_scan_args(argc, argv, "01",&name);
 	VALUE result[2];
-	result[0]=wrap(CEGUI::String(CEGUI::Combobox::WidgetTypeName));
+	result[0]=wrap(CEGUI::Combobox::WidgetTypeName);
 	result[1]=name;
 	return rb_call_super(2,result);
 }
-
-/*
-*/
-VALUE _isTextValid(VALUE self)
-{
-	return RBOOL(_self->isTextValid());
-}
-/*
-*/
-VALUE _hasInputFocus(VALUE self)
-{
-	return RBOOL(_self->hasInputFocus());
-}
-
 
 VALUE _getSelection(VALUE self)
 {
@@ -87,36 +81,23 @@ VALUE _each_item(VALUE self)
 	}
 	return self;
 }
-/*
-*/
-VALUE _selected(VALUE self)
-{
-	return wrap(_self->getSelectedItem());
-}
 
-/*
-*/
-VALUE _getEditbox(VALUE self)
-{
-	return wrap(_self->getEditbox());
-}
-/*
-*/
-VALUE _getPushButton(VALUE self)
-{
-	return wrap(_self->getPushButton());
-}
-/*
-*/
-VALUE _getDropList(VALUE self)
-{
-	return wrap(_self->getDropList());
-}
 
 }
 
+/* Document-method: text_valid?
+*/
+/* Document-method: inputfocus?
+*/
 /* Document-method: clear
-
+*/
+/* Document-method: selected
+*/
+/* Document-method: editbox
+*/
+/* Document-method: pushButton
+*/
+/* Document-method: dropList
 */
 
 /*
@@ -160,7 +141,7 @@ void Init_CeguiCombobox(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiCombobox,"clear",RUBY_METHOD_FUNC(_resetList),0);
 	
 	rb_define_method(rb_cCeguiCombobox,"each_item",RUBY_METHOD_FUNC(_each_item),0);
-	rb_define_method(rb_cCeguiCombobox,"selected",RUBY_METHOD_FUNC(_selected),0);
+	rb_define_method(rb_cCeguiCombobox,"selected",RUBY_METHOD_FUNC(_getSelectedItem),0);
 	
 	rb_define_method(rb_cCeguiCombobox,"editbox",RUBY_METHOD_FUNC(_getEditbox),0);
 	rb_define_method(rb_cCeguiCombobox,"pushButton",RUBY_METHOD_FUNC(_getPushButton),0);

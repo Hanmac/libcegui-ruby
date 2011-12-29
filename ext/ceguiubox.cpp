@@ -34,6 +34,31 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	_set_d_right(self,_get_d_right(other));
 	return result;
 }
+
+/*
+ * call-seq:
+ *   ==(ubox) -> Boolean
+ *
+ * compare with UBox.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::UBox>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::UBox>(other));
+}
+
+
+
+/*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::UBox>::toString(*_self));
+}
 /*
  * call-seq:
  *   inspect -> String
@@ -44,14 +69,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[6];
-	array[0]=rb_str_new2("#<%s:(%s, %s, %s, %s)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=rb_funcall(_get_d_top(self),rb_intern("inspect"),0);
-	array[3]=rb_funcall(_get_d_left(self),rb_intern("inspect"),0);
-	array[4]=rb_funcall(_get_d_bottom(self),rb_intern("inspect"),0);
-	array[5]=rb_funcall(_get_d_right(self),rb_intern("inspect"),0);
-	return rb_f_sprintf(6,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -74,7 +96,10 @@ VALUE _plus(VALUE self,VALUE other)
 */
 VALUE _mal(VALUE self,VALUE other)
 {
-	return wrap(*_self * wrap<CEGUI::UDim>(other));
+	if(rb_obj_is_kind_of(other,rb_cNumeric))
+		return wrap(*_self * NUM2DBL(other));
+	else
+		return wrap(*_self * wrap<CEGUI::UDim>(other));
 }
 /*
  * call-seq:
@@ -104,13 +129,17 @@ VALUE _marshal_dump(VALUE self)
 	VALUE result = rb_ary_new();
 	rb_ary_push(result,DBL2NUM(_self->d_top.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_top.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_left.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_left.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_bottom.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_bottom.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_right.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_right.d_offset));
-	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("dddddddd"));
+
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
 }
 /*
  * call-seq:
@@ -120,15 +149,20 @@ VALUE _marshal_dump(VALUE self)
 */
 VALUE _marshal_load(VALUE self,VALUE load)
 {
-	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddddddd"));
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
+
 	_self->d_right.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_right.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_bottom.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_bottom.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_left.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_left.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_top.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_top.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	return self;
 }
 
@@ -168,10 +202,13 @@ void Init_CeguiUBox(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiUBox,"bottom",_get_d_bottom,_set_d_bottom);
 	rb_define_attr_method(rb_cCeguiUBox,"right",_get_d_right,_set_d_right);
 
+	rb_define_method(rb_cCeguiUBox,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiUBox,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiUBox,"+",RUBY_METHOD_FUNC(_plus),1);
 	rb_define_method(rb_cCeguiUBox,"*",RUBY_METHOD_FUNC(_mal),1);
+
+	rb_define_method(rb_cCeguiUBox,"==",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiUBox,"hash",RUBY_METHOD_FUNC(_hash),0);
 

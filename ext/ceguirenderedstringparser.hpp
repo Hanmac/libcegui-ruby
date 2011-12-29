@@ -16,7 +16,7 @@
 
 void Init_CeguiRenderedStringParser(VALUE rb_mCegui);
 extern VALUE rb_mCeguiRenderedStringParser;
-
+//*
 class RubyRenderedStringParser : public CEGUI::RenderedStringParser{
 
 public:
@@ -27,10 +27,10 @@ public:
 		return wrap<CEGUI::RenderedString>(rb_funcall(this->obj,rb_intern("parse"),3,wrap(input_string),wrap(initial_font),wrap(initial_colours)));
 	}
 
-	virtual ~RubyRenderedStringParser();
+	virtual ~RubyRenderedStringParser() {};
 	VALUE obj;
 };
-
+//*/
 extern std::map<VALUE, RubyRenderedStringParser*> renderedparserholder;
 
 template <>
@@ -42,12 +42,14 @@ inline VALUE wrap< CEGUI::RenderedStringParser >(CEGUI::RenderedStringParser *pa
 	CEGUI::BasicRenderedStringParser *basicparser = dynamic_cast<CEGUI::BasicRenderedStringParser*>(parser);
 	if(basicparser)
 		return wrap(basicparser);
+
 	std::map<VALUE,RubyRenderedStringParser*>::iterator it;
 	for(it = renderedparserholder.begin();it != renderedparserholder.end();++it)
 	{
-	if(it->second == (RubyRenderedStringParser*)parser)
+	if(it->second == dynamic_cast<RubyRenderedStringParser*>(parser))
 		return it->first;
 	}
+
 	return Qnil;
 }
 
@@ -67,16 +69,16 @@ inline RubyRenderedStringParser* wrap< RubyRenderedStringParser* >(const VALUE &
 template <>
 inline CEGUI::RenderedStringParser* wrap< CEGUI::RenderedStringParser* >(const VALUE &vparser)
 {
-/*	if (rb_obj_is_kind_of(vparser, rb_cCeguiDefaultRenderedStringParser))
+	if (rb_obj_is_kind_of(vparser, rb_cCeguiDefaultRenderedStringParser))
 		return wrap< CEGUI::DefaultRenderedStringParser* >(vparser);
 	if (rb_obj_is_kind_of(vparser, rb_cCeguiBasicRenderedStringParser))
 		return wrap< CEGUI::BasicRenderedStringParser* >(vparser);
-*/
+
 	if (rb_obj_is_kind_of(vparser, rb_mCeguiRenderedStringParser)){
 		return (CEGUI::RenderedStringParser*)wrap< RubyRenderedStringParser* >(vparser);
-	}else {
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_mCeguiRenderedStringParser),rb_obj_classname(vparser));
 		return NULL;
+	}else {
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_mCeguiRenderedStringParser),rb_obj_classname(vparser));
 	}
 }
 

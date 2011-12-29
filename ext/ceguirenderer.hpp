@@ -4,9 +4,9 @@
 #include "main.hpp"
 void Init_CeguiRenderer(VALUE rb_mCegui);
 extern VALUE rb_cCeguiRenderer;
-#if HAVE_RENDERERMODULES_NULL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_NULL_RENDERER_H
 extern VALUE rb_cCeguiNullRenderer;
-#include <RendererModules/Null/Renderer.h>
+#include <CEGUI/RendererModules/Null/Renderer.h>
 template <>
 inline VALUE wrap< CEGUI::NullRenderer >(CEGUI::NullRenderer *renderer )
 {
@@ -16,9 +16,9 @@ inline VALUE wrap< CEGUI::NullRenderer >(CEGUI::NullRenderer *renderer )
 }
 #endif
 
-#if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGL_RENDERER_H
 extern VALUE rb_cCeguiOpenGLRenderer;
-#include <RendererModules/OpenGL/Renderer.h>
+#include <CEGUI/RendererModules/OpenGL/Renderer.h>
 template <>
 inline VALUE wrap< CEGUI::OpenGLRenderer >(CEGUI::OpenGLRenderer *renderer )
 {
@@ -27,9 +27,23 @@ inline VALUE wrap< CEGUI::OpenGLRenderer >(CEGUI::OpenGLRenderer *renderer )
 	return Data_Wrap_Struct(rb_cCeguiOpenGLRenderer, NULL, NULL, renderer);
 }
 #endif
-#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+
+#if HAVE_CEGUI_RENDERERMODULES_OPENGLES_RENDERER_H
+extern VALUE rb_cCeguiOpenGLESRenderer;
+#include <CEGUI/RendererModules/OpenGLES/Renderer.h>
+template <>
+inline VALUE wrap< CEGUI::OpenGLESRenderer >(CEGUI::OpenGLESRenderer *renderer )
+{
+	if(renderer==NULL)
+		return Qnil;
+	return Data_Wrap_Struct(rb_cCeguiOpenGLESRenderer, NULL, NULL, renderer);
+}
+#endif
+
+
+#if HAVE_CEGUI_RENDERERMODULES_OGRE_RENDERER_H
 extern VALUE rb_cCeguiOgreRenderer;
-#include <RendererModules/Ogre/Renderer.h>
+#include <CEGUI/RendererModules/Ogre/Renderer.h>
 template <>
 inline VALUE wrap< CEGUI::OgreRenderer >(CEGUI::OgreRenderer *renderer )
 {
@@ -52,9 +66,9 @@ inline Ogre::RenderTarget* wrap< Ogre::RenderTarget* >(const VALUE &vtarget)
 #endif
 
 
-#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_IRRLICHT_RENDERER_H
 extern VALUE rb_cCeguiIrrlichtRenderer;
-#include <RendererModules/Irrlicht/Renderer.h>
+#include <CEGUI/RendererModules/Irrlicht/Renderer.h>
 template <>
 inline VALUE wrap< CEGUI::IrrlichtRenderer >(CEGUI::IrrlichtRenderer *renderer )
 {
@@ -69,22 +83,27 @@ inline VALUE wrap< CEGUI::Renderer >(CEGUI::Renderer *renderer )
 {
 	if(renderer==NULL)
 		return Qnil;
-#if HAVE_RENDERERMODULES_NULL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_NULL_RENDERER_H
 	CEGUI::NullRenderer *nullrenderer = dynamic_cast<CEGUI::NullRenderer*>(renderer);
 	if(nullrenderer)
 		return wrap(nullrenderer);
 #endif
-#if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGL_RENDERER_H
 	CEGUI::OpenGLRenderer *openglrenderer = dynamic_cast<CEGUI::OpenGLRenderer*>(renderer);
 	if(openglrenderer)
 		return wrap(openglrenderer);
 #endif
-#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGLES_RENDERER_H
+	CEGUI::OpenGLESRenderer *openglesrenderer = dynamic_cast<CEGUI::OpenGLESRenderer*>(renderer);
+	if(openglesrenderer)
+		return wrap(openglesrenderer);
+#endif
+#if HAVE_CEGUI_RENDERERMODULES_OGRE_RENDERER_H
 	CEGUI::OgreRenderer *ogrerenderer = dynamic_cast<CEGUI::OgreRenderer*>(renderer);
 	if(ogrerenderer)
 		return wrap(ogrerenderer);
 #endif
-#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_IRRLICHT_RENDERER_H
 	CEGUI::IrrlichtRenderer *irrlichtrenderer = dynamic_cast<CEGUI::IrrlichtRenderer*>(renderer);
 	if(irrlichtrenderer)
 		return wrap(irrlichtrenderer);
@@ -95,13 +114,6 @@ inline VALUE wrap< CEGUI::Renderer >(CEGUI::Renderer *renderer )
 template <>
 inline CEGUI::Renderer* wrap< CEGUI::Renderer* >(const VALUE &vrenderer)
 {
-	if (rb_obj_is_kind_of(vrenderer, rb_cCeguiRenderer)){
-		CEGUI::Renderer *renderer;
-		Data_Get_Struct( vrenderer, CEGUI::Renderer, renderer);
-		return renderer;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderer),rb_obj_classname(vrenderer));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::Renderer>(vrenderer, rb_cCeguiRenderer);
 }
 #endif /* __RubyCeguiRenderer_H__ */

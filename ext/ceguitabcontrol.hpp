@@ -22,11 +22,6 @@ inline VALUE wrap< CEGUI::TabControl >(CEGUI::TabControl *tabcontrol )
 template <>
 inline CEGUI::TabControl* wrap< CEGUI::TabControl* >(const VALUE &vtabcontrol)
 {
-	if (rb_obj_is_kind_of(vtabcontrol, rb_cCeguiTabControl)){
-		return (CEGUI::TabControl*)(wrap< CEGUI::Window* >(vtabcontrol));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTabControl),rb_obj_classname(vtabcontrol));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::TabControl>(vtabcontrol, rb_cCeguiTabControl);
 }
 #endif /* __RubyCeguiTabControl_H__ */

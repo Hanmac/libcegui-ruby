@@ -22,13 +22,6 @@ inline VALUE wrap< CEGUI::ComponentArea >(CEGUI::ComponentArea *component )
 template <>
 inline CEGUI::ComponentArea* wrap< CEGUI::ComponentArea* >(const VALUE &vcomponent)
 {
-	if (rb_obj_is_kind_of(vcomponent, rb_cCeguiComponentArea)){
-		CEGUI::ComponentArea *component;
-		Data_Get_Struct( vcomponent, CEGUI::ComponentArea, component);
-		return component;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiComponentArea),rb_obj_classname(vcomponent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::ComponentArea>(vcomponent, rb_cCeguiComponentArea);
 }
 #endif /* __RubyCeguiComponentArea_H__ */

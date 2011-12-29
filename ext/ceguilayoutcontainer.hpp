@@ -27,11 +27,6 @@ inline VALUE wrap< CEGUI::LayoutContainer >(CEGUI::LayoutContainer *layoutcontai
 template <>
 inline CEGUI::LayoutContainer* wrap< CEGUI::LayoutContainer* >(const VALUE &vlayoutcontainer)
 {
-	if (rb_obj_is_kind_of(vlayoutcontainer, rb_cCeguiLayoutContainer)){
-		return (CEGUI::LayoutContainer*)(wrap< CEGUI::Window* >(vlayoutcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiLayoutContainer),rb_obj_classname(vlayoutcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::LayoutContainer>(vlayoutcontainer, rb_cCeguiLayoutContainer);
 }
 #endif /* __RubyCeguiLayoutContainer_H__ */

@@ -14,6 +14,20 @@ inline VALUE wrap< CEGUI::UBox >(CEGUI::UBox *box )
 }
 
 template <>
+inline bool is_wrapable< CEGUI::UBox >(const VALUE &vbox)
+{
+	if (rb_obj_is_kind_of(vbox, rb_cCeguiUBox)){
+		return true;
+	}else if(rb_respond_to(vbox,rb_intern("top")) &&
+			rb_respond_to(vbox,rb_intern("left")) &&
+			rb_respond_to(vbox,rb_intern("bottom")) &&
+			rb_respond_to(vbox,rb_intern("right"))){
+		return true;
+	}else
+		return false;
+}
+
+template <>
 inline CEGUI::UBox* wrap< CEGUI::UBox* >(const VALUE &vbox)
 {
 	if (rb_obj_is_kind_of(vbox, rb_cCeguiUBox)){
@@ -31,7 +45,7 @@ inline CEGUI::UBox* wrap< CEGUI::UBox* >(const VALUE &vbox)
 		box->d_right = wrap<CEGUI::UDim>(rb_funcall(vbox,rb_intern("right"),0));
 	 	return box;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUBox),rb_obj_classname(vbox));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiUBox),rb_obj_classname(vbox));
 		return NULL;
 	}
 

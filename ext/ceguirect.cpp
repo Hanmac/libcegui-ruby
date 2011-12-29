@@ -123,7 +123,7 @@ VALUE _mal(VALUE self,VALUE other)
 */
 VALUE _isinside(VALUE self,VALUE point)
 {
-	return RBOOL(_self->isPointInRect(wrap<CEGUI::Vector2f>(point)));
+	return wrap(_self->isPointInRect(wrap<CEGUI::Vector2f>(point)));
 }
 /*
 */
@@ -195,6 +195,21 @@ VALUE _offset(VALUE self,VALUE point)
 	return wrap(temp);
 }
 
+/*
+ * call-seq:
+ *   ==(Rect) -> Boolean
+ *
+ * compare with Rect.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::Rectf>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::Rectf>(other));
+}
+
 
 /*
  * call-seq:
@@ -224,7 +239,7 @@ VALUE _marshal_dump(VALUE self)
 	rb_ary_push(result,_get_d_bottom(self));
 	rb_ary_push(result,_get_d_left(self));
 	rb_ary_push(result,_get_d_right(self));
-	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("dddd"));
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
 }
 /*
  * call-seq:
@@ -234,7 +249,7 @@ VALUE _marshal_dump(VALUE self)
 */
 VALUE _marshal_load(VALUE self,VALUE load)
 {
-	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddd"));
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
 	_set_d_right(self,rb_ary_pop(result));
 	_set_d_left(self,rb_ary_pop(result));
 	_set_d_bottom(self,rb_ary_pop(result));
@@ -304,6 +319,8 @@ void Init_CeguiRect(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiRect,"*",RUBY_METHOD_FUNC(_mal),1);
 
 	rb_define_method(rb_cCeguiRect,"hash",RUBY_METHOD_FUNC(_hash),0);
+
+	rb_define_method(rb_cCeguiRect,"equal",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiRect,"swap",RUBY_METHOD_FUNC(_swap),1);
 

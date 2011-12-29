@@ -22,12 +22,7 @@ inline VALUE wrap< CEGUI::ScrolledContainer >(CEGUI::ScrolledContainer *scrolled
 template <>
 inline CEGUI::ScrolledContainer* wrap< CEGUI::ScrolledContainer* >(const VALUE &vscrolledcontainer)
 {
-	if (rb_obj_is_kind_of(vscrolledcontainer, rb_cCeguiScrolledContainer)){
-		return (CEGUI::ScrolledContainer*)(wrap< CEGUI::Window* >(vscrolledcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiScrolledContainer),rb_obj_classname(vscrolledcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ScrolledContainer>(vscrolledcontainer, rb_cCeguiScrolledContainer);
 }
 #endif /* __RubyCeguiScrolledContainer_H__ */
 

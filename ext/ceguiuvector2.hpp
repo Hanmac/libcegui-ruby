@@ -14,6 +14,19 @@ inline VALUE wrap< CEGUI::UVector2 >(CEGUI::UVector2 *vector )
 }
 
 template <>
+inline bool is_wrapable< CEGUI::UVector2 >(const VALUE &vvector)
+{
+	if (rb_obj_is_kind_of(vvector, rb_cCeguiUVector2)){
+		return true;
+	}else if(rb_respond_to(vvector,rb_intern("x")) &&
+		rb_respond_to(vvector,rb_intern("y"))){
+		return is_wrapable<CEGUI::UDim>(rb_funcall(vvector,rb_intern("x"),0))
+			&& is_wrapable<CEGUI::UDim>(rb_funcall(vvector,rb_intern("y"),0));
+	}else
+		return false;
+}
+
+template <>
 inline CEGUI::UVector2* wrap< CEGUI::UVector2* >(const VALUE &vvector)
 {
 	if (rb_obj_is_kind_of(vvector, rb_cCeguiUVector2)){
@@ -27,7 +40,7 @@ inline CEGUI::UVector2* wrap< CEGUI::UVector2* >(const VALUE &vvector)
 	 	vector->d_y = wrap<CEGUI::UDim>(rb_funcall(vvector,rb_intern("y"),0));
 	 	return vector;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUVector2),rb_obj_classname(vvector));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiUVector2),rb_obj_classname(vvector));
 		return NULL;
 	}
 
@@ -35,6 +48,9 @@ inline CEGUI::UVector2* wrap< CEGUI::UVector2* >(const VALUE &vvector)
 template <>
 inline CEGUI::UVector2 wrap< CEGUI::UVector2 >(const VALUE &vvector)
 {
-	return *wrap< CEGUI::UVector2* >(vvector);
+	if (rb_obj_is_kind_of(vvector, rb_cString))
+		return CEGUI::PropertyHelper<CEGUI::UVector2>::fromString(wrap<CEGUI::String>(vvector));
+	else
+		return *wrap< CEGUI::UVector2* >(vvector);
 }
 #endif /* __RubyCeguiUVector2_H__ */

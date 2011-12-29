@@ -63,13 +63,13 @@ VALUE _setParent(VALUE self,VALUE val)
 */
 VALUE _isChild(VALUE self,VALUE val)
 {
-	return RBOOL(_self->isChild(wrap<CEGUI::Element*>(val)));
+	return wrap(_self->isChild(wrap<CEGUI::Element*>(val)));
 }
 /*
 */
 VALUE _isAncestor(VALUE self,VALUE val)
 {
-	return RBOOL(_self->isAncestor(wrap<CEGUI::Element*>(val)));
+	return wrap(_self->isAncestor(wrap<CEGUI::Element*>(val)));
 }
 
 

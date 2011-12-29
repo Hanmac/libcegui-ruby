@@ -17,13 +17,6 @@ inline VALUE wrap< CEGUI::RenderingWindow >(CEGUI::RenderingWindow *window )
 template <>
 inline CEGUI::RenderingWindow* wrap< CEGUI::RenderingWindow* >(const VALUE &vwindow)
 {
-	if (rb_obj_is_kind_of(vwindow, rb_cCeguiRenderingWindow)){
-		CEGUI::RenderingWindow *window;
-		Data_Get_Struct( vwindow, CEGUI::RenderingWindow, window);
-		return window;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRenderingWindow),rb_obj_classname(vwindow));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderingWindow>(vwindow, rb_cCeguiRenderingWindow);
 }
 #endif /* __RubyCeguiRenderingWindow_H__ */

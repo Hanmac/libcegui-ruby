@@ -15,13 +15,6 @@ inline VALUE wrap< CEGUI::WidgetLookFeel >(CEGUI::WidgetLookFeel *look )
 template <>
 inline CEGUI::WidgetLookFeel* wrap< CEGUI::WidgetLookFeel* >(const VALUE &vlook)
 {
-	if (rb_obj_is_kind_of(vlook, rb_cCeguiWidgetLook)){
-		CEGUI::WidgetLookFeel *look;
-		Data_Get_Struct( vlook, CEGUI::WidgetLookFeel, look);
-		return look;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiWidgetLook),rb_obj_classname(vlook));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::WidgetLookFeel>(vlook, rb_cCeguiWidgetLook);
 }
 #endif /* __RubyCeguiWidgetLook_H__ */

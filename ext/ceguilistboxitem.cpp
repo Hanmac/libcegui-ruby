@@ -13,7 +13,7 @@ macro_attr(TooltipText,CEGUI::String)
 
 macro_attr(OwnerWindow,CEGUI::Window*)
 
-macro_attr_with_func(ID,UINT2NUM,NUM2UINT)
+macro_attr(ID,uint)
 
 macro_attr(SelectionColours,CEGUI::ColourRect)
 macro_attr(SelectionBrushImage,CEGUI::Image*)

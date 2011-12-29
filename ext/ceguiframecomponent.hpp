@@ -22,13 +22,6 @@ inline VALUE wrap< CEGUI::FrameComponent >(CEGUI::FrameComponent *framecomponent
 template <>
 inline CEGUI::FrameComponent* wrap< CEGUI::FrameComponent* >(const VALUE &vframecomponent)
 {
-	if (rb_obj_is_kind_of(vframecomponent, rb_cCeguiFrameComponent)){
-		CEGUI::FrameComponent *framecomponent;
-		Data_Get_Struct( vframecomponent, CEGUI::FrameComponent, framecomponent);
-		return framecomponent;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiFrameComponent),rb_obj_classname(vframecomponent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::FrameComponent>(vframecomponent, rb_cCeguiFrameComponent);
 }
 #endif /* __RubyCeguiFrameComponent_H__ */

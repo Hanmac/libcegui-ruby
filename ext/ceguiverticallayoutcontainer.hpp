@@ -22,11 +22,6 @@ inline VALUE wrap< CEGUI::VerticalLayoutContainer >(CEGUI::VerticalLayoutContain
 template <>
 inline CEGUI::VerticalLayoutContainer* wrap< CEGUI::VerticalLayoutContainer* >(const VALUE &vlayoutcontainer)
 {
-	if (rb_obj_is_kind_of(vlayoutcontainer, rb_cCeguiVerticalLayoutContainer)){
-		return (CEGUI::VerticalLayoutContainer*)(wrap< CEGUI::Window* >(vlayoutcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiVerticalLayoutContainer),rb_obj_classname(vlayoutcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::VerticalLayoutContainer>(vlayoutcontainer, rb_cCeguiVerticalLayoutContainer);
 }
 #endif /* __RubyCeguiVerticalLayoutContainer_H__ */

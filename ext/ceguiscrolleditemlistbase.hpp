@@ -28,11 +28,6 @@ inline VALUE wrap< CEGUI::ScrolledItemListBase >(CEGUI::ScrolledItemListBase *sc
 template <>
 inline CEGUI::ScrolledItemListBase* wrap< CEGUI::ScrolledItemListBase* >(const VALUE &vscrolleditemlistbase)
 {
-	if (rb_obj_is_kind_of(vscrolleditemlistbase, rb_cCeguiScrolledItemListBase)){
-		return (CEGUI::ScrolledItemListBase*)wrap<CEGUI::Window*>(vscrolleditemlistbase);
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiScrolledItemListBase),rb_obj_classname(vscrolleditemlistbase));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ScrolledItemListBase>(vscrolleditemlistbase, rb_cCeguiScrolledItemListBase);
 }
 #endif /* __RubyCeguiScrolledItemListBase_H__ */

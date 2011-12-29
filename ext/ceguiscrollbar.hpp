@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::Scrollbar >(CEGUI::Scrollbar *scrollbar )
 template <>
 inline CEGUI::Scrollbar* wrap< CEGUI::Scrollbar* >(const VALUE &vscrollbar)
 {
-	if (rb_obj_is_kind_of(vscrollbar, rb_cCeguiScrollbar)){
-		return (CEGUI::Scrollbar*)(wrap< CEGUI::Window* >(vscrollbar));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiScrollbar),rb_obj_classname(vscrollbar));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Scrollbar>(vscrollbar, rb_cCeguiScrollbar);
 }
 #endif /* __RubyCeguiScrollbar_H__ */

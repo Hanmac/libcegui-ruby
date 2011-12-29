@@ -17,14 +17,6 @@ inline VALUE wrap< CEGUI::RenderedStringImageComponent >(CEGUI::RenderedStringIm
 template <>
 inline CEGUI::RenderedStringImageComponent* wrap< CEGUI::RenderedStringImageComponent* >(const VALUE &vcomponent)
 {
-	if (rb_obj_is_kind_of(vcomponent, rb_cCeguiRenderedStringImageComponent)){
-		CEGUI::RenderedStringImageComponent *component;
-		Data_Get_Struct( vcomponent, CEGUI::RenderedStringImageComponent, component);
-		return component;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",
-			rb_class2name(rb_cCeguiRenderedStringImageComponent),rb_obj_classname(vcomponent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderedStringImageComponent>(vcomponent, rb_cCeguiRenderedStringImageComponent);
 }
 #endif /* __RubyCeguiRenderedStringImageComponent_H__ */

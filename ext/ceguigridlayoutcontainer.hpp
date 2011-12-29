@@ -23,11 +23,6 @@ inline VALUE wrap< CEGUI::GridLayoutContainer >(CEGUI::GridLayoutContainer *layo
 template <>
 inline CEGUI::GridLayoutContainer* wrap< CEGUI::GridLayoutContainer* >(const VALUE &vlayoutcontainer)
 {
-	if (rb_obj_is_kind_of(vlayoutcontainer, rb_cCeguiGridLayoutContainer)){
-		return (CEGUI::GridLayoutContainer*)(wrap< CEGUI::Window* >(vlayoutcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiGridLayoutContainer),rb_obj_classname(vlayoutcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::GridLayoutContainer>(vlayoutcontainer, rb_cCeguiGridLayoutContainer);
 }
 #endif /* __RubyCeguiGridLayoutContainer_H__ */

@@ -60,13 +60,16 @@ inline CEGUI::Colour* wrap< CEGUI::Colour* >(const VALUE &vcolor)
 	 color->setAlpha(temp);
 	 return color;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiColor),rb_obj_classname(vcolor));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiColor),rb_obj_classname(vcolor));
 		return NULL;
 	}
 }
 template <>
 inline CEGUI::Colour wrap< CEGUI::Colour >(const VALUE &vcolor)
 {
-	return *wrap< CEGUI::Colour* >(vcolor);
+	if (rb_obj_is_kind_of(vcolor, rb_cString)){
+		return CEGUI::PropertyHelper<CEGUI::Colour>::fromString(wrap<CEGUI::String>(vcolor));
+	}else
+		return *wrap< CEGUI::Colour* >(vcolor);
 }
 #endif /* __RubyCeguiColor_H__ */

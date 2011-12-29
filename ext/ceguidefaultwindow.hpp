@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::DefaultWindow >(CEGUI::DefaultWindow *defaultwindow )
 template <>
 inline CEGUI::DefaultWindow* wrap< CEGUI::DefaultWindow* >(const VALUE &vdefaultwindow)
 {
-	if (rb_obj_is_kind_of(vdefaultwindow, rb_cCeguiDefaultWindow)){
-		return (CEGUI::DefaultWindow*)(wrap< CEGUI::Window* >(vdefaultwindow));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiDefaultWindow),rb_obj_classname(vdefaultwindow));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::DefaultWindow>(vdefaultwindow, rb_cCeguiDefaultWindow);
 }
 #endif /* __RubyCeguiDefaultWindow_H__ */

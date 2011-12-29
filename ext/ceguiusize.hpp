@@ -18,6 +18,19 @@ inline VALUE wrap< CEGUI::USize >(CEGUI::USize *size )
 	return Data_Wrap_Struct(rb_cCeguiUSize, NULL, free, size);
 }
 
+
+template <>
+inline bool is_wrapable< CEGUI::USize >(const VALUE &vsize)
+{
+	if (rb_obj_is_kind_of(vsize, rb_cCeguiUSize)){
+		return true;
+	}else if(rb_respond_to(vsize,rb_intern("width")) &&
+		rb_respond_to(vsize,rb_intern("height"))){
+		return true;
+	}else
+		return false;
+}
+
 template <>
 inline CEGUI::USize* wrap< CEGUI::USize* >(const VALUE &vsize)
 {
@@ -32,7 +45,7 @@ inline CEGUI::USize* wrap< CEGUI::USize* >(const VALUE &vsize)
 	 	size->d_height = wrap<CEGUI::UDim>(rb_funcall(vsize,rb_intern("height"),0));
 	 	return size;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiUSize),rb_obj_classname(vsize));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiUSize),rb_obj_classname(vsize));
 		return NULL;
 	}
 
@@ -40,6 +53,9 @@ inline CEGUI::USize* wrap< CEGUI::USize* >(const VALUE &vsize)
 template <>
 inline CEGUI::USize wrap< CEGUI::USize >(const VALUE &vsize)
 {
-	return *wrap< CEGUI::USize* >(vsize);
+	if (rb_obj_is_kind_of(vsize, rb_cString))
+		return CEGUI::PropertyHelper<CEGUI::USize>::fromString(wrap<CEGUI::String>(vsize));
+	else
+		return *wrap< CEGUI::USize* >(vsize);
 }
 #endif /* __RubyCeguiSize_H__ */

@@ -21,11 +21,6 @@ inline VALUE wrap< CEGUI::Listbox >(CEGUI::Listbox *listbox )
 template <>
 inline CEGUI::Listbox* wrap< CEGUI::Listbox* >(const VALUE &vlistbox)
 {
-	if (rb_obj_is_kind_of(vlistbox, rb_cCeguiListbox)){
-		return (CEGUI::Listbox*)(wrap< CEGUI::Window* >(vlistbox));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiListbox),rb_obj_classname(vlistbox));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Listbox>(vlistbox, rb_cCeguiListbox);
 }
 #endif /* __RubyCeguiListbox_H__ */

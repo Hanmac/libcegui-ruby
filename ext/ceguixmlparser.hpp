@@ -15,13 +15,6 @@ inline VALUE wrap< CEGUI::XMLParser >(CEGUI::XMLParser *parser )
 template <>
 inline CEGUI::XMLParser* wrap< CEGUI::XMLParser* >(const VALUE &vparser)
 {
-	if (rb_obj_is_kind_of(vparser, rb_cCeguiXMLParser)){
-		CEGUI::XMLParser *parser;
-		Data_Get_Struct( vparser, CEGUI::XMLParser, parser);
-		return parser;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiXMLParser),rb_obj_classname(vparser));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::XMLParser>(vparser, rb_cCeguiXMLParser);
 }
 #endif /* __RubyCeguiXMLParser_H__ */

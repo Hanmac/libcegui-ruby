@@ -33,11 +33,24 @@ VALUE wrap(const std::vector<T> &vec){
 	return result;
 };
 
+
 template <>
 inline VALUE wrap< CEGUI::String >(const CEGUI::String &st )
 {
 	return rb_str_new2(st.c_str());
 }
+
+template <>
+inline CEGUI::String wrap< CEGUI::String >(const VALUE &val )
+{
+	if(NIL_P(val))
+		return "";
+	else if (rb_obj_is_kind_of(val, rb_cString))
+		return rb_string_value_cstr((volatile VALUE*)(&val));
+	else
+		return wrap< CEGUI::String >(rb_funcall(val,rb_intern("to_s"),0));
+}
+
 
 template <>
 inline float wrap< float >(const VALUE &val )
@@ -51,6 +64,17 @@ inline VALUE wrap< float >(const float &st )
 	return DBL2NUM(st);
 }
 
+template <>
+inline uint wrap< uint >(const VALUE &val )
+{
+	return NUM2UINT(val);
+}
+
+template <>
+inline VALUE wrap< uint >(const uint &st )
+{
+	return UINT2NUM(st);
+}
 
 template <>
 inline bool wrap< bool >(const VALUE &val )
@@ -71,17 +95,6 @@ inline VALUE wrap< CEGUI::XMLAttributes >(const CEGUI::XMLAttributes &st )
 	for( unsigned int i=0 ; i < st.getCount(); ++i)
 		rb_hash_aset(hash,wrap(st.getName(i)),wrap(st.getValue(i)));
 	return hash;
-}
-
-template <>
-inline CEGUI::String wrap< CEGUI::String >(const VALUE &val )
-{
-	if(NIL_P(val))
-		return "";
-	else if (rb_obj_is_kind_of(val, rb_cString))
-		return rb_string_value_cstr((volatile VALUE*)(&val));
-	else
-		return wrap< CEGUI::String >(rb_funcall(val,rb_intern("to_s"),0));
 }
 
 template <typename T>
@@ -105,36 +118,6 @@ inline Range wrap< Range >(const VALUE &val )
 	return wrap_pair<float>(val);
 }
 
-/*
-template <typename T>
-T wrap(const VALUE &val,typename T default_value )
-{
-	if(val == Qnil)
-		return default_value;
-	else
-		return wrap<typename T>(val);
-}
-//*/
-//template <typename T>
-//void wrap_each1(T begin,T end)
-//{
-//	for(T cit = begin; cit != end; ++cit)
-//		rb_yield(wrap(*cit));
-//}
-//template <typename T>
-//void wrap_each2(T begin,T end)
-//{
-//	for(T cit = begin; cit != end; ++cit)
-//			rb_yield_values(2,wrap(cit->first),wrap(cit->second));
-//}
-
-//template <typename T>
-//void wrap_each2a(T begin,T end)
-//{
-//	for(T cit = begin; cit != end; ++cit)
-//			rb_yield(wrap(cit->first));
-//}
-
 template <typename T>
 void wrap_each(CEGUI::ConstMapIterator<std::map<CEGUI::String, T, CEGUI::StringFastLessCompare > > it)
 {
@@ -149,6 +132,13 @@ void wrap_each(CEGUI::ConstVectorIterator<std::vector<T> > it)
 	for(it.toStart(); !it.isAtEnd(); ++it)
 		rb_yield_values(1,wrap(it.getCurrentValue()));
 }
+template <typename T>
+void wrap_each(CEGUI::ConstVectorIterator<std::multiset<T> > it)
+{
+	for(it.toStart(); !it.isAtEnd(); ++it)
+		rb_yield_values(1,wrap(it.getCurrentValue()));
+}
+
 /*
 */
 VALUE Cegui_dummy0(VALUE self);
@@ -173,14 +163,51 @@ inline void rb_define_single_attr_method(VALUE klass,std::string name,VALUE(get)
 bool cegui_subscriberfunc(const CEGUI::EventArgs& arg, void * obj);
 
 
+template <typename T>
+T* unwrapPtr(const VALUE &obj,const VALUE &klass)
+{
+	if (rb_obj_is_kind_of(obj, klass)){
+		T *temp;
+		Data_Get_Struct( obj, T, temp);
+		return temp;
+	}else{
+		rb_raise(rb_eTypeError,
+				"Expected %s got %s!",
+				rb_class2name(klass),
+				rb_obj_classname(obj)
+		);
+		return NULL;
+	}
+
+}
+
+template <typename T>
+T* unwrapWindow(const VALUE &obj,const VALUE &klass)
+{
+	if (rb_obj_is_kind_of(obj, klass)){
+		return (T*)(wrap< CEGUI::Window* >(obj));
+	}else{
+		rb_raise(rb_eTypeError,
+				"Expected %s got %s!",
+				rb_class2name(klass),
+				rb_obj_classname(obj)
+		);
+		return NULL;
+	}
+}
+
+
+
+VALUE rb_funcall(VALUE obj,const char *name);
+
+template<typename T>
+VALUE rb_funcall(VALUE obj,const char *name,T param)
+{
+	return rb_funcall(obj,rb_intern(name),1,wrap(param));
+}
 inline void rb_raise(VALUE exception){
 	rb_funcall(rb_mKernel,rb_intern("raise"),1,exception);
 }
-
-struct RubyResource{
-	CEGUI::String name;
-};
-
 
 #define macro_attr(attr,type) \
 VALUE _get##attr(VALUE self)\
@@ -212,16 +239,6 @@ VALUE _set##attr(VALUE self,VALUE other)\
 	return other;\
 }
 
-#define macro_attr_with_func(attr,getfunc,setfunc) \
-VALUE _get##attr(VALUE self)\
-{return getfunc(_self->get##attr() );}\
-\
-VALUE _set##attr(VALUE self,VALUE other)\
-{\
-	_self->set##attr( setfunc(other) );\
-	return other;\
-}
-
 //*/
 #define macro_attr_prop(attr,type) \
 VALUE _get_##attr(VALUE self)\
@@ -233,29 +250,27 @@ VALUE _set_##attr(VALUE self,VALUE other)\
 	return other;\
 }
 
-#define macro_attr_prop_with_func(attr,getfunc,setfunc) \
-VALUE _get_##attr(VALUE self)\
-{return getfunc(_self->attr);}\
-\
-VALUE _set_##attr(VALUE self,VALUE other)\
-{\
-	_self->attr = setfunc(other);\
-	return other;\
-}
-
-#define RBOOL(val) (val) ? Qtrue : Qfalse
-
 #define singlefunc(func) \
 VALUE _##func(VALUE self)\
 {\
-try{\
+	try{\
 		_self->func();\
 	}catch(CEGUI::Exception& e){\
 		rb_raise(e);\
-		return Qnil;\
 	}\
 	return self;\
 }
+#define singlereturn(func) \
+VALUE _##func(VALUE self)\
+{\
+	try{\
+		return wrap(_self->func());\
+	}catch(CEGUI::Exception& e){\
+		rb_raise(e);\
+	}\
+	return Qnil;\
+}
+
 
 #endif /* __RubyCeguiMain_H__ */
 

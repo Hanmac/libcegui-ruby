@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::FrameWindow >(CEGUI::FrameWindow *framewindow )
 template <>
 inline CEGUI::FrameWindow* wrap< CEGUI::FrameWindow* >(const VALUE &vframewindow)
 {
-	if (rb_obj_is_kind_of(vframewindow, rb_cCeguiFrameWindow)){
-		return (CEGUI::FrameWindow*)(wrap< CEGUI::Window* >(vframewindow));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiFrameWindow),rb_obj_classname(vframewindow));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::FrameWindow>(vframewindow, rb_cCeguiFrameWindow);
 }
 #endif /* __RubyCeguiFrameWindow_H__ */

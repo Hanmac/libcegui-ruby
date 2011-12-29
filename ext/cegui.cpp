@@ -68,14 +68,28 @@
 #include "ceguiscriptmodule.hpp"
 
 #include "ceguiwidgetlook.hpp"
+#include "ceguiimagerysection.hpp"
 #include "ceguicomponentbase.hpp"
 #include "ceguicomponentarea.hpp"
+#include "ceguiwidgetcomponent.hpp"
+#include "ceguistateimagery.hpp"
+#include "ceguilayerspecification.hpp"
+#include "ceguisectionspecification.hpp"
+
+#include "ceguinamedarea.hpp"
 
 #include "ceguitreeitem.hpp"
 
 #include "ceguirenderedstring.hpp"
 #include "ceguirenderedstringcomponent.hpp"
 #include "ceguirenderedstringparser.hpp"
+
+
+#include "ceguianimation.hpp"
+#include "ceguianimationinstance.hpp"
+#include "ceguiaffector.hpp"
+#include "ceguikeyframe.hpp"
+
 
 VALUE rb_mCegui;
 
@@ -110,6 +124,12 @@ VALUE Cegui_method_missing(int argc,VALUE *argv,VALUE self)
 		return rb_call_super(argc,argv);
 	}
 }
+
+VALUE rb_funcall(VALUE obj,const char *name)
+{
+	return rb_funcall(obj,rb_intern(name),0);
+}
+
 
 
 extern "C" void Init_cegui(void)
@@ -167,6 +187,7 @@ extern "C" void Init_cegui(void)
 	Init_CeguiDragContainer(rb_mCegui);
 
 	Init_CeguiEditbox(rb_mCegui);
+	Init_CeguiMultiLineEditbox(rb_mCegui);
 	
 	Init_CeguiButtonBase(rb_mCegui);
 	Init_CeguiPushButton(rb_mCegui);
@@ -180,6 +201,8 @@ extern "C" void Init_cegui(void)
 	Init_CeguiMenuBase(rb_mCegui);
 	Init_CeguiPopupMenu(rb_mCegui);
 	Init_CeguiMenubar(rb_mCegui);
+
+	Init_CeguiMultiColumnList(rb_mCegui);
 
 	Init_CeguiScrolledItemListBase(rb_mCegui);
 
@@ -222,18 +245,34 @@ extern "C" void Init_cegui(void)
 	Init_CeguiXMLHandler(rb_mCegui);
 
 	Init_CeguiSystem(rb_mCegui);
+	Init_CeguiMouseCursor(rb_mCegui);
 	Init_CeguiImageCodec(rb_mCegui);
 	
 	Init_CeguiScriptModule(rb_mCegui);
+
+	Init_CeguiAnimation(rb_mCegui);
+	Init_CeguiAnimationInstance(rb_mCegui);
+	Init_CeguiAffector(rb_mCegui);
+	Init_CeguiKeyFrame(rb_mCegui);
 	
 	Init_CeguiWidgetLook(rb_mCegui);
 	Init_CeguiFalagard(rb_mCegui);
+	Init_CeguiImagerySection(rb_mCegui);
+
 
 	Init_CeguiComponentArea(rb_mCegui);
 
 	Init_CeguiComponentBase(rb_mCegui);
 	Init_CeguiFrameComponent(rb_mCegui);
+	Init_CeguiImageryComponent(rb_mCegui);
+	Init_CeguiTextComponent(rb_mCegui);
+	Init_CeguiWidgetComponent(rb_mCegui);
+	Init_CeguiNamedArea(rb_mCegui);
 	
+	Init_CeguiStateImagery(rb_mCegui);
+	Init_CeguiLayerSpecification(rb_mCegui);
+	Init_CeguiSectionSpecification(rb_mCegui);
+
 	Init_CeguiEventArgs(rb_mCegui);
 	Init_CeguiWindowEventArgs(rb_mCegui);
 	Init_CeguiKeyEventArgs(rb_mCegui);
@@ -246,6 +285,8 @@ extern "C" void Init_cegui(void)
 	Init_CeguiRenderedStringParser(rb_mCegui);
 	Init_CeguiDefaultRenderedStringParser(rb_mCegui);
 	Init_CeguiBasicRenderedStringParser(rb_mCegui);
+
+
 	VALUE array[4];
 	array[0]=rb_str_new2("%d.%d.%d");
 	array[1]=INT2NUM(CEGUI_VERSION_MAJOR);

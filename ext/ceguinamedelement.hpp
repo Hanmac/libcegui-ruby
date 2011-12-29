@@ -28,13 +28,6 @@ inline CEGUI::NamedElement* wrap< CEGUI::NamedElement* >(const VALUE &velement)
 	if (rb_obj_is_kind_of(velement, rb_cCeguiWindow)){
 		return wrap<CEGUI::Window*>(velement);
 	}
-	if (rb_obj_is_kind_of(velement, rb_cCeguiNamedElement)){
-		CEGUI::NamedElement *element;
-		Data_Get_Struct( velement, CEGUI::NamedElement, element);
-		return element;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiNamedElement),rb_obj_classname(velement));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::NamedElement>(velement, rb_cCeguiNamedElement);
 }
 #endif /* __RubyCeguiNamedElement_H__ */

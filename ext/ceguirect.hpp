@@ -57,14 +57,17 @@ inline CEGUI::Rectf* wrap< CEGUI::Rectf* >(const VALUE &vrect)
 		rect->d_max.d_y = NUM2DBL(rb_funcall(vrect,rb_intern("right"),0));
 		return rect;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiRect),rb_obj_classname(vrect));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiRect),rb_obj_classname(vrect));
 		return NULL;
 	}
 }
 template <>
 inline CEGUI::Rectf wrap< CEGUI::Rectf >(const VALUE &vrect)
 {
-	return *wrap< CEGUI::Rectf* >(vrect);
+	if (rb_obj_is_kind_of(vrect, rb_cString))
+		return CEGUI::PropertyHelper<CEGUI::Rectf>::fromString(wrap<CEGUI::String>(vrect));
+	else
+		return *wrap< CEGUI::Rectf* >(vrect);
 }
 //*/
 #endif /* __RubyCeguiRect_H__ */

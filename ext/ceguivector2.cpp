@@ -27,6 +27,15 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	_set_d_y(self,_get_d_y(other));
 	return result;
 }
+
+/*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::Vector2f>::toString(*_self));
+}
+
 /*
  * call-seq:
  *   inspect -> String
@@ -37,12 +46,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[4];
-	array[0]=rb_str_new2("#<%s:(%f, %f)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_x(self);
-	array[3]=_get_d_y(self);
-	return rb_f_sprintf(4,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -138,6 +146,10 @@ VALUE _marshal_load(VALUE self,VALUE load)
 */
 VALUE _equal(VALUE self,VALUE other)
 {
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::Vector2f>(other))
+		return Qfalse;
 	return wrap(*_self == wrap<CEGUI::Vector2f>(other));
 }
 

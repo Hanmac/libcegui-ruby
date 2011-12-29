@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 #Encoding: UTF-8
 =begin
 This file is part of libcegui-ruby. 
@@ -37,9 +38,9 @@ with_cflags("-x c++"){
 		abort("need cegui-dev package.")
 	end
 
-	["Null","OpenGL","Ogre","Irrlicht"].each{|n|
+	["Null","OpenGL","OpenGLES","Ogre","Irrlicht"].each{|n|
 		find_library("CEGUI#{n}Renderer","main")
-		have_header("RendererModules/#{n}/Renderer.h")
+		have_header("CEGUI/RendererModules/#{n}/Renderer.h")
 	}
 
 	#wird nicht mehr abgefagt weil das game das dynamisch laden soll

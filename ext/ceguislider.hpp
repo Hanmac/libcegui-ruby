@@ -22,12 +22,7 @@ inline VALUE wrap< CEGUI::Slider >(CEGUI::Slider *slider )
 template <>
 inline CEGUI::Slider* wrap< CEGUI::Slider* >(const VALUE &vslider)
 {
-	if (rb_obj_is_kind_of(vslider, rb_cCeguiSlider)){
-		return (CEGUI::Slider*)(wrap< CEGUI::Window* >(vslider));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiSlider),rb_obj_classname(vslider));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Slider>(vslider, rb_cCeguiSlider);
 }
 #endif /* __RubyCeguiSlider_H__ */
 

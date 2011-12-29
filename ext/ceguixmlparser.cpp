@@ -7,31 +7,16 @@
 
 VALUE rb_cCeguiXMLParser;
 
-/*
-*/
-VALUE CeguiXMLParser_getName(VALUE self)
-{
-	return wrap(_self->getIdentifierString());
-}
+namespace CeguiXMLParser {
+
+singlereturn(getIdentifierString)
+singlereturn(initialise)
+singlefunc(cleanup)
 
 
 /*
 */
-VALUE CeguiXMLParser_initialise(VALUE self)
-{
-	return RBOOL(_self->initialise());
-}
-/*
-*/
-VALUE CeguiXMLParser_cleanup(VALUE self)
-{
-	_self->cleanup();
-	return Qnil;
-}
-
-/*
-*/
-VALUE CeguiXMLParser_parseXMLFile(VALUE self,VALUE handler,VALUE filename,VALUE schemaName,VALUE resourceGroup)
+VALUE _parseXMLFile(VALUE self,VALUE handler,VALUE filename,VALUE schemaName,VALUE resourceGroup)
 {
 	CEGUI::XMLHandler *temp = wrap<CEGUI::XMLHandler*>(handler);
 	_self->parseXMLFile(*temp,wrap<CEGUI::String>(filename),wrap<CEGUI::String>(schemaName),wrap<CEGUI::String>(resourceGroup));
@@ -39,7 +24,7 @@ VALUE CeguiXMLParser_parseXMLFile(VALUE self,VALUE handler,VALUE filename,VALUE 
 }
 /*
 */
-VALUE CeguiXMLParser_parseXMLString(VALUE self,VALUE handler,VALUE filename,VALUE schemaName)
+VALUE _parseXMLString(VALUE self,VALUE handler,VALUE filename,VALUE schemaName)
 {
 	CEGUI::XMLHandler *temp = wrap<CEGUI::XMLHandler*>(handler);
 	_self->parseXMLString(*temp,wrap<CEGUI::String>(filename),wrap<CEGUI::String>(schemaName));
@@ -54,14 +39,20 @@ VALUE CeguiXMLParser_parseXMLString(VALUE self,VALUE handler,VALUE filename,VALU
  * ===Return value
  * String
 */
-VALUE CeguiXMLParser_inspect(VALUE self)
+VALUE _inspect(VALUE self)
 {
 	VALUE array[2];
 	array[0]=rb_str_new2("#<%s>");
-	array[1]=CeguiXMLParser_getName(self);
+	array[1]=self;
 	return rb_f_sprintf(2,array);
 }
 
+
+}
+
+
+/* Document-method: name
+*/
 
 /*
 */
@@ -71,17 +62,21 @@ void Init_CeguiXMLParser(VALUE rb_mCegui)
 	rb_mCegui = rb_define_module("CEGUI");
 	
 #endif
+	using namespace CeguiXMLParser;
+
 	rb_cCeguiXMLParser = rb_define_class_under(rb_mCegui,"XMLParser",rb_cObject);
 	rb_undef_alloc_func(rb_cCeguiXMLParser);
 
 	rb_include_module(rb_cCeguiXMLParser,rb_mCeguiPropertySet);
 
-	rb_define_method(rb_cCeguiXMLParser,"name",RUBY_METHOD_FUNC(CeguiXMLParser_getName),0);
-	rb_define_method(rb_cCeguiXMLParser,"inspect",RUBY_METHOD_FUNC(CeguiXMLParser_inspect),0);
+	rb_define_method(rb_cCeguiXMLParser,"name",RUBY_METHOD_FUNC(_getIdentifierString),0);
+	rb_define_method(rb_cCeguiXMLParser,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 	
-	rb_define_method(rb_cCeguiXMLParser,"initialise",RUBY_METHOD_FUNC(CeguiXMLParser_initialise),0);
-	rb_define_method(rb_cCeguiXMLParser,"cleanup",RUBY_METHOD_FUNC(CeguiXMLParser_cleanup),0);
+	rb_define_alias(rb_cCeguiXMLParser,"to_s","name");
 
-	rb_define_method(rb_cCeguiXMLParser,"parseXMLFile",RUBY_METHOD_FUNC(CeguiXMLParser_parseXMLFile),4);
-	rb_define_method(rb_cCeguiXMLParser,"parseXMLString",RUBY_METHOD_FUNC(CeguiXMLParser_parseXMLString),3);
+	rb_define_method(rb_cCeguiXMLParser,"initialise",RUBY_METHOD_FUNC(_initialise),0);
+	rb_define_method(rb_cCeguiXMLParser,"cleanup",RUBY_METHOD_FUNC(_cleanup),0);
+
+	rb_define_method(rb_cCeguiXMLParser,"parseXMLFile",RUBY_METHOD_FUNC(_parseXMLFile),4);
+	rb_define_method(rb_cCeguiXMLParser,"parseXMLString",RUBY_METHOD_FUNC(_parseXMLString),3);
 }

@@ -71,6 +71,10 @@ VALUE _equal(VALUE self,VALUE other)
 	}
 }
 
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::ColourRect>::toString(*_self));
+}
 /*
  * call-seq:
  *   inspect -> String
@@ -81,14 +85,11 @@ VALUE _equal(VALUE self,VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[6];
-	array[0]=rb_str_new2("#<%s:tl:%s tr:%s bl:%s br:%s)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:(%s)>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_top_left(self);
-	array[3]=_get_d_top_right(self);
-	array[4]=_get_d_bottom_left(self);
-	array[5]=_get_d_bottom_right(self);
-	return rb_f_sprintf(6,array);
+	array[2]=_to_s(self);
+	return rb_f_sprintf(3,array);
 }
 /*
  * call-seq:
@@ -110,37 +111,70 @@ VALUE _hash(VALUE self)
 	return rb_funcall(result,rb_intern("hash"),0);
 }
 
-//
-///*
-// * call-seq:
-// *   marshal_dump -> string
-// *
-// * packs a Rect into an string.
-//*/
-//VALUE _marshal_dump(VALUE self)
-//{
-//	VALUE result = rb_ary_new();
-//	rb_ary_push(result,_get_d_top(self));
-//	rb_ary_push(result,_get_d_bottom(self));
-//	rb_ary_push(result,_get_d_left(self));
-//	rb_ary_push(result,_get_d_right(self));
-//	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("dddd"));
-//}
-///*
-// * call-seq:
-// *   marshal_load(string) -> self
-// *
-// * loads a string into an Rect.
-//*/
-//VALUE _marshal_load(VALUE self,VALUE load)
-//{
-//	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddd"));
-//	_set_d_right(self,rb_ary_pop(result));
-//	_set_d_left(self,rb_ary_pop(result));
-//	_set_d_bottom(self,rb_ary_pop(result));
-//	_set_d_top(self,rb_ary_pop(result));
-//	return self;
-//}
+
+/*
+ * call-seq:
+ *   marshal_dump -> string
+ *
+ * packs a ColorRect into an string.
+*/
+VALUE _marshal_dump(VALUE self)
+{
+	VALUE result = rb_ary_new();
+	rb_ary_push(result,DBL2NUM(_self->d_top_left.getRed()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_left.getGreen()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_left.getBlue()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_left.getAlpha()));
+
+	rb_ary_push(result,DBL2NUM(_self->d_top_right.getRed()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_right.getGreen()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_right.getBlue()));
+	rb_ary_push(result,DBL2NUM(_self->d_top_right.getAlpha()));
+
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_left.getRed()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_left.getGreen()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_left.getBlue()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_left.getAlpha()));
+
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_right.getRed()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_right.getGreen()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_right.getBlue()));
+	rb_ary_push(result,DBL2NUM(_self->d_bottom_right.getAlpha()));
+
+
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
+}
+/*
+ * call-seq:
+ *   marshal_load(string) -> self
+ *
+ * loads a string into an ColorRect.
+*/
+VALUE _marshal_load(VALUE self,VALUE load)
+{
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
+	_self->d_bottom_right.setAlpha(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_right.setBlue(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_right.setGreen(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_right.setRed(NUM2DBL(rb_ary_pop(result)));
+
+	_self->d_bottom_left.setAlpha(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_left.setBlue(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_left.setGreen(NUM2DBL(rb_ary_pop(result)));
+	_self->d_bottom_left.setRed(NUM2DBL(rb_ary_pop(result)));
+
+	_self->d_top_right.setAlpha(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_right.setBlue(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_right.setGreen(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_right.setRed(NUM2DBL(rb_ary_pop(result)));
+
+	_self->d_top_left.setAlpha(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_left.setBlue(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_left.setGreen(NUM2DBL(rb_ary_pop(result)));
+	_self->d_top_left.setRed(NUM2DBL(rb_ary_pop(result)));
+
+	return self;
+}
 
 /*
 */
@@ -178,7 +212,7 @@ void Init_CeguiColorRect(VALUE rb_mCegui)
 	rb_cCeguiColorRect = rb_define_class_under(rb_mCegui,"ColorRect",rb_cObject);
 	rb_define_alloc_func(rb_cCeguiColorRect,_alloc);
 
-	rb_define_method(rb_cCeguiColorRect,"initialize",RUBY_METHOD_FUNC(_initialize),4);
+	rb_define_method(rb_cCeguiColorRect,"initialize",RUBY_METHOD_FUNC(_initialize),-1);
 
 	
 	rb_define_attr_method(rb_cCeguiColorRect,"top_left",_get_d_top_left,_set_d_top_left);
@@ -186,8 +220,12 @@ void Init_CeguiColorRect(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiColorRect,"bottom_left",_get_d_bottom_left,_set_d_bottom_left);
 	rb_define_attr_method(rb_cCeguiColorRect,"bottom_right",_get_d_bottom_right,_set_d_bottom_right);
 
+	rb_define_method(rb_cCeguiColorRect,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiColorRect,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 	rb_define_method(rb_cCeguiColorRect,"hash",RUBY_METHOD_FUNC(_hash),0);
+
+	rb_define_method(rb_cCeguiColorRect,"marshal_dump",RUBY_METHOD_FUNC(_marshal_dump),0);
+	rb_define_method(rb_cCeguiColorRect,"marshal_load",RUBY_METHOD_FUNC(_marshal_load),1);
 
 	rb_define_method(rb_cCeguiColorRect,"swap",RUBY_METHOD_FUNC(_swap),1);
 

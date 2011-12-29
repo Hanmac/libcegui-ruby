@@ -81,6 +81,14 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 //*/
 
 /*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::URect>::toString(*_self));
+}
+
+/*
  * call-seq:
  *   inspect -> String
  * 
@@ -90,12 +98,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[4];
-	array[0]=rb_str_new2("#<%s:(%s, %s)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=rb_funcall(_get_d_min(self),rb_intern("inpect"),0);
-	array[3]=rb_funcall(_get_d_max(self),rb_intern("inpect"),0);
-	return rb_f_sprintf(4,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -116,8 +123,28 @@ VALUE _plus(VALUE self,VALUE other)
 */
 VALUE _mal(VALUE self,VALUE other)
 {
-	return wrap(*_self * wrap<CEGUI::UDim>(other));
+	if (rb_obj_is_kind_of(other, rb_cNumeric))
+		return wrap(*_self * NUM2DBL(other));
+	else
+		return wrap(*_self * wrap<CEGUI::UDim>(other));
 }
+
+
+/*
+ * call-seq:
+ *   ==(URect) -> Boolean
+ *
+ * compare with URect.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::URect>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::URect>(other));
+}
+
 /*
  * call-seq:
  *   vector.hash -> Integer
@@ -142,15 +169,20 @@ VALUE _hash(VALUE self)
 VALUE _marshal_dump(VALUE self)
 {
 	VALUE result = rb_ary_new();
+
 	rb_ary_push(result,DBL2NUM(_self->d_min.d_x.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_min.d_x.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_min.d_y.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_min.d_y.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_max.d_x.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_max.d_x.d_offset));
+
 	rb_ary_push(result,DBL2NUM(_self->d_max.d_y.d_scale));
 	rb_ary_push(result,DBL2NUM(_self->d_max.d_y.d_offset));
-	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("dddddddd"));
+
+	return rb_funcall(result,rb_intern("pack"),1,rb_str_new2("d*"));
 }
 /*
  * call-seq:
@@ -160,15 +192,20 @@ VALUE _marshal_dump(VALUE self)
 */
 VALUE _marshal_load(VALUE self,VALUE load)
 {
-	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("dddddddd"));
+	VALUE result = rb_funcall(load,rb_intern("unpack"),1,rb_str_new2("d*"));
+
 	_self->d_max.d_y.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_max.d_y.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_max.d_x.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_max.d_x.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_min.d_y.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_min.d_y.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	_self->d_min.d_x.d_offset=NUM2DBL(rb_ary_pop(result));
 	_self->d_min.d_x.d_scale=NUM2DBL(rb_ary_pop(result));
+
 	return self;
 }
 
@@ -230,10 +267,13 @@ void Init_CeguiURect(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiURect,"right",_get_d_left,_set_d_right);
 
 	
+	rb_define_method(rb_cCeguiURect,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiURect,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiURect,"+",RUBY_METHOD_FUNC(_plus),1);
 	rb_define_method(rb_cCeguiURect,"*",RUBY_METHOD_FUNC(_mal),1);
+
+	rb_define_method(rb_cCeguiURect,"==",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiURect,"hash",RUBY_METHOD_FUNC(_hash),0);
 

@@ -22,12 +22,7 @@ inline VALUE wrap< CEGUI::DragContainer >(CEGUI::DragContainer *dragcontainer )
 template <>
 inline CEGUI::DragContainer* wrap< CEGUI::DragContainer* >(const VALUE &vdragcontainer)
 {
-	if (rb_obj_is_kind_of(vdragcontainer, rb_cCeguiDragContainer)){
-		return (CEGUI::DragContainer*)(wrap< CEGUI::Window* >(vdragcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiDragContainer),rb_obj_classname(vdragcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::DragContainer>(vdragcontainer, rb_cCeguiDragContainer);
 }
 #endif /* __RubyCeguiDragContainer_H__ */
 

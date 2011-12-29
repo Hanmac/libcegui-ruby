@@ -16,11 +16,6 @@ inline VALUE wrap< CEGUI::PopupMenu >(CEGUI::PopupMenu *popupmenu )
 template <>
 inline CEGUI::PopupMenu* wrap< CEGUI::PopupMenu* >(const VALUE &vpopupmenu)
 {
-	if (rb_obj_is_kind_of(vpopupmenu, rb_cCeguiPopupMenu)){
-		return (CEGUI::PopupMenu*)wrap<CEGUI::Window*>(vpopupmenu);
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiPopupMenu),rb_obj_classname(vpopupmenu));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::PopupMenu>(vpopupmenu, rb_cCeguiPopupMenu);
 }
 #endif /* __RubyCeguiPopupMenu_H__ */

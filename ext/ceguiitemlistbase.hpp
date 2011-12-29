@@ -26,11 +26,6 @@ inline VALUE wrap< CEGUI::ItemListBase >(CEGUI::ItemListBase *itemlistbase )
 template <>
 inline CEGUI::ItemListBase* wrap< CEGUI::ItemListBase* >(const VALUE &vitemlistbase)
 {
-	if (rb_obj_is_kind_of(vitemlistbase, rb_cCeguiItemListBase)){
-		return (CEGUI::ItemListBase*)wrap<CEGUI::Window*>(vitemlistbase);
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiItemListBase),rb_obj_classname(vitemlistbase));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ItemListBase>(vitemlistbase, rb_cCeguiItemListBase);
 }
 #endif /* __RubyCeguiItemListBase_H__ */

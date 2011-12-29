@@ -2,10 +2,12 @@
 #define __RubyCeguiEventSet_H__
 
 #include "main.hpp"
-#include "ceguiwindow.hpp"
+#include "ceguielement.hpp"
 #include "ceguischeme.hpp"
 #include "ceguifont.hpp"
 #include "ceguisystem.hpp"
+#include "ceguirenderingsurface.hpp"
+#include "ceguimousecursor.hpp"
 //#include "ceguiimageset.hpp"
 void Init_CeguiEventSet(VALUE rb_mCegui);
 extern VALUE rb_mCeguiEventSet;
@@ -31,8 +33,10 @@ template <>
 inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 {
 	CEGUI::EventSet* result;
-	if (rb_obj_is_kind_of(vset, rb_cCeguiWindow))
-		result = wrap< CEGUI::Window* >(vset);
+	if (rb_obj_is_kind_of(vset, rb_cCeguiElement))
+		result = wrap< CEGUI::Element* >(vset);
+	else if (rb_obj_is_kind_of(vset, rb_cCeguiRenderingSurface))
+		result = wrap< CEGUI::RenderingSurface* >(vset);
 	else if(vset == rb_cCeguiWindow)
 		result = CEGUI::WindowManager::getSingletonPtr();
 	else if(vset == rb_cCeguiScheme)
@@ -40,7 +44,9 @@ inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 	else if(vset == rb_cCeguiFont)
 		result = CEGUI::FontManager::getSingletonPtr();
 	else if(vset == rb_mCeguiSystem)
-		result = CEGUI::System::getSingletonPtr();
+			result = CEGUI::System::getSingletonPtr();
+	else if(vset == rb_mCeguiMouseCursor)
+			result = CEGUI::MouseCursor::getSingletonPtr();
 	else if (rb_obj_is_kind_of(vset, rb_mCeguiEventSet)){
 		std::map<VALUE,CEGUI::EventSet*>::iterator it = eventsetholder.find(vset);
 		if(it != eventsetholder.end()){
@@ -52,7 +58,7 @@ inline CEGUI::EventSet* wrap< CEGUI::EventSet* >(const VALUE &vset)
 		}
 	}
 	else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_mCeguiEventSet),rb_obj_classname(vset));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_mCeguiEventSet),rb_obj_classname(vset));
 		return NULL;
 	}
 	

@@ -17,17 +17,11 @@ extern VALUE rb_windowholder;
 
 int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg);
 void ruby_bootstrap();
+
 template <>
 inline RubyWindowHolder* wrap< RubyWindowHolder* >(const VALUE &vwindow)
 {
-	if (rb_obj_is_kind_of(vwindow, rb_cCeguiWindow)){
-		RubyWindowHolder *window;
-		Data_Get_Struct( vwindow, RubyWindowHolder, window);
-		return window;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiWindow),rb_obj_classname(vwindow));
-		return NULL;
-	}
+	return unwrapPtr<RubyWindowHolder>(vwindow, rb_cCeguiWindow);
 }
 
 template <>

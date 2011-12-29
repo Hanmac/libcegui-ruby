@@ -17,14 +17,6 @@ inline VALUE wrap< CEGUI::RenderedString >(CEGUI::RenderedString *renderedstring
 template <>
 inline CEGUI::RenderedString* wrap< CEGUI::RenderedString* >(const VALUE &vrenderedstring)
 {
-	if (rb_obj_is_kind_of(vrenderedstring, rb_cCeguiRenderedString)){
-		CEGUI::RenderedString *renderedstring;
-		Data_Get_Struct( vrenderedstring, CEGUI::RenderedString, renderedstring);
-		return renderedstring;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",
-			rb_class2name(rb_cCeguiRenderedString),rb_obj_classname(vrenderedstring));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderedString>(vrenderedstring, rb_cCeguiRenderedString);
 }
 #endif /* __RubyCeguiTree_H__ */

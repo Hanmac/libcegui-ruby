@@ -14,13 +14,7 @@ namespace CeguiFont {
 macro_attr(NativeResolution,CEGUI::Sizef)
 macro_attr_bool(AutoScaled)
 
-/*
-*/
-VALUE _getName(VALUE self)
-{
-	return wrap(_self->getName());
-}
-
+singlereturn(getName)
 
 
 /*
@@ -82,7 +76,7 @@ VALUE _Manager_each(VALUE self)
 */
 VALUE _Manager_isDefined(VALUE self,VALUE name)
 {
-	return RBOOL(_manager->isDefined(wrap<CEGUI::String>(name)));
+	return wrap(_manager->isDefined(wrap<CEGUI::String>(name)));
 }
 /*
 */

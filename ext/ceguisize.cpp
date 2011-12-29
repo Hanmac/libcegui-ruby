@@ -29,9 +29,18 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	_set_d_height(self,_get_d_height(other));
 	return result;
 }
+
+/*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::Sizef>::toString(*_self));
+}
+
 /*
  * call-seq:
- *   Size.inspect -> String
+ *   inspect -> String
  * 
  * Human-readable description. 
  * ===Return value
@@ -39,12 +48,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[4];
-	array[0]=rb_str_new2("#<%s:(%f, %f)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_width(self);
-	array[3]=_get_d_height(self);
-	return rb_f_sprintf(4,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -79,9 +87,26 @@ VALUE _mal(VALUE self,VALUE other)
 {
 	return wrap(*_self * NUM2DBL(other));
 }
+
 /*
  * call-seq:
- *   vector.hash -> Integer
+ *   ==(size) -> Boolean
+ *
+ * compare with Size.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::Sizef>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::Sizef>(other));
+}
+
+
+/*
+ * call-seq:
+ *   hash -> Integer
  * 
  * hash from the combined Size values.
  * ===Return value
@@ -148,12 +173,15 @@ void Init_CeguiSize(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiSize,"width",_get_d_width,_set_d_width);
 	rb_define_attr_method(rb_cCeguiSize,"height",_get_d_height,_set_d_height);
 
+	rb_define_method(rb_cCeguiSize,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiSize,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 	rb_define_method(rb_cCeguiSize,"-@",RUBY_METHOD_FUNC(_minusself),0);
 
 	rb_define_method(rb_cCeguiSize,"+",RUBY_METHOD_FUNC(_plus),1);
 	rb_define_method(rb_cCeguiSize,"-",RUBY_METHOD_FUNC(_minus),1);
 	rb_define_method(rb_cCeguiSize,"*",RUBY_METHOD_FUNC(_mal),1);
+
+	rb_define_method(rb_cCeguiSize,"==",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiSize,"hash",RUBY_METHOD_FUNC(_hash),0);
 
@@ -162,4 +190,6 @@ void Init_CeguiSize(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiSize,"marshal_dump",RUBY_METHOD_FUNC(_marshal_dump),0);
 	rb_define_method(rb_cCeguiSize,"marshal_load",RUBY_METHOD_FUNC(_marshal_load),1);
 
+	rb_define_const(rb_cCeguiSize,"Zero",wrap(CEGUI::Sizef::zero()));
+	rb_define_const(rb_cCeguiSize,"One",wrap(CEGUI::Sizef::one()));
 }

@@ -21,11 +21,6 @@ inline VALUE wrap< CEGUI::ItemEntry >(CEGUI::ItemEntry *itementry )
 template <>
 inline CEGUI::ItemEntry* wrap< CEGUI::ItemEntry* >(const VALUE &vitementry)
 {
-	if (rb_obj_is_kind_of(vitementry, rb_cCeguiItemEntry)){
-		return (CEGUI::ItemEntry*)(wrap< CEGUI::ItemEntry* >(vitementry));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiItemEntry),rb_obj_classname(vitementry));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ItemEntry>(vitementry, rb_cCeguiItemEntry);
 }
 #endif /* __RubyCeguiItemEntry_H__ */

@@ -14,6 +14,7 @@ extern VALUE rb_cCeguiListHeaderSegment;
 
 #include "ceguiwindowimpl.hpp"
 
+
 template <>
 inline VALUE wrap< CEGUI::ListHeaderSegment >(CEGUI::ListHeaderSegment *listheader )
 {
@@ -21,13 +22,21 @@ inline VALUE wrap< CEGUI::ListHeaderSegment >(CEGUI::ListHeaderSegment *listhead
 }
 
 template <>
+inline VALUE wrap< CEGUI::ListHeaderSegment >(const CEGUI::ListHeaderSegment &listheader )
+{
+	return wrap< CEGUI::ListHeaderSegment >(const_cast<CEGUI::ListHeaderSegment*>(&listheader));
+}
+
+
+template <>
 inline CEGUI::ListHeaderSegment* wrap< CEGUI::ListHeaderSegment* >(const VALUE &vlistheader)
 {
-	if (rb_obj_is_kind_of(vlistheader, rb_cCeguiListHeaderSegment)){
-		return (CEGUI::ListHeaderSegment*)(wrap< CEGUI::Window* >(vlistheader));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiListHeaderSegment),rb_obj_classname(vlistheader));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ListHeaderSegment>(vlistheader, rb_cCeguiListHeaderSegment);
+}
+
+template <>
+inline const CEGUI::ListHeaderSegment& wrap< const CEGUI::ListHeaderSegment& >(const VALUE &vlistheader)
+{
+	return *wrap< CEGUI::ListHeaderSegment* >(vlistheader);
 }
 #endif /* __RubyCeguiListHeaderSegment_H__ */

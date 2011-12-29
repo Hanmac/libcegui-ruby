@@ -12,7 +12,6 @@ inline VALUE wrap< CEGUI::Vector2f >(CEGUI::Vector2f *vector )
 	return Data_Wrap_Struct(rb_cCeguiVector2, NULL, free, vector);
 }
 
-
 template <>
 inline bool is_wrapable< CEGUI::Vector2f >(const VALUE &vvector)
 {
@@ -39,7 +38,7 @@ inline CEGUI::Vector2f* wrap< CEGUI::Vector2f* >(const VALUE &vvector)
 	 	vector->d_y = NUM2DBL(rb_funcall(vvector,rb_intern("y"),0));
 	 	return vector;
 	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiVector2),rb_obj_classname(vvector));
+		rb_raise(rb_eTypeError,"Expected %s got %s!",rb_class2name(rb_cCeguiVector2),rb_obj_classname(vvector));
 		return NULL;
 	}
 
@@ -47,6 +46,9 @@ inline CEGUI::Vector2f* wrap< CEGUI::Vector2f* >(const VALUE &vvector)
 template <>
 inline CEGUI::Vector2f wrap< CEGUI::Vector2f >(const VALUE &vvector)
 {
-	return *wrap< CEGUI::Vector2f* >(vvector);
+	if (rb_obj_is_kind_of(vvector, rb_cString))
+		return CEGUI::PropertyHelper<CEGUI::Vector2f>::fromString(wrap<CEGUI::String>(vvector));
+	else
+		return *wrap< CEGUI::Vector2f* >(vvector);
 }
 #endif /* __RubyCeguiVector2_H__ */

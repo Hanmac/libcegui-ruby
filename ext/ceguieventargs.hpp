@@ -30,13 +30,6 @@ inline VALUE wrap<const CEGUI::EventArgs >(const CEGUI::EventArgs *args )
 template <>
 inline CEGUI::EventArgs* wrap< CEGUI::EventArgs* >(const VALUE &vargs)
 {
-	if (rb_obj_is_kind_of(vargs, rb_cCeguiEventArgs)){
-		CEGUI::EventArgs *args;
-		Data_Get_Struct( vargs, CEGUI::EventArgs, args);
-		return args;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiEventArgs),rb_obj_classname(vargs));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::EventArgs>(vargs, rb_cCeguiEventArgs);
 }
 #endif /* __RubyCeguiEventArgs_H__ */

@@ -22,20 +22,7 @@ inline VALUE wrap< CEGUI::Affector >(CEGUI::Affector *affector )
 template <>
 inline CEGUI::Affector* wrap< CEGUI::Affector* >(const VALUE &vaffector)
 {
-	try {
-		if (rb_obj_is_kind_of(vaffector, rb_cCeguiAffector)){
-			CEGUI::Affector *affector;
-			Data_Get_Struct( vaffector, CEGUI::Affector, affector);
-			return affector;
-		}else{
-			rb_raise(rb_eTypeError,"Excepted %s got %s!",
-				rb_class2name(rb_cCeguiAffector),rb_obj_classname(vaffector));
-			return NULL;
-		}
-	}catch(CEGUI::Exception& e){
-		rb_raise(e);
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::Affector>(vaffector, rb_cCeguiAffector);
 }
 #endif /* __RubyCeguiAffector_H__ */
 

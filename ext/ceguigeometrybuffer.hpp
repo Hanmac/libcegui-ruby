@@ -22,13 +22,6 @@ inline VALUE wrap< CEGUI::GeometryBuffer >(const CEGUI::GeometryBuffer &geometry
 template <>
 inline CEGUI::GeometryBuffer* wrap< CEGUI::GeometryBuffer* >(const VALUE &vgeometrybuffer)
 {
-	if (rb_obj_is_kind_of(vgeometrybuffer, rb_cCeguiGeometryBuffer)){
-		CEGUI::GeometryBuffer *geometrybuffer;
-		Data_Get_Struct( vgeometrybuffer, CEGUI::GeometryBuffer, geometrybuffer);
-		return geometrybuffer;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiGeometryBuffer),rb_obj_classname(vgeometrybuffer));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::GeometryBuffer>(vgeometrybuffer, rb_cCeguiGeometryBuffer);
 }
 #endif /* __RubyCeguiGeometryBuffer_H__ */

@@ -22,12 +22,7 @@ inline VALUE wrap< CEGUI::ClippedContainer >(CEGUI::ClippedContainer *clippedcon
 template <>
 inline CEGUI::ClippedContainer* wrap< CEGUI::ClippedContainer* >(const VALUE &vclippedcontainer)
 {
-	if (rb_obj_is_kind_of(vclippedcontainer, rb_cCeguiClippedContainer)){
-		return (CEGUI::ClippedContainer*)(wrap< CEGUI::Window* >(vclippedcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiClippedContainer),rb_obj_classname(vclippedcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::ClippedContainer>(vclippedcontainer, rb_cCeguiClippedContainer);
 }
 #endif /* __RubyCeguiClippedContainer_H__ */
 

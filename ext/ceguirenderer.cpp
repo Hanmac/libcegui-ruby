@@ -17,26 +17,10 @@ namespace CeguiRenderer {
 macro_attr(DisplaySize,CEGUI::Sizef)
 singlefunc(beginRendering)
 singlefunc(endRendering)
-/*
-*/
-VALUE _getName(VALUE self)
-{
-	return wrap(_self->getIdentifierString());
-}
 
-/*
-*/
-VALUE _createGeometryBuffer(VALUE self)
-{
-	return wrap(_self->createGeometryBuffer());
-}
-
-/*
-*/
-VALUE _createTextureTarget(VALUE self)
-{
-	return wrap(_self->createTextureTarget());
-}
+singlereturn(getIdentifierString)
+singlereturn(createGeometryBuffer)
+singlereturn(createTextureTarget)
 
 /*
 */
@@ -64,13 +48,13 @@ VALUE _inspect(VALUE self)
 {
 	VALUE array[2];
 	array[0]=rb_str_new2("#<%s>");
-	array[1]=_getName(self);
+	array[1]=rb_funcall(self,"name");
 	return rb_f_sprintf(2,array);
 }
 
 }
 
-#if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGL_RENDERER_H
 VALUE rb_cCeguiOpenGLRenderer;
 namespace CeguiRenderer {
 
@@ -100,7 +84,39 @@ VALUE _opengl_alloc(VALUE self)
 }
 }
 #endif
-#if HAVE_RENDERERMODULES_NULL_RENDERER_H
+
+
+#if HAVE_CEGUI_RENDERERMODULES_OPENGLES_RENDERER_H
+VALUE rb_cCeguiOpenGLESRenderer;
+namespace CeguiRenderer {
+
+/*
+*/
+VALUE _opengles_bootstrap(VALUE self)
+{
+	try {
+		VALUE val = wrap(CEGUI::OpenGLESRenderer::bootstrapSystem());
+		ruby_bootstrap();
+		return val;
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+/*
+*/
+VALUE _opengles_alloc(VALUE self)
+{
+	try {
+		return wrap(CEGUI::OpenGLESRenderer::create());
+	}catch(CEGUI::Exception& e){
+		rb_raise(e);
+	}
+	return Qnil;
+}
+}
+#endif
+#if HAVE_CEGUI_RENDERERMODULES_NULL_RENDERER_H
 VALUE rb_cCeguiNullRenderer;
 namespace CeguiRenderer {
 /*
@@ -129,7 +145,7 @@ VALUE _null_alloc(VALUE self)
 }
 }
 #endif
-#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OGRE_RENDERER_H
 VALUE rb_cCeguiOgreRenderer;
 namespace CeguiRenderer {
 /*
@@ -159,7 +175,7 @@ VALUE _ogre_alloc(VALUE self)
 }
 #endif
 
-#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_IRRLICHT_RENDERER_H
 VALUE rb_cCeguiIrrlichtRenderer;
 namespace CeguiRenderer {
 
@@ -193,12 +209,18 @@ VALUE _irrlicht_alloc(VALUE self,VALUE irr)
 #endif
 
 /* Document-method: beginRendering
-
 */
 
 /* Document-method: endRendering
-
 */
+
+/* Document-method: name
+*/
+/* Document-method: createGeometryBuffer
+*/
+/* Document-method: createTextureTarget
+*/
+
 
 
 void Init_CeguiRenderer(VALUE rb_mCegui)
@@ -215,7 +237,7 @@ void Init_CeguiRenderer(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiRenderer,"displaySize",_getDisplaySize,_setDisplaySize);
 
 	rb_define_method(rb_cCeguiRenderer,"inspect",RUBY_METHOD_FUNC(_inspect),0);
-	rb_define_method(rb_cCeguiRenderer,"name",RUBY_METHOD_FUNC(_getName),0);
+	rb_define_method(rb_cCeguiRenderer,"name",RUBY_METHOD_FUNC(_getIdentifierString),0);
 
 	rb_define_method(rb_cCeguiRenderer,"beginRendering",RUBY_METHOD_FUNC(_beginRendering),0);
 	rb_define_method(rb_cCeguiRenderer,"endRendering",RUBY_METHOD_FUNC(_endRendering),0);
@@ -225,25 +247,31 @@ void Init_CeguiRenderer(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiRenderer,"createTextureTarget",RUBY_METHOD_FUNC(_createTextureTarget),0);
 
 
-#if HAVE_RENDERERMODULES_NULL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_NULL_RENDERER_H
 	rb_cCeguiNullRenderer = rb_define_class_under(rb_mCegui,"NullRenderer",rb_cCeguiRenderer);
 	rb_define_alloc_func(rb_cCeguiNullRenderer,_null_alloc);
 	rb_define_singleton_method(rb_cCeguiNullRenderer,"bootstrap",RUBY_METHOD_FUNC(_null_bootstrap),0);
 #endif
 
-#if HAVE_RENDERERMODULES_OPENGL_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGL_RENDERER_H
 	rb_cCeguiOpenGLRenderer = rb_define_class_under(rb_mCegui,"OpenGLRenderer",rb_cCeguiRenderer);
 	rb_define_alloc_func(rb_cCeguiOpenGLRenderer,_opengl_alloc);
 	rb_define_singleton_method(rb_cCeguiOpenGLRenderer,"bootstrap",RUBY_METHOD_FUNC(_opengl_bootstrap),0);
 #endif
 
-#if HAVE_RENDERERMODULES_OGRE_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_OPENGLES_RENDERER_H
+	rb_cCeguiOpenGLESRenderer = rb_define_class_under(rb_mCegui,"OpenGLESRenderer",rb_cCeguiRenderer);
+	rb_define_alloc_func(rb_cCeguiOpenGLESRenderer,_opengles_alloc);
+	rb_define_singleton_method(rb_cCeguiOpenGLESRenderer,"bootstrap",RUBY_METHOD_FUNC(_opengles_bootstrap),0);
+#endif
+
+#if HAVE_CEGUI_RENDERERMODULES_OGRE_RENDERER_H
 	rb_cCeguiOgreRenderer = rb_define_class_under(rb_mCegui,"OgreRenderer",rb_cCeguiRenderer);
 	rb_define_alloc_func(rb_cCeguiOgreRenderer,_ogre_alloc);
 	rb_define_singleton_method(rb_cCeguiOgreRenderer,"bootstrap",RUBY_METHOD_FUNC(_ogre_bootstrap),0);
 #endif
 
-#if HAVE_RENDERERMODULES_IRRLICHT_RENDERER_H
+#if HAVE_CEGUI_RENDERERMODULES_IRRLICHT_RENDERER_H
 	rb_cCeguiIrrlichtRenderer = rb_define_class_under(rb_mCegui,"IrrlichtRenderer",rb_cCeguiRenderer);
 	rb_define_singleton_method(rb_cCeguiIrrlichtRenderer,"new",RUBY_METHOD_FUNC(_irrlicht_alloc),1);
 	rb_define_singleton_method(rb_cCeguiIrrlichtRenderer,"bootstrap",RUBY_METHOD_FUNC(_irrlicht_bootstrap),1);

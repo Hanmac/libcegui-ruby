@@ -6,12 +6,17 @@ VALUE rb_cCeguiEditbox;
 namespace CeguiEditbox {
 
 macro_attr(ValidationString,CEGUI::String)
-macro_attr_with_func(CaretIndex,UINT2NUM,NUM2UINT)
 
-macro_attr_with_func(MaskCodePoint,ULONG2NUM,NUM2ULONG)
+macro_attr(CaretIndex,uint)
+macro_attr(MaxTextLength,uint)
+
+macro_attr(MaskCodePoint,CEGUI::String::value_type)
 
 macro_attr_bool(ReadOnly)
 macro_attr_bool(TextMasked)
+
+singlereturn(isTextValid)
+singlereturn(hasInputFocus)
 /*
 */
 VALUE _new(int argc,VALUE *argv,VALUE self)
@@ -23,20 +28,6 @@ VALUE _new(int argc,VALUE *argv,VALUE self)
 	result[1]=name;
 	return rb_call_super(2,result);
 }
-
-/*
-*/
-VALUE _isTextValid(VALUE self)
-{
-	return RBOOL(_self->isTextValid());
-}
-/*
-*/
-VALUE _hasInputFocus(VALUE self)
-{
-	return RBOOL(_self->hasInputFocus());
-}
-
 
 VALUE _getSelection(VALUE self)
 {
@@ -52,6 +43,14 @@ VALUE _setSelection(VALUE self,VALUE val)
 }
 
 }
+
+
+
+/* Document-method: text_valid?
+*/
+/* Document-method: inputfocus?
+*/
+
 /*
 */
 void Init_CeguiEditbox(VALUE rb_mCegui)
@@ -64,6 +63,7 @@ void Init_CeguiEditbox(VALUE rb_mCegui)
 	rb_define_attr(rb_cCeguiEditbox,"maskCodePoint",1,1);
 	
 	rb_define_attr(rb_cCeguiEditbox,"caret",1,1);
+	rb_define_attr(rb_cCeguiEditbox,"maxtextLength",1,1);
 	rb_define_attr(rb_cCeguiEditbox,"selection",1,1);
 
 	rb_define_attr(rb_cCeguiEditbox,"readOnly",1,1);
@@ -79,6 +79,8 @@ void Init_CeguiEditbox(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiEditbox,"validationString",_getValidationString,_setValidationString);
 	rb_define_attr_method(rb_cCeguiEditbox,"maskCodePoint",_getMaskCodePoint,_setMaskCodePoint);
 	rb_define_attr_method(rb_cCeguiEditbox,"caret",_getCaretIndex,_setCaretIndex);
+	rb_define_attr_method(rb_cCeguiEditbox,"maxtextLength",_getMaxTextLength,_setMaxTextLength);
+
 	rb_define_attr_method(rb_cCeguiEditbox,"selection",_getSelection,_setSelection);
 	
 	rb_define_attr_method(rb_cCeguiEditbox,"readOnly",_getReadOnly,_setReadOnly);

@@ -21,11 +21,6 @@ inline VALUE wrap< CEGUI::PushButton >(CEGUI::PushButton *pushbutton )
 template <>
 inline CEGUI::PushButton* wrap< CEGUI::PushButton* >(const VALUE &vpushbutton)
 {
-	if (rb_obj_is_kind_of(vpushbutton, rb_cCeguiPushButton)){
-		return (CEGUI::PushButton*)(wrap< CEGUI::Window* >(vpushbutton));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiPushButton),rb_obj_classname(vpushbutton));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::PushButton>(vpushbutton, rb_cCeguiPushButton);
 }
 #endif /* __RubyCeguiPushButton_H__ */

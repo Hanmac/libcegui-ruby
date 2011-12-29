@@ -33,11 +33,6 @@ inline VALUE wrap< CEGUI::SequentialLayoutContainer >(CEGUI::SequentialLayoutCon
 template <>
 inline CEGUI::SequentialLayoutContainer* wrap< CEGUI::SequentialLayoutContainer* >(const VALUE &vlayoutcontainer)
 {
-	if (rb_obj_is_kind_of(vlayoutcontainer, rb_cCeguiSequentialLayoutContainer)){
-		return (CEGUI::SequentialLayoutContainer*)(wrap< CEGUI::Window* >(vlayoutcontainer));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiSequentialLayoutContainer),rb_obj_classname(vlayoutcontainer));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::SequentialLayoutContainer>(vlayoutcontainer, rb_cCeguiSequentialLayoutContainer);
 }
 #endif /* __RubyCeguiSequentialLayoutContainer_H__ */

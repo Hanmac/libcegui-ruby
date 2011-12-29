@@ -16,12 +16,7 @@ inline VALUE wrap< CEGUI::Checkbox >(CEGUI::Checkbox *checkbox )
 template <>
 inline CEGUI::Checkbox* wrap< CEGUI::Checkbox* >(const VALUE &vcheckbox)
 {
-	if (rb_obj_is_kind_of(vcheckbox, rb_cCeguiCheckbox)){
-		return (CEGUI::Checkbox*)(wrap< CEGUI::Window* >(vcheckbox));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiCheckbox),rb_obj_classname(vcheckbox));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Checkbox>(vcheckbox, rb_cCeguiCheckbox);
 }
 
 #endif /* __RubyCeguiCheckbox_H__ */

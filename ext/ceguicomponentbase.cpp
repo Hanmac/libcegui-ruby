@@ -21,6 +21,9 @@ namespace CeguiComponentBase
 macro_attr(ComponentArea,CEGUI::ComponentArea)
 macro_attr(Colours,CEGUI::ColourRect)
 
+macro_attr(VertFormattingPropertySource,CEGUI::String)
+macro_attr(HorzFormattingPropertySource,CEGUI::String)
+
 }
 /*
  *

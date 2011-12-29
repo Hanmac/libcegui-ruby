@@ -17,11 +17,6 @@ inline VALUE wrap< CEGUI::Tooltip >(CEGUI::Tooltip *tooltip )
 template <>
 inline CEGUI::Tooltip* wrap< CEGUI::Tooltip* >(const VALUE &vtooltip)
 {
-	if (rb_obj_is_kind_of(vtooltip, rb_cCeguiTooltip)){
-		return (CEGUI::Tooltip*)(wrap< CEGUI::Window* >(vtooltip));
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiTooltip),rb_obj_classname(vtooltip));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::Tooltip>(vtooltip, rb_cCeguiTooltip);
 }
 #endif /* __RubyCeguiTooltip_H__ */

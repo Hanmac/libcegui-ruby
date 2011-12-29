@@ -12,12 +12,6 @@ inline VALUE wrap(CEGUI::ImageCodec &codec )
 template<>
 inline CEGUI::ImageCodec* wrap<CEGUI::ImageCodec*>(const VALUE &vcodec)
 {
-	if (rb_obj_is_kind_of(vcodec, rb_cCeguiImageCodec)){
-		CEGUI::ImageCodec *codec;
-		Data_Get_Struct( vcodec, CEGUI::ImageCodec, codec);
-		return codec;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiImageCodec),rb_obj_classname(vcodec));
-	}
+	return unwrapPtr<CEGUI::ImageCodec>(vcodec, rb_cCeguiImageCodec);
 }
 #endif /* __RubyCeguiImageCodec_H__ */

@@ -27,6 +27,13 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 	return result;
 }
 /*
+ *
+ */
+VALUE _to_s(VALUE self)
+{
+	return wrap(CEGUI::PropertyHelper<CEGUI::UDim>::toString(*_self));
+}
+/*
  * call-seq:
  *   udim.inspect -> String
  * 
@@ -36,12 +43,11 @@ VALUE _initialize_copy(VALUE self, VALUE other)
 */
 VALUE _inspect(VALUE self)
 {
-	VALUE array[4];
-	array[0]=rb_str_new2("#<%s:(%f, %f)>");
+	VALUE array[3];
+	array[0]=rb_str_new2("#<%s:%s>");
 	array[1]=rb_class_of(self);
-	array[2]=_get_d_scale(self);
-	array[3]=_get_d_offset(self);
-	return rb_f_sprintf(4,array);
+	array[2]=self;
+	return rb_f_sprintf(3,array);
 }
 /*
 */
@@ -74,7 +80,10 @@ VALUE _minus(VALUE self,VALUE other)
 */
 VALUE _mal(VALUE self,VALUE other)
 {
-	return wrap(*_self * wrap<CEGUI::UDim>(other));
+	if(rb_obj_is_kind_of(other,rb_cNumeric))
+		return wrap(*_self * NUM2DBL(other));
+	else
+		return wrap(*_self * wrap<CEGUI::UDim>(other));
 }
 /*
 */
@@ -82,6 +91,23 @@ VALUE _durch(VALUE self,VALUE other)
 {
 	return wrap(*_self / wrap<CEGUI::UDim>(other));
 }
+
+/*
+ * call-seq:
+ *   ==(udim) -> Boolean
+ *
+ * compare with UDim.
+*/
+VALUE _equal(VALUE self,VALUE other)
+{
+	if(self == other)
+		return Qtrue;
+	if(!is_wrapable<CEGUI::UDim>(other))
+		return Qfalse;
+	return wrap(*_self == wrap<CEGUI::UDim>(other));
+}
+
+
 /*
  * call-seq:
  *   vector.hash -> Integer
@@ -150,6 +176,7 @@ void Init_CeguiUDim(VALUE rb_mCegui)
 	rb_define_attr_method(rb_cCeguiUDim,"scale",_get_d_scale,_set_d_scale);
 	rb_define_attr_method(rb_cCeguiUDim,"offset",_get_d_offset,_set_d_offset);
 
+	rb_define_method(rb_cCeguiUDim,"to_s",RUBY_METHOD_FUNC(_to_s),0);
 	rb_define_method(rb_cCeguiUDim,"inspect",RUBY_METHOD_FUNC(_inspect),0);
 
 	rb_define_method(rb_cCeguiUDim,"-@",RUBY_METHOD_FUNC(_minusself),0);
@@ -158,6 +185,8 @@ void Init_CeguiUDim(VALUE rb_mCegui)
 	rb_define_method(rb_cCeguiUDim,"-",RUBY_METHOD_FUNC(_minus),1);
 	rb_define_method(rb_cCeguiUDim,"*",RUBY_METHOD_FUNC(_mal),1);
 	rb_define_method(rb_cCeguiUDim,"/",RUBY_METHOD_FUNC(_durch),1);
+
+	rb_define_method(rb_cCeguiUDim,"==",RUBY_METHOD_FUNC(_equal),1);
 
 	rb_define_method(rb_cCeguiUDim,"hash",RUBY_METHOD_FUNC(_hash),0);
 

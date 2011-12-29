@@ -15,6 +15,8 @@ macro_attr(CurrentValue,float)
 macro_attr(MaxValue,float)
 macro_attr(ClickStep,float)
 
+singlereturn(getThumb)
+
 /*
 */
 VALUE _new(int argc,VALUE *argv,VALUE self)
@@ -26,14 +28,10 @@ VALUE _new(int argc,VALUE *argv,VALUE self)
 	result[1]=name;
 	return rb_call_super(2,result);
 }
-/*
-*/
-VALUE _getThumb(VALUE self)
-{
-	return wrap(_self->getThumb());
 }
 
-}
+/* Document-method: thumb
+*/
 
 /*
 */

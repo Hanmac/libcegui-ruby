@@ -24,11 +24,6 @@ inline VALUE wrap< CEGUI::MenuBase >(CEGUI::MenuBase *menubase )
 template <>
 inline CEGUI::MenuBase* wrap< CEGUI::MenuBase* >(const VALUE &vmenubase)
 {
-	if (rb_obj_is_kind_of(vmenubase, rb_cCeguiMenuBase)){
-		return (CEGUI::MenuBase*)wrap<CEGUI::Window*>(vmenubase);
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiMenuBase),rb_obj_classname(vmenubase));
-		return NULL;
-	}
+	return unwrapWindow<CEGUI::MenuBase>(vmenubase, rb_cCeguiMenuBase);
 }
 #endif /* __RubyCeguiMenuBase_H__ */

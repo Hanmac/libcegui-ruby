@@ -53,13 +53,17 @@ singlefunc(unloadFactoryAliases)
 singlefunc(unloadFalagardMappings)
 
 
+singlereturn(resourcesLoaded)
 
-/*
-*/
-VALUE _resourcesLoaded(VALUE self)
-{
-	return RBOOL(_self->resourcesLoaded());
-}
+singlereturn(areXMLImagesetsLoaded)
+singlereturn(areFontsLoaded)
+singlereturn(areImageFileImagesetsLoaded)
+singlereturn(areLookNFeelsLoaded)
+singlereturn(areWindowFactoriesLoaded)
+singlereturn(areWindowRendererFactoriesLoaded)
+singlereturn(areFactoryAliasesLoaded)
+singlereturn(areFalagardMappingsLoaded)
+
 /*
 */
 VALUE _each_XMLImagesets(VALUE self)
@@ -107,7 +111,7 @@ VALUE _Manager_each(VALUE self)
 */
 VALUE _Manager_isDefined(VALUE self,VALUE name)
 {
-	return RBOOL(_manager->isDefined(wrap<CEGUI::String>(name)));
+	return wrap(_manager->isDefined(wrap<CEGUI::String>(name)));
 }
 /*
 */
@@ -161,59 +165,13 @@ VALUE _Manager_setDefaultResourceGroup(VALUE self,VALUE val)
 	return val;
 }
 
-/*
-*/
-VALUE _areXMLImagesetsLoaded(VALUE self)
-{
-	return wrap(_self->areXMLImagesetsLoaded());
-}
-/*
-*/
-VALUE _areFontsLoaded(VALUE self)
-{
-	return wrap(_self->areFontsLoaded());
-}
-/*
-*/
-VALUE _areImageFileImagesetsLoaded(VALUE self)
-{
-	return wrap(_self->areImageFileImagesetsLoaded());
-}/*
-*/
-VALUE _areLookNFeelsLoaded(VALUE self)
-{
-	return wrap(_self->areLookNFeelsLoaded());
-}
-/*
-*/
-VALUE _areWindowFactoriesLoaded(VALUE self)
-{
-	return wrap(_self->areWindowFactoriesLoaded());
-}
-/*
-*/
-VALUE _areWindowRendererFactoriesLoaded(VALUE self)
-{
-	return wrap(_self->areWindowRendererFactoriesLoaded());
-}
-/*
-*/
-VALUE _areFactoryAliasesLoaded(VALUE self)
-{
-	return wrap(_self->areFactoryAliasesLoaded());
-}
-/*
-*/
-VALUE _areFalagardMappingsLoaded(VALUE self)
-{
-	return wrap(_self->areFalagardMappingsLoaded());
 }
 
+/* Document-method: loaded?
+*/
 
-}
 
 /* Document-method: load 
-
 */
 /* Document-method: loadXMLImagesets 
 
@@ -266,6 +224,23 @@ VALUE _areFalagardMappingsLoaded(VALUE self)
 /* Document-method: unloadFalagardMappings 
 
 */
+/* Document-method: XMLImagesets_loaded?
+*/
+/* Document-method: ImageFileImagesets_loaded?
+*/
+/* Document-method: Fonts_loaded?
+*/
+/* Document-method: LookNFeels_loaded?
+*/
+/* Document-method: WindowFactories_loaded?
+*/
+/* Document-method: WindowRendererFactories_loaded?
+*/
+/* Document-method: FactoryAliases_loaded?
+*/
+/* Document-method: FalagardMappings_loaded?
+*/
+
 
 void Init_CeguiScheme(VALUE rb_mCegui)
 {

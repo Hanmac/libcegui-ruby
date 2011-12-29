@@ -20,14 +20,6 @@ inline VALUE wrap< CEGUI::RenderedStringComponent >(CEGUI::RenderedStringCompone
 template <>
 inline CEGUI::RenderedStringComponent* wrap< CEGUI::RenderedStringComponent* >(const VALUE &vcomponent)
 {
-	if (rb_obj_is_kind_of(vcomponent, rb_cCeguiRenderedStringComponent)){
-		CEGUI::RenderedStringComponent *component;
-		Data_Get_Struct( vcomponent, CEGUI::RenderedStringComponent, component);
-		return component;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",
-			rb_class2name(rb_cCeguiRenderedStringComponent),rb_obj_classname(vcomponent));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::RenderedStringComponent>(vcomponent, rb_cCeguiRenderedStringComponent);
 }
 #endif /* __RubyCeguiRenderedStringComponent_H__ */

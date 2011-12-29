@@ -77,7 +77,10 @@ macro_attr(UpdateMode,CEGUI::WindowUpdateMode)
 
 singlefunc(render)
 singlefunc(destroy)
+
 singlefunc(releaseInput)
+singlereturn(captureInput)
+
 singlefunc(beginInitialisation)
 singlefunc(endInitialisation)
 
@@ -90,20 +93,13 @@ singlefunc(disable)
 singlefunc(activate)
 singlefunc(deactivate)
 
+singlereturn(getType)
 
-/*
- * call-seq:
- *   type
- * 
- * returns the type of the window
- * ===Return value
- * string
-*/
-VALUE _getType(VALUE self)
-{
-	return wrap(_self->getType());
-}
+singlereturn(getActiveChild)
+singlereturn(getActiveSibling)
 
+singlereturn(getRootWindow)
+singlereturn(getPixelSize)
 
 /*
  * call-seq:
@@ -140,16 +136,10 @@ VALUE _inspect(VALUE self)
 }
 /*
 */
-VALUE _captureInput(VALUE self)
-{
-	return wrap(_self->captureInput());
-}
-/*
-*/
 VALUE _isChild(VALUE self,VALUE val)
 {
 	if(rb_obj_is_kind_of(val, rb_cInteger)){
-		return RBOOL(_self->isChild(NUM2ULONG(val)));
+		return wrap(_self->isChild(NUM2ULONG(val)));
 	}else
 		return rb_call_super(1,&val);
 }
@@ -158,39 +148,9 @@ VALUE _isChild(VALUE self,VALUE val)
 VALUE _isAncestor(VALUE self,VALUE val)
 {
 	if(rb_obj_is_kind_of(val, rb_cInteger)){
-		return RBOOL(_self->isAncestor(NUM2ULONG(val)));
+		return wrap(_self->isAncestor(NUM2ULONG(val)));
 	}else
 		return rb_call_super(1,&val);
-}
-/*
-*/
-VALUE _getActiveChild(VALUE self)
-{
-	return wrap(_self->getActiveChild());
-}
-/*
-*/
-VALUE _getActiveSibling(VALUE self)
-{
-	return wrap(_self->getActiveSibling());
-}
-/*
- * call-seq:
- *   rootWindow -> CEGUI::Window
- * 
- * gets the root window of this window
- * ===Return value
- * CEGUI::Window or nil
-*/
-VALUE _getRootWindow(VALUE self)
-{
-	return wrap(_self->getRootWindow());
-}
-/*
-*/
-VALUE _getPixelSize(VALUE self)
-{
-	return wrap(_self->getPixelSize());
 }
 
 /*
@@ -282,7 +242,7 @@ VALUE _Manager_lock(VALUE self)
 	//check if system is created
 	wrap< CEGUI::System* >(self);
 	_manager->lock();
-	return RBOOL(_manager->isLocked());
+	return wrap(_manager->isLocked());
 }
 /*
 */
@@ -291,7 +251,7 @@ VALUE _Manager_unlock(VALUE self)
 	//check if system is created
 	wrap< CEGUI::System* >(self);
 	_manager->unlock();
-	return RBOOL(_manager->isLocked());
+	return wrap(_manager->isLocked());
 }
 /*
 */
@@ -299,7 +259,7 @@ VALUE _Manager_locked(VALUE self)
 {
 	//check if system is created
 	wrap< CEGUI::System* >(self);
-	return RBOOL(_manager->isLocked());
+	return wrap(_manager->isLocked());
 }
 
 
@@ -447,6 +407,10 @@ int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg)
 
 /* Document-method: releaseInput
 */
+
+/* Document-method: captureInput
+*/
+
 /* Document-method: beginInitialisation
 */
 /* Document-method: endInitialisation
@@ -465,6 +429,32 @@ int ruby_window_destroyed_callback(const CEGUI::EventArgs &arg)
 /* Document-method: activate
 */
 /* Document-method: deactivate
+*/
+
+/* Document-method: type
+ * call-seq:
+ *   type
+ *
+ * returns the type of the window
+ * ===Return value
+ * string
+*/
+
+/* Document-method: activeChild
+*/
+/* Document-method: activeSibling
+*/
+/* Document-method: pixelSize
+*/
+
+
+/* Document-method: rootWindow
+ * call-seq:
+ *   rootWindow -> CEGUI::Window
+ *
+ * gets the root window of this window
+ * ===Return value
+ * CEGUI::Window or nil
 */
 
 void Init_CeguiWindow(VALUE rb_mCegui)

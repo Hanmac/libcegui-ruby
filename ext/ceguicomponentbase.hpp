@@ -9,8 +9,8 @@
 #define __RubyCeguiComponentBase_H__
 
 #include "ceguiframecomponent.hpp"
-
-
+#include "ceguiimagerycomponent.hpp"
+#include "ceguitextcomponent.hpp"
 void Init_CeguiComponentBase(VALUE rb_mCegui);
 extern VALUE rb_cCeguiComponentBase;
 
@@ -22,19 +22,20 @@ inline VALUE wrap< CEGUI::FalagardComponentBase >(CEGUI::FalagardComponentBase *
 	if(framecomponent)
 		return wrap(framecomponent);
 
+	CEGUI::ImageryComponent *imagerycomponent = dynamic_cast<CEGUI::ImageryComponent*>(componentbase);
+	if(imagerycomponent)
+		return wrap(imagerycomponent);
+
+	CEGUI::TextComponent *textcomponent = dynamic_cast<CEGUI::TextComponent*>(componentbase);
+	if(textcomponent)
+		return wrap(textcomponent);
+
 	return Data_Wrap_Struct(rb_cCeguiComponentBase, NULL, NULL, componentbase);
 }
 
 template <>
 inline CEGUI::FalagardComponentBase* wrap< CEGUI::FalagardComponentBase* >(const VALUE &vcomponentbase)
 {
-	if (rb_obj_is_kind_of(vcomponentbase, rb_cCeguiComponentBase)){
-		CEGUI::FalagardComponentBase *componentbase;
-		Data_Get_Struct( vcomponentbase, CEGUI::FalagardComponentBase, componentbase);
-		return componentbase;
-	}else{
-		rb_raise(rb_eTypeError,"Excepted %s got %s!",rb_class2name(rb_cCeguiComponentBase),rb_obj_classname(vcomponentbase));
-		return NULL;
-	}
+	return unwrapPtr<CEGUI::FalagardComponentBase>(vcomponentbase, rb_cCeguiComponentBase);
 }
 #endif /* __RubyCeguiComponentBase_H__ */
